@@ -2,10 +2,17 @@ package calabash.java;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+
+import xmlwise.Plist;
 
 /**
  * 
@@ -13,34 +20,48 @@ import java.io.InputStreamReader;
  */
 public final class CalabashRunner {
 
-	private File pbxprojFile;
+	private final File pbxprojFile;
+	private final File projectDir;
+	private final File xcodeProjectDir;
+	private final String projectName;
 
-	/**
-	 * Sets the project path
-	 * 
-	 * @param path
-	 * @throws CalabashException
-	 */
-	public void setProjectPath(String path) throws CalabashException {
+	public CalabashRunner(String path) throws CalabashException {
 		File projectPath = new File(path);
-
 		if (!projectPath.exists())
 			throw new CalabashException(String.format("'%s' doesn't exists",
 					path));
-
 		if (!projectPath.isDirectory())
 			throw new CalabashException(String.format(
 					"'%s' is not a directory", path));
 
-		final String xCodeProjectFile = "project.pbxproj";
-		File projectFile = new File(projectPath, xCodeProjectFile);
+		// Finding the xcode project directory and the pbxproj file
+		File[] dirs = projectPath.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				return f.isDirectory() && f.getName().contains(".xcodeproj");
+			}
+
+		});
+		if (dirs == null || dirs.length == 0)
+			throw new CalabashException(
+					String.format(
+							"'%s' is not a valid project path. Can't find .xcodeproj directory",
+							path));
+		File xcodeProjectDir = dirs[0];
+
+		// Ensuring pbxproj file exists
+		File projectFile = new File(xcodeProjectDir, "project.pbxproj");
 		if (!projectFile.exists())
 			throw new CalabashException(
 					String.format(
-							"'%s' is not a Xcode project directory. Unable to locate '%s'",
-							path, xCodeProjectFile));
+							"'%s' is not a Xcode project directory. Unable to locate 'project.pbxproj'",
+							path));
 
+		this.projectDir = projectPath;
 		this.pbxprojFile = projectFile;
+		this.xcodeProjectDir = xcodeProjectDir;
+		this.projectName = xcodeProjectDir.getName().replace(".xcodeproj", "");
 	}
 
 	public void setupCalabash() throws CalabashException {
@@ -52,21 +73,19 @@ public final class CalabashRunner {
 			return;
 		}
 
-		String projectName = findProjectName();
 		ensureXCodeIsNotRunning();
 		backupProjectFile();
 		extractCalabashFramework();
-		injectCalabashFramework(projectName);
+		injectCalabashFramework();
 	}
 
-	private String findProjectName() throws CalabashException {
-		String name = pbxprojFile.getParentFile().getName();
-		if (name != null && !name.isEmpty())
-			return name.replace(".xcodeproj", "");
-
-		throw new CalabashException(String.format(
-				"Can't find project name from '%s'", pbxprojFile
-						.getParentFile().getAbsolutePath()));
+	public void start() throws CalabashException {
+		try {
+			String appPath = findAppBundlePath();
+			System.out.println(appPath);
+		} catch (AutoDetectAppBundlePathException e) {
+			throw new CalabashException("Can't find the APP bundle path");
+		}
 	}
 
 	private void ensureXCodeIsNotRunning() throws CalabashException {
@@ -129,13 +148,11 @@ public final class CalabashRunner {
 	}
 
 	private void extractCalabashFramework() throws CalabashException {
-		String parentDir = pbxprojFile.getParentFile().getParentFile()
-				.getAbsolutePath();
 		// TODO: remove full path and read from bundle
 		String[] cmd = {
 				"unzip",
 				"/Users/navaneeth/projects/calabash/calabash-ios-java/deps/calabash.framework.zip",
-				"-d", parentDir };
+				"-d", projectDir.getAbsolutePath() };
 		try {
 			Process process = Runtime.getRuntime().exec(cmd);
 			int exitcode = process.waitFor();
@@ -163,12 +180,10 @@ public final class CalabashRunner {
 		}
 	}
 
-	private void injectCalabashFramework(String projectName)
-			throws CalabashException {
-		String xcodeprojDir = pbxprojFile.getParentFile().getAbsolutePath();
+	private void injectCalabashFramework() throws CalabashException {
 		String[] cmd = {
 				"/Users/navaneeth/projects/calabash/calabash-ios-java/deps/CalabashSetup",
-				xcodeprojDir, projectName };
+				xcodeProjectDir.getAbsolutePath(), projectName };
 
 		try {
 			Process process = Runtime.getRuntime().exec(cmd);
@@ -192,6 +207,91 @@ public final class CalabashRunner {
 		} catch (InterruptedException e) {
 			throw new CalabashException("Error injecting calabash framework", e);
 		}
+	}
+
+	// Tries to detect the app bundle path. Usually Xcode builds to
+	// ~Library/Developer/Xcode/DerivedData
+	// Throws exception when fails
+	private String findAppBundlePath() throws AutoDetectAppBundlePathException {
+		File xcodeBuildDir = new File(
+				new File(System.getProperty("user.home")),
+				"Library/Developer/Xcode/DerivedData");
+		Collection<File> plistFiles = getDirectoryContentsRecursive(
+				xcodeBuildDir, new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						return name.contains("info.plist");
+					}
+				});
+
+		File buildDir = null;
+		for (File file : plistFiles) {
+			if (file.isDirectory())
+				continue;
+
+			try {
+				Map<String, Object> map = Plist.load(file);
+				Object workspacePath = map.get("WorkspacePath");
+				if (workspacePath != null
+						&& workspacePath.toString().contains(
+								projectDir.getAbsolutePath())) {
+					buildDir = file.getParentFile();
+					break;
+				}
+			} catch (Exception e) {
+			}
+		}
+
+		if (buildDir == null)
+			throw new AutoDetectAppBundlePathException();
+
+		ArrayList<File> allFilesInBuildDir = getDirectoryContentsRecursive(
+				buildDir, new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						System.out.println(name);
+						return name.equals(String.format("%s-cal.app",
+								projectName));
+					}
+				});
+
+		if (allFilesInBuildDir.size() != 1)
+			throw new AutoDetectAppBundlePathException();
+
+		File candidate = allFilesInBuildDir.get(0);
+		if (!candidate.isDirectory())
+			throw new AutoDetectAppBundlePathException();
+
+		return candidate.getAbsolutePath();
+	}
+
+	private static ArrayList<File> getDirectoryContentsRecursive(File dir,
+			FilenameFilter filter) {
+		ArrayList<File> files = new ArrayList<File>();
+		if (!dir.isDirectory())
+			return files;
+
+		File[] allFiles = dir.listFiles();
+		for (File file : allFiles) {
+			if (filter != null) {
+				boolean shouldAccept = filter.accept(dir, file.getName());
+				if (shouldAccept)
+					files.add(file);
+			} else
+				files.add(file);
+
+			if (file.isDirectory()) {
+				files.addAll(getDirectoryContentsRecursive(file, filter));
+			}
+		}
+
+		return files;
+	}
+
+	private class AutoDetectAppBundlePathException extends Exception {
+
+		private static final long serialVersionUID = 4983508335141990708L;
+
 	}
 
 }
