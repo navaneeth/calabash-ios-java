@@ -24,6 +24,7 @@ public final class CalabashRunner {
 	private final File projectDir;
 	private final File xcodeProjectDir;
 	private final String projectName;
+	private final String defaultEndPoint = "http://localhost:37265/";
 
 	public CalabashRunner(String path) throws CalabashException {
 		File projectPath = new File(path);
@@ -80,11 +81,58 @@ public final class CalabashRunner {
 	}
 
 	public void start() throws CalabashException {
+		String appPath = null;
 		try {
-			String appPath = findAppBundlePath();
-			System.out.println(appPath);
+			appPath = findAppBundlePath();
 		} catch (AutoDetectAppBundlePathException e) {
-			throw new CalabashException("Can't find the APP bundle path");
+			throw new CalabashException(
+					String.format(
+							"Can't find the application bundle path. Please build '%s-cal' target from Xcode.\nIf your Xcode build points to non-standard location, set APP_BUNDLE_PATH environment variable to the application path",
+							projectName));
+		}
+
+		final String[] cmd = {
+				"/Users/navaneeth/projects/calabash/calabash-ios-java/deps/ios-sim",
+				"launch", appPath, "--sdk", "6.1", "--family", "iphone",
+				"--exit" };
+		try {
+			Runtime.getRuntime().exec(cmd);
+		} catch (IOException e) {
+			throw new CalabashException(String.format(
+					"Unable to launch simulator. %s", e.getMessage()), e);
+		}
+
+		ensureConnectivity();
+	}
+
+	private void ensureConnectivity() throws CalabashException {
+		final int MAXIMUM_RETRIES = 30;
+		int tries = 0;
+		boolean connected = false;
+
+		Http http = new Http(defaultEndPoint);
+		while (!connected) {
+			if (++tries == MAXIMUM_RETRIES)
+				throw new CalabashException(
+						String.format(
+								"Can't establish connection to '%s'.\nMake sure you don't have a firewall blocking the traffic",
+								defaultEndPoint));
+
+			try {
+				connected = http.tryPing();
+			} catch (Exception ex) {
+				// We don't care this
+			} finally {
+				if (!connected)
+					sleepQuietly(1000);
+			}
+		}
+	}
+
+	private void sleepQuietly(long ms) {
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
 		}
 	}
 
@@ -249,7 +297,6 @@ public final class CalabashRunner {
 				buildDir, new FilenameFilter() {
 					@Override
 					public boolean accept(File dir, String name) {
-						System.out.println(name);
 						return name.equals(String.format("%s-cal.app",
 								projectName));
 					}
@@ -289,9 +336,7 @@ public final class CalabashRunner {
 	}
 
 	private class AutoDetectAppBundlePathException extends Exception {
-
 		private static final long serialVersionUID = 4983508335141990708L;
-
 	}
 
 }
