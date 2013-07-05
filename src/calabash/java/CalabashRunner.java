@@ -24,7 +24,6 @@ public final class CalabashRunner {
 	private final File projectDir;
 	private final File xcodeProjectDir;
 	private final String projectName;
-	private final String defaultEndPoint = "http://localhost:37265/";
 
 	public CalabashRunner(String path) throws CalabashException {
 		File projectPath = new File(path);
@@ -80,7 +79,7 @@ public final class CalabashRunner {
 		injectCalabashFramework();
 	}
 
-	public void start() throws CalabashException {
+	public Application start() throws CalabashException {
 		String appPath = null;
 		try {
 			appPath = findAppBundlePath();
@@ -103,6 +102,8 @@ public final class CalabashRunner {
 		}
 
 		ensureConnectivity();
+		
+		return new Application();
 	}
 
 	private void ensureConnectivity() throws CalabashException {
@@ -110,13 +111,13 @@ public final class CalabashRunner {
 		int tries = 0;
 		boolean connected = false;
 
-		Http http = new Http(defaultEndPoint);
+		Http http = new Http(Config.endPoint());
 		while (!connected) {
 			if (++tries == MAXIMUM_RETRIES)
 				throw new CalabashException(
 						String.format(
 								"Can't establish connection to '%s'.\nMake sure you don't have a firewall blocking the traffic",
-								defaultEndPoint));
+								Config.endPoint()));
 
 			try {
 				connected = http.tryPing();
