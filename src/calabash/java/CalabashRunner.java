@@ -24,6 +24,7 @@ public final class CalabashRunner {
 	private final File projectDir;
 	private final File xcodeProjectDir;
 	private final String projectName;
+	private static CalabashServerVersion serverVersion;
 
 	public CalabashRunner(String path) throws CalabashException {
 		File projectPath = new File(path);
@@ -69,7 +70,6 @@ public final class CalabashRunner {
 			throw new CalabashException("Project path is not set");
 
 		if (isCalabashSetup()) {
-			System.out.println("Already setup");
 			return;
 		}
 
@@ -102,8 +102,13 @@ public final class CalabashRunner {
 		}
 
 		ensureConnectivity();
-		
+		serverVersion = new Http(Config.endPoint()).getServerVersion();
+
 		return new Application();
+	}
+
+	public static CalabashServerVersion getServerVersion() {
+		return serverVersion;
 	}
 
 	private void ensureConnectivity() throws CalabashException {

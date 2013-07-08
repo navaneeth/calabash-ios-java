@@ -50,7 +50,7 @@ public final class UIElement {
 				getIntFromJSON(rect, "center_x"), getIntFromJSON(rect,
 						"center_y"));
 	}
-	
+
 	public Rect getFrame() {
 		JSONObject rect;
 		try {
@@ -62,6 +62,24 @@ public final class UIElement {
 		return new Rect(getIntFromJSON(rect, "x"), getIntFromJSON(rect, "y"),
 				getIntFromJSON(rect, "width"), getIntFromJSON(rect, "height"),
 				null, null);
+	}
+
+	public void touch() throws CalabashException {
+		Http http = new Http(Config.endPoint());
+		CalabashServerVersion version = http.getServerVersion();
+
+		String uiaGesture = null;
+		if (version.getiOSVersion().major().equals("7"))
+			uiaGesture = "tap";
+
+		String touchEventData = Utils.loadPlaybackData("touch");
+		JSONObject postData = new JSONObject();
+		postData.put("events", touchEventData);
+		postData.put("query", query);
+		if (uiaGesture != null)
+			postData.put("uia_gesture", uiaGesture);
+		
+		http.post("play", postData.toString());
 	}
 
 }
