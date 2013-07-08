@@ -15,6 +15,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 /**
  * 
  *
@@ -34,6 +36,12 @@ public final class Http {
 		} catch (CalabashException e) {
 			return false;
 		}
+	}
+
+	public CalabashServerVersion getServerVersion() throws CalabashException {
+		JSONObject version = new JSONObject(get("version", null));
+		return new CalabashServerVersion(version);
+
 	}
 
 	public String get(String path, Map<String, String> args)

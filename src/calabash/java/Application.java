@@ -40,6 +40,6 @@ public final class Application {
 					+ result, e);
 		}
 
-		return new UIElements(results);
+		return new UIElements(results, query);
 	}
 }

@@ -5,6 +5,7 @@ package calabash.java;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import static calabash.java.Utils.*;
 
 /**
  * 
@@ -13,9 +14,11 @@ import org.json.JSONObject;
 public final class UIElement {
 
 	private final JSONObject data;
+	private final String query;
 
-	public UIElement(JSONObject data) {
+	public UIElement(JSONObject data, String query) {
 		this.data = data;
+		this.query = query;
 	}
 
 	public String getElementClass() {
@@ -59,22 +62,6 @@ public final class UIElement {
 		return new Rect(getIntFromJSON(rect, "x"), getIntFromJSON(rect, "y"),
 				getIntFromJSON(rect, "width"), getIntFromJSON(rect, "height"),
 				null, null);
-	}
-
-	private String getStringFromJSON(JSONObject target, String key) {
-		try {
-			return target.getString(key);
-		} catch (JSONException e) {
-			return null;
-		}
-	}
-
-	private Integer getIntFromJSON(JSONObject target, String key) {
-		try {
-			return target.getInt(key);
-		} catch (JSONException e) {
-			return null;
-		}
 	}
 
 }
