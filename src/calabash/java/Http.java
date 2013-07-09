@@ -3,19 +3,15 @@
  */
 package calabash.java;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -48,7 +44,7 @@ public final class Http {
 
 	}
 
-	public String get(String path, Map<String, String> args)
+	public byte[] getBytes(String path, Map<String, String> args)
 			throws CalabashException {
 		StringBuilder query = new StringBuilder(endPoint);
 		query.append(path);
@@ -78,9 +74,7 @@ public final class Http {
 				throw new CalabashException(message);
 			} else {
 				InputStream stream = connection.getInputStream();
-				String message = convertStreamToString(stream);
-				stream.close();
-				return message;
+				return convertStreamToBytes(stream);
 			}
 
 		} catch (MalformedURLException e) {
@@ -90,6 +84,17 @@ public final class Http {
 		} finally {
 			if (connection != null)
 				connection.disconnect();
+		}
+	}
+
+	public String get(String path, Map<String, String> args)
+			throws CalabashException {
+		byte[] bytes = getBytes(path, args);
+		try {
+			return new String(bytes, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// never happens
+			return null;
 		}
 	}
 
@@ -130,18 +135,22 @@ public final class Http {
 	}
 
 	private String convertStreamToString(InputStream is) throws IOException {
+		return new String(convertStreamToBytes(is), "UTF-8");
+	}
+
+	private byte[] convertStreamToBytes(InputStream is) throws IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
 		int read = 0;
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		while ((read = is.read(buffer, 0, BUFFER_SIZE)) != -1) {
-			bytes.write(buffer, 0, read);
+		try {
+			while ((read = is.read(buffer, 0, BUFFER_SIZE)) != -1) {
+				bytes.write(buffer, 0, read);
+			}
+			return bytes.toByteArray();
+		} finally {
+			is.close();
+			bytes.close();
 		}
-
-		String result = new String(bytes.toByteArray(), "UTF-8");
-		is.close();
-		bytes.close();
-
-		return result;
 	}
 
 	private String utf8URLEncode(String text) {

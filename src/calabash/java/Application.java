@@ -74,4 +74,14 @@ public final class Application {
 	public boolean isRunning() {
 		return http.tryPing();
 	}
+
+	/**
+	 * Takes a screenshot
+	 * 
+	 * @return
+	 * @throws CalabashException
+	 */
+	public byte[] takeScreenshot() throws CalabashException {
+		return http.getBytes("screenshot", null);
+	}
 }
