@@ -15,8 +15,8 @@ import java.util.Map;
 import xmlwise.Plist;
 
 /**
+ * Manages setting up calabash framework and launching the simulator
  * 
- *
  */
 public final class CalabashRunner {
 
@@ -26,6 +26,13 @@ public final class CalabashRunner {
 	private final String projectName;
 	private static CalabashServerVersion serverVersion;
 
+	/**
+	 * Initializes CalabashRunner
+	 * 
+	 * @param path
+	 *            full path to the project
+	 * @throws CalabashException
+	 */
 	public CalabashRunner(String path) throws CalabashException {
 		File projectPath = new File(path);
 		if (!projectPath.exists())
@@ -65,6 +72,12 @@ public final class CalabashRunner {
 		this.projectName = xcodeProjectDir.getName().replace(".xcodeproj", "");
 	}
 
+	/**
+	 * Setup calabash for the current project. This needs to be called only
+	 * once. If project is already setup, this function is a no-op
+	 * 
+	 * @throws CalabashException
+	 */
 	public void setupCalabash() throws CalabashException {
 		if (this.pbxprojFile == null)
 			throw new CalabashException("Project path is not set");
@@ -79,7 +92,17 @@ public final class CalabashRunner {
 		injectCalabashFramework();
 	}
 
+	/**
+	 * Starts the test environment. This launches the simulator and starts the
+	 * process in the simulator
+	 * 
+	 * @return
+	 * @throws CalabashException
+	 */
 	public Application start() throws CalabashException {
+		if (!isCalabashSetup())
+			setupCalabash();
+
 		String appPath = null;
 		try {
 			appPath = findAppBundlePath();
@@ -89,6 +112,14 @@ public final class CalabashRunner {
 							"Can't find the application bundle path. Please build '%s-cal' target from Xcode.\nIf your Xcode build points to non-standard location, set APP_BUNDLE_PATH environment variable to the application path",
 							projectName));
 		}
+
+		// Checking if application is already running. If yes, kill it before we
+		// launch again
+		// This is required because Calabash server need to be restarted after
+		// each run
+		Application existing = new Application();
+		if (existing.isRunning())
+			existing.exit();
 
 		final String[] cmd = {
 				"/Users/navaneeth/projects/calabash/calabash-ios-java/deps/ios-sim",
