@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * 
+ * Represents an iOS application
  *
  */
 public final class Application {
@@ -41,5 +41,16 @@ public final class Application {
 		}
 
 		return new UIElements(results, query);
+	}
+
+	/**
+	 * Kills the application
+	 * 
+	 */
+	public void exit() {
+		try {
+			http.post("exit", "");
+		} catch (CalabashException e) {
+		}
 	}
 }
