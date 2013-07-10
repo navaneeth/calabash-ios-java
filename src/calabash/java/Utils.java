@@ -6,7 +6,6 @@ package calabash.java;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +14,7 @@ import org.json.JSONObject;
  * 
  *
  */
-public final class Utils {
+final class Utils {
 
 	public static String getStringFromJSON(JSONObject target, String key) {
 		try {
@@ -31,6 +30,26 @@ public final class Utils {
 		} catch (JSONException e) {
 			return null;
 		}
+	}
+
+	public static void playback(String recordingName, String query)
+			throws CalabashException {
+		CalabashServerVersion version = CalabashRunner.getServerVersion();
+		String uiaGesture = null;
+		if (version.getiOSVersion().major().equals("7"))
+			uiaGesture = "tap";
+
+		String playbackData = loadPlaybackData(recordingName);
+		JSONObject postData = new JSONObject();
+		postData.put("events", playbackData);
+
+		if (query != null)
+			postData.put("query", query);
+
+		if (uiaGesture != null)
+			postData.put("uia_gesture", uiaGesture);
+
+		new Http(Config.endPoint()).post("play", postData.toString());
 	}
 
 	public static String loadPlaybackData(String recordingName)

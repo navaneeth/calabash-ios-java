@@ -103,20 +103,7 @@ public final class UIElement {
 	 * @throws CalabashException
 	 */
 	public void touch() throws CalabashException {
-		CalabashServerVersion version = http.getServerVersion();
-
-		String uiaGesture = null;
-		if (version.getiOSVersion().major().equals("7"))
-			uiaGesture = "tap";
-
-		String touchEventData = Utils.loadPlaybackData("touch");
-		JSONObject postData = new JSONObject();
-		postData.put("events", touchEventData);
-		postData.put("query", query);
-		if (uiaGesture != null)
-			postData.put("uia_gesture", uiaGesture);
-
-		http.post("play", postData.toString());
+		Utils.playback("touch", query);
 	}
 
 	/**

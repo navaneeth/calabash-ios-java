@@ -18,6 +18,12 @@ public final class Application {
 
 	private final Http http;
 
+	private enum HomeButtonPosition {
+		DOWN, UP, RIGHT, LEFT;
+	}
+
+	private HomeButtonPosition homeButtonPosition = HomeButtonPosition.DOWN;
+
 	/**
 	 * Initializes a new instance of Application
 	 */
@@ -83,5 +89,82 @@ public final class Application {
 	 */
 	public byte[] takeScreenshot() throws CalabashException {
 		return http.getBytes("screenshot", null);
+	}
+
+	/**
+	 * Rotate the screen to the left
+	 * 
+	 * @throws CalabashException
+	 */
+	public void rotateLeft() throws CalabashException {
+		String command = null;
+		HomeButtonPosition newPosition = null;
+		switch (homeButtonPosition) {
+		case DOWN:
+			command = "left_home_down";
+			newPosition = HomeButtonPosition.RIGHT;
+			break;
+		case RIGHT:
+			command = "left_home_right";
+			newPosition = HomeButtonPosition.UP;
+			break;
+		case LEFT:
+			command = "left_home_left";
+			newPosition = HomeButtonPosition.DOWN;
+			break;
+		case UP:
+			command = "left_home_up";
+			newPosition = HomeButtonPosition.LEFT;
+			break;
+		}
+
+		Utils.playback("rotate_" + command, null);
+		homeButtonPosition = newPosition;
+
+		// Remove this when we get proper way of knowing whether the rotation
+		// completed
+		waitFor(1000);
+	}
+
+	/**
+	 * Rotate the screen to the right
+	 * 
+	 * @throws CalabashException
+	 */
+	public void rotateRight() throws CalabashException {
+		String command = null;
+		HomeButtonPosition newPosition = null;
+		switch (homeButtonPosition) {
+		case DOWN:
+			command = "right_home_down";
+			newPosition = HomeButtonPosition.LEFT;
+			break;
+		case RIGHT:
+			command = "right_home_right";
+			newPosition = HomeButtonPosition.DOWN;
+			break;
+		case LEFT:
+			command = "right_home_left";
+			newPosition = HomeButtonPosition.UP;
+			break;
+		case UP:
+			command = "right_home_up";
+			newPosition = HomeButtonPosition.DOWN;
+			break;
+		}
+
+		Utils.playback("rotate_" + command, null);
+		homeButtonPosition = newPosition;
+
+		// Remove this when we get proper way of knowing whether the rotation
+		// completed
+		waitFor(1000);
+	}
+
+	private void waitFor(int ms) {
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
+		}
 	}
 }
