@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -115,12 +116,11 @@ public final class Http {
 			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				InputStream errorStream = connection.getErrorStream();
 				String message = convertStreamToString(errorStream);
-				errorStream.close();
 				throw new CalabashException(message);
 			} else {
 				InputStream stream = connection.getInputStream();
 				String message = convertStreamToString(stream);
-				stream.close();
+				ensureResultIsSuccess(message, url, data);
 				return message;
 			}
 
@@ -131,6 +131,20 @@ public final class Http {
 		} finally {
 			if (connection != null)
 				connection.disconnect();
+		}
+	}
+
+	private void ensureResultIsSuccess(String result, URL url, String data)
+			throws CalabashException {
+		try {
+			JSONObject jsonObject = new JSONObject(result);
+			String outcome = jsonObject.getString("outcome");
+			if (!"SUCCESS".equals(outcome))
+				throw new CalabashException(jsonObject.getString("reason"));
+		} catch (JSONException e) {
+			throw new CalabashException(String.format(
+					"Retuned value is not JSON. URL - %s\nPost data - %s\n",
+					url.toExternalForm(), data), e);
 		}
 	}
 

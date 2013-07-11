@@ -6,7 +6,10 @@ package calabash.java;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,6 +32,42 @@ final class Utils {
 			return target.getInt(key);
 		} catch (JSONException e) {
 			return null;
+		}
+	}
+
+	public static String capitalize(String string) {
+		if (string == null || string.length() == 0)
+			return string;
+
+		return String.format("%c%s", Character.toUpperCase(string.charAt(0)),
+				string.substring(1, string.length()));
+	}
+
+	public static UIElements query(String query) throws CalabashException {
+		JSONArray results = query(query, (String[]) null);
+		return new UIElements(results, query);
+	}
+
+	public static JSONArray query(String query, String... filter)
+			throws CalabashException {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("query", query);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("method_name", "query");
+
+		if (filter != null)
+			map.put("arguments", new JSONArray(filter));
+
+		jsonObject.put("operation", map);
+
+		String result = new Http(Config.endPoint()).post("map",
+				jsonObject.toString());
+		try {
+			return new JSONObject(result).getJSONArray("results");
+		} catch (JSONException e) {
+			throw new CalabashException("Result is not in expected format.\n"
+					+ result, e);
 		}
 	}
 
@@ -96,6 +135,13 @@ final class Utils {
 		stream.close();
 
 		return new String(b, "UTF-8");
+	}
+
+	public static void sleep(int ms) {
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+		}
 	}
 
 }

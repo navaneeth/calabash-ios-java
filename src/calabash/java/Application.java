@@ -3,12 +3,7 @@
  */
 package calabash.java;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Represents an iOS application
@@ -41,8 +36,7 @@ public final class Application {
 	 * @throws CalabashException
 	 */
 	public UIElements query(String query) throws CalabashException {
-		JSONArray results = query(query, (String[]) null);
-		return new UIElements(results, query);
+		return Utils.query(query);
 	}
 
 	/**
@@ -57,24 +51,7 @@ public final class Application {
 	 */
 	public JSONArray query(String query, String... filter)
 			throws CalabashException {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("query", query);
-
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("method_name", "query");
-
-		if (filter != null)
-			map.put("arguments", new JSONArray(filter));
-
-		jsonObject.put("operation", map);
-
-		String result = http.post("map", jsonObject.toString());
-		try {
-			return new JSONObject(result).getJSONArray("results");
-		} catch (JSONException e) {
-			throw new CalabashException("Result is not in expected format.\n"
-					+ result, e);
-		}
+		return Utils.query(query, filter);
 	}
 
 	/**
@@ -175,6 +152,17 @@ public final class Application {
 		// Remove this when we get proper way of knowing whether the rotation
 		// completed
 		waitFor(1000);
+	}
+
+	/**
+	 * Gets the current keyboard
+	 * 
+	 * @return
+	 * @throws CalabashException
+	 *             If no visible keyboards are available.
+	 */
+	public Keyboard getKeyboard() throws CalabashException {
+		return new Keyboard();
 	}
 
 	private void waitFor(int ms) {
