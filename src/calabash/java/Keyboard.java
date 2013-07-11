@@ -37,6 +37,14 @@ public final class Keyboard {
 				"numbers-and-punctuation-alternate");
 	}
 
+	/**
+	 * Enter the supplied text. Keyboard should be visible for
+	 * this method to work
+	 * 
+	 * @param text
+	 *            Text to input
+	 * @throws CalabashException
+	 */
 	public void enterText(String text) throws CalabashException {
 		ensureKeyboardIsVisible();
 		for (int i = 0; i < text.length(); i++) {
@@ -49,6 +57,30 @@ public final class Keyboard {
 					throw new CalabashException("Could not enter " + toEnter);
 			}
 		}
+	}
+
+	/**
+	 * Presses the supplied special key
+	 * 
+	 * @param key
+	 *            Key to press
+	 * @throws CalabashException
+	 */
+	public void pressSpecialKey(SpecialKeys key) throws CalabashException {
+		if (key == null)
+			throw new CalabashException("Key should not be null");
+
+		ensureKeyboardIsVisible();
+		enterSingleCharacterOrSpecialStrings(key.getKeyName());
+	}
+
+	/**
+	 * Presses the done/search button or the default action
+	 * 
+	 * @throws CalabashException
+	 */
+	public void done() throws CalabashException {
+		pressSpecialKey(SpecialKeys.Return);
 	}
 
 	private void enterSingleCharacterOrSpecialStrings(String text)
