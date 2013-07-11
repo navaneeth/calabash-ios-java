@@ -41,24 +41,40 @@ public final class Application {
 	 * @throws CalabashException
 	 */
 	public UIElements query(String query) throws CalabashException {
+		JSONArray results = query(query, (String[]) null);
+		return new UIElements(results, query);
+	}
+
+	/**
+	 * Runs a query on the remote iOS application and returns results as JSON
+	 * 
+	 * @param query
+	 *            Calabash iOS supported query
+	 * @param filter
+	 *            Properties to be fetched
+	 * @return
+	 * @throws CalabashException
+	 */
+	public JSONArray query(String query, String... filter)
+			throws CalabashException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("query", query);
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("method_name", "query");
-		map.put("arguments", new String[0]);
+
+		if (filter != null)
+			map.put("arguments", new JSONArray(filter));
+
 		jsonObject.put("operation", map);
 
 		String result = http.post("map", jsonObject.toString());
-		JSONArray results;
 		try {
-			results = new JSONObject(result).getJSONArray("results");
+			return new JSONObject(result).getJSONArray("results");
 		} catch (JSONException e) {
 			throw new CalabashException("Result is not in expected format.\n"
 					+ result, e);
 		}
-
-		return new UIElements(results, query);
 	}
 
 	/**
