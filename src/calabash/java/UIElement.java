@@ -158,7 +158,7 @@ public final class UIElement {
 	 * @throws CalabashException
 	 */
 	public void scroll(ScrollDirection direction) throws CalabashException {
-		Utils.query(query, direction.getDirection());
+		Utils.map(query, "scroll", direction.getDirection());
 	}
 
 	@Override

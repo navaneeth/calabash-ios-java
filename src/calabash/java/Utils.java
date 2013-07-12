@@ -50,14 +50,19 @@ final class Utils {
 
 	public static JSONArray query(String query, String... filter)
 			throws CalabashException {
+		return map(query, "query", filter);
+	}
+
+	public static JSONArray map(String query, String methodName, String... args)
+			throws CalabashException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("query", query);
 
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("method_name", "query");
+		map.put("method_name", methodName);
 
-		if (filter != null)
-			map.put("arguments", new JSONArray(filter));
+		if (args != null)
+			map.put("arguments", new JSONArray(args));
 
 		jsonObject.put("operation", map);
 
