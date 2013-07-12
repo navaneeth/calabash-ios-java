@@ -150,6 +150,17 @@ public final class UIElement {
 		return Utils.query(query, properties);
 	}
 
+	/**
+	 * Scrolls the element to the direction
+	 * 
+	 * @param direction
+	 *            Direction to scroll
+	 * @throws CalabashException
+	 */
+	public void scroll(ScrollDirection direction) throws CalabashException {
+		Utils.query(query, direction.getDirection());
+	}
+
 	@Override
 	public String toString() {
 		return String.format(
