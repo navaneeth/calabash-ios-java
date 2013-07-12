@@ -334,19 +334,40 @@ public final class CalabashRunner {
 				buildDir, new FilenameFilter() {
 					@Override
 					public boolean accept(File dir, String name) {
-						return name.equals(String.format("%s-cal.app",
-								projectName));
+						return name.equals(String.format("%s.app", projectName));
 					}
 				});
 
-		if (allFilesInBuildDir.size() != 1)
-			throw new AutoDetectAppBundlePathException();
+		// Uses otool and checking if calabash server is embedded in it
+		for (File appFile : allFilesInBuildDir) {
+			String path = appFile.getAbsolutePath();
+			if (hasCalabashFramework(path)) {
+				return appFile.getAbsolutePath();
+			}
+		}
+		throw new AutoDetectAppBundlePathException();
+	}
 
-		File candidate = allFilesInBuildDir.get(0);
-		if (!candidate.isDirectory())
-			throw new AutoDetectAppBundlePathException();
+	private boolean hasCalabashFramework(String path) {
+		if (!path.endsWith("/"))
+			path += "/";
 
-		return candidate.getAbsolutePath();
+		String[] cmd = {
+				"sh",
+				"-c",
+				String.format(
+						"otool %s* -o 2> /dev/null | grep CalabashServer", path) };
+
+		try {
+			Process process = Runtime.getRuntime().exec(cmd);
+			int exitcode = process.waitFor();
+			if (exitcode == 0) {
+				return true;
+			}
+		} catch (Exception e) {
+		}
+
+		return false;
 	}
 
 	private static ArrayList<File> getDirectoryContentsRecursive(File dir,
