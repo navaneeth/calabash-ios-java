@@ -120,7 +120,22 @@ public final class UIElement {
 		postData.put("operation", operation);
 		http.post("map", postData.toString());
 	}
-	
+
+	/**
+	 * Gets the text from this UI element if it supports text
+	 * 
+	 * @return
+	 * @throws CalabashException
+	 */
+	public String getText() throws CalabashException {
+		JSONArray result = Utils.query(query, "text");
+		if (result.length() > 0) {
+			return result.getString(0);
+		}
+
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		return String.format(
