@@ -120,5 +120,13 @@ public final class UIElement {
 		postData.put("operation", operation);
 		http.post("map", postData.toString());
 	}
+	
+	@Override
+	public String toString() {
+		return String.format(
+				"class: %s, label: %s, description: %s, rect: %s, frame: %s",
+				getElementClass(), getLabel(), getDescription(), getRect(),
+				getFrame());
+	}
 
 }
