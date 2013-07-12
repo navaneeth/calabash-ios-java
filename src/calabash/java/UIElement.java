@@ -136,6 +136,20 @@ public final class UIElement {
 		return null;
 	}
 
+	/**
+	 * Gets the property from this UIElement. This method can be used to fetch
+	 * any properties which are present in the UIElement
+	 * 
+	 * @param properties
+	 *            list of required properties
+	 * @return
+	 * @throws CalabashException
+	 */
+	public JSONArray getProperyValuesAsJSON(String... properties)
+			throws CalabashException {
+		return Utils.query(query, properties);
+	}
+
 	@Override
 	public String toString() {
 		return String.format(
