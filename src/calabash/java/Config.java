@@ -48,6 +48,20 @@ final class Config {
 		return getEnv("OS");
 	}
 
+	public static int pauseMs() {
+		final int defaultValue = 1000;
+		String pause = getEnv("PAUSE_MS");
+		if (pause != null) {
+			try {
+				return Integer.parseInt(pause);
+			} catch (NumberFormatException e) {
+				return defaultValue;
+			}
+		}
+
+		return defaultValue;
+	}
+
 	private static String getEnv(String name) {
 		try {
 			String value = System.getenv(name);
