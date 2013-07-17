@@ -3,10 +3,13 @@
  */
 package calabash.java;
 
+import static calabash.java.Utils.getIntFromHash;
+import static calabash.java.Utils.getStringFromHash;
+
+import org.jruby.RubyArray;
+import org.jruby.RubyHash;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import static calabash.java.Utils.*;
 
 /**
  * Represents an UI element.
@@ -14,14 +17,14 @@ import static calabash.java.Utils.*;
  */
 public final class UIElement {
 
-	private final JSONObject data;
+	private final RubyHash data;
 	private final String query;
-	private final Http http;
+	private final CalabashWrapper calabashWrapper;
 
-	public UIElement(JSONObject data, String query) {
+	public UIElement(RubyHash data, String query, CalabashWrapper calabashWrapper) {
 		this.data = data;
 		this.query = query;
-		this.http = new Http(Config.endPoint());
+		this.calabashWrapper = calabashWrapper;
 	}
 
 	/**
@@ -30,7 +33,7 @@ public final class UIElement {
 	 * @return
 	 */
 	public String getElementClass() {
-		return getStringFromJSON(data, "class");
+		return getStringFromHash(data, "class");
 	}
 
 	/**
@@ -39,7 +42,7 @@ public final class UIElement {
 	 * @return
 	 */
 	public String getId() {
-		return getStringFromJSON(data, "id");
+		return getStringFromHash(data, "id");
 	}
 
 	/**
@@ -48,7 +51,7 @@ public final class UIElement {
 	 * @return
 	 */
 	public String getLabel() {
-		return getStringFromJSON(data, "label");
+		return getStringFromHash(data, "label");
 	}
 
 	/**
@@ -57,7 +60,7 @@ public final class UIElement {
 	 * @return
 	 */
 	public String getDescription() {
-		return getStringFromJSON(data, "description");
+		return getStringFromHash(data, "description");
 	}
 
 	/**
@@ -66,16 +69,18 @@ public final class UIElement {
 	 * @return
 	 */
 	public Rect getRect() {
-		JSONObject rect;
+		RubyHash rect;
 		try {
-			rect = data.getJSONObject("rect");
-		} catch (JSONException e) {
+			rect = (RubyHash) data.get("rect");
+			if (rect == null)
+				return null;
+		} catch (Exception e) {
 			return null;
 		}
 
-		return new Rect(getIntFromJSON(rect, "x"), getIntFromJSON(rect, "y"),
-				getIntFromJSON(rect, "width"), getIntFromJSON(rect, "height"),
-				getIntFromJSON(rect, "center_x"), getIntFromJSON(rect,
+		return new Rect(getIntFromHash(rect, "x"), getIntFromHash(rect, "y"),
+				getIntFromHash(rect, "width"), getIntFromHash(rect, "height"),
+				getIntFromHash(rect, "center_x"), getIntFromHash(rect,
 						"center_y"));
 	}
 
@@ -85,15 +90,15 @@ public final class UIElement {
 	 * @return
 	 */
 	public Rect getFrame() {
-		JSONObject rect;
+		RubyHash rect;
 		try {
-			rect = data.getJSONObject("frame");
-		} catch (JSONException e) {
+			rect = (RubyHash) data.get("frame");
+		} catch (Exception e) {
 			return null;
 		}
 
-		return new Rect(getIntFromJSON(rect, "x"), getIntFromJSON(rect, "y"),
-				getIntFromJSON(rect, "width"), getIntFromJSON(rect, "height"),
+		return new Rect(getIntFromHash(rect, "x"), getIntFromHash(rect, "y"),
+				getIntFromHash(rect, "width"), getIntFromHash(rect, "height"),
 				null, null);
 	}
 
@@ -118,7 +123,6 @@ public final class UIElement {
 		JSONObject postData = new JSONObject();
 		postData.put("query", query);
 		postData.put("operation", operation);
-		http.post("map", postData.toString());
 	}
 
 	/**
@@ -128,9 +132,9 @@ public final class UIElement {
 	 * @throws CalabashException
 	 */
 	public String getText() throws CalabashException {
-		JSONArray result = Utils.query(query, "text");
-		if (result.length() > 0) {
-			return result.getString(0);
+		RubyArray result = calabashWrapper.query(query, "text");
+		if (result.size() > 0) {
+			return result.get(0).toString();
 		}
 
 		return null;
@@ -145,9 +149,10 @@ public final class UIElement {
 	 * @return
 	 * @throws CalabashException
 	 */
-	public JSONArray getProperyValuesAsJSON(String... properties)
+	public Object[] getProperyValues(String... properties)
 			throws CalabashException {
-		return Utils.query(query, properties);
+		RubyArray values = calabashWrapper.query(query, properties);
+		return Utils.toJavaArray(values);
 	}
 
 	/**
@@ -158,7 +163,7 @@ public final class UIElement {
 	 * @throws CalabashException
 	 */
 	public void scroll(ScrollDirection direction) throws CalabashException {
-		Utils.map(query, "scroll", direction.getDirection());
+//		Utils.map(query, "scroll", direction.getDirection());
 	}
 
 	@Override

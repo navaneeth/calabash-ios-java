@@ -6,12 +6,14 @@ package calabash.java;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jruby.RubyArray;
+import org.jruby.RubyHash;
+import org.jruby.RubyObject;
 
 /**
  * 
@@ -19,20 +21,28 @@ import org.json.JSONObject;
  */
 final class Utils {
 
-	public static String getStringFromJSON(JSONObject target, String key) {
+	public static String getStringFromHash(RubyHash target, String key) {
 		try {
-			return target.getString(key);
-		} catch (JSONException e) {
+			Object value = target.get(key);
+			if (value != null)
+				return value.toString();
+			return null;
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	public static Integer getIntFromJSON(JSONObject target, String key) {
-		try {
-			return target.getInt(key);
-		} catch (JSONException e) {
-			return null;
+	public static Integer getIntFromHash(RubyHash target, String key) {
+		String value = getStringFromHash(target, key);
+		if (value != null) {
+			try {
+				return Integer.parseInt(value);
+			} catch (NumberFormatException e) {
+				return null;
+			}
 		}
+
+		return null;
 	}
 
 	public static String capitalize(String string) {
@@ -42,40 +52,7 @@ final class Utils {
 		return String.format("%c%s", Character.toUpperCase(string.charAt(0)),
 				string.substring(1, string.length()));
 	}
-
-	public static UIElements query(String query) throws CalabashException {
-		JSONArray results = query(query, (String[]) null);
-		return new UIElements(results, query);
-	}
-
-	public static JSONArray query(String query, String... filter)
-			throws CalabashException {
-		return map(query, "query", filter);
-	}
-
-	public static JSONArray map(String query, String methodName, String... args)
-			throws CalabashException {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("query", query);
-
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("method_name", methodName);
-
-		if (args != null)
-			map.put("arguments", new JSONArray(args));
-
-		jsonObject.put("operation", map);
-
-		String result = new Http(Config.endPoint()).post("map",
-				jsonObject.toString());
-		try {
-			return new JSONObject(result).getJSONArray("results");
-		} catch (JSONException e) {
-			throw new CalabashException("Result is not in expected format.\n"
-					+ result, e);
-		}
-	}
-
+	
 	public static void unzip(File zipFile, File destination)
 			throws CalabashException {
 		if (!zipFile.exists())
@@ -187,6 +164,43 @@ final class Utils {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
 		}
+	}
+	
+	public static Object[] toJavaArray(RubyArray array) {
+		ArrayList<Object> result = new ArrayList<Object>();
+		for (int i = 0; i < array.size(); i++) {
+			Object rubyObject = array.get(i);
+			Object javaObject = toJavaObject(rubyObject);
+			result.add(javaObject);
+		}
+		
+		return result.toArray();
+	}
+	
+	public static Object toJavaObject(Object rubyObject) {
+		if (rubyObject == null)
+			return rubyObject;
+		
+		if (rubyObject instanceof RubyArray)
+			return toJavaArray((RubyArray) rubyObject);
+		if (rubyObject instanceof RubyHash)
+			return toJavaHash((RubyHash) rubyObject);
+		if (rubyObject instanceof RubyObject)
+			return ((RubyObject) rubyObject).toJava(Object.class);
+		
+		return rubyObject.toString();
+	}
+
+	public static Map<?,?> toJavaHash(RubyHash rubyHash) {
+		HashMap<Object,Object> map = new HashMap<Object, Object>();
+		Set<?> keySet = rubyHash.keySet();
+		for (Object rubyKey : keySet) {
+			Object rubyValue = rubyHash.get(rubyKey);
+			Object javaKey = toJavaObject(rubyKey);
+			Object javaValue = toJavaObject(rubyValue);
+			map.put(javaKey, javaValue);
+		}
+		return map;
 	}
 
 }

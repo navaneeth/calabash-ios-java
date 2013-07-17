@@ -5,9 +5,6 @@ import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import net.lingala.zip4j.core.ZipFile;
 
 /**
  * Manages setting up calabash framework and launching the simulator
@@ -144,26 +141,6 @@ public final class CalabashRunner {
 			throw new CalabashException(
 					"Can't create gems extraction directory.", e);
 		}
-	}
-
-	private List<String> getLoadPaths() {
-		ArrayList<String> loadPaths = new ArrayList<String>();
-		File basePath = new File(
-				"/Users/navaneeth/.rvm/gems/ruby-1.9.3-p194@tmp/gems");
-		File[] gems = basePath.listFiles(new FileFilter() {
-
-			@Override
-			public boolean accept(File arg0) {
-				return arg0.isDirectory();
-			}
-		});
-
-		for (File gem : gems) {
-			File libPath = new File(gem, "lib");
-			loadPaths.add(libPath.getAbsolutePath());
-		}
-
-		return loadPaths;
 	}
 
 	/**

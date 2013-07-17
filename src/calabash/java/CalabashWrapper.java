@@ -5,11 +5,11 @@ package calabash.java;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jruby.RubyArray;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
@@ -61,6 +61,37 @@ public final class CalabashWrapper {
 			throw new CalabashException(String.format(
 					"Failed to start simulator. %s", e.getMessage()), e);
 		}
+	}
+	
+	public RubyArray query(String query, String... args) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			
+			container.put("cjQueryString", query);
+			container.put("cjQueryArgs", args);
+			
+			RubyArray queryResults = null;
+			if (args != null && args.length > 0)
+				queryResults = (RubyArray) container.runScriptlet("query(cjQueryString, cjQueryArgs)");
+			else
+				queryResults = (RubyArray) container.runScriptlet("puts cjQueryString\nquery(cjQueryString)");
+			
+			return queryResults;
+		}
+		catch (Exception e) {
+			throw new CalabashException(String.format("Failed to execute '%s'. %s", query, e.getMessage()), e);
+		}
+	}
+	
+	private void addRequiresAndIncludes(String... modules) {
+		StringBuilder script = new StringBuilder("require 'calabash-cucumber'\n");
+		for (String module : modules) {
+			script.append("include " + module);
+			script.append("\n");
+		}
+		
+		container.runScriptlet(script.toString());
 	}
 
 	private final void initializeScriptingContainer() throws CalabashException {

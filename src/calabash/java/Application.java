@@ -3,15 +3,13 @@
  */
 package calabash.java;
 
-import org.json.JSONArray;
+import org.jruby.RubyArray;
 
 /**
  * Represents an iOS application
  * 
  */
 public final class Application {
-
-	private final Http http;
 
 	private enum HomeButtonPosition {
 		DOWN, UP, RIGHT, LEFT;
@@ -26,7 +24,6 @@ public final class Application {
 	 */
 	public Application(CalabashWrapper calabashWrapper) {
 		this.calabashWrapper = calabashWrapper;
-		this.http = new Http(Config.endPoint());
 	}
 
 	/**
@@ -39,7 +36,8 @@ public final class Application {
 	 * @throws CalabashException
 	 */
 	public UIElements query(String query) throws CalabashException {
-		return Utils.query(query);
+		RubyArray array = calabashWrapper.query(query);
+		return new UIElements(array, query, calabashWrapper);
 	}
 
 	/**
@@ -52,9 +50,10 @@ public final class Application {
 	 * @return
 	 * @throws CalabashException
 	 */
-	public JSONArray query(String query, String... filter)
+	public Object[] query(String query, String... filter)
 			throws CalabashException {
-		return Utils.query(query, filter);
+		RubyArray rubyArray = calabashWrapper.query(query, filter);
+		return Utils.toJavaArray(rubyArray);
 	}
 
 	/**
@@ -62,10 +61,10 @@ public final class Application {
 	 * 
 	 */
 	public void exit() {
-		try {
-			http.post("exit", "");
-		} catch (CalabashException e) {
-		}
+//		try {
+//			http.post("exit", "");
+//		} catch (CalabashException e) {
+//		}
 	}
 
 	/**
@@ -74,7 +73,8 @@ public final class Application {
 	 * @return true if the application is running, false otherwise
 	 */
 	public boolean isRunning() {
-		return http.tryPing();
+//		return http.tryPing();
+		return true;
 	}
 
 	/**
@@ -84,7 +84,8 @@ public final class Application {
 	 * @throws CalabashException
 	 */
 	public byte[] takeScreenshot() throws CalabashException {
-		return http.getBytes("screenshot", null);
+//		return http.getBytes("screenshot", null);
+		return null;
 	}
 
 	/**

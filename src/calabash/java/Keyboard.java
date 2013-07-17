@@ -17,7 +17,6 @@ import org.json.JSONObject;
  */
 public final class Keyboard {
 
-	private final Http http;
 	private final Map<String, String> keyplaneNames = new HashMap<String, String>();
 
 	/**
@@ -28,7 +27,6 @@ public final class Keyboard {
 	 */
 	public Keyboard() throws CalabashException {
 		ensureKeyboardIsVisible();
-		this.http = new Http(Config.endPoint());
 		keyplaneNames.put("small_letters", "small-letters");
 		keyplaneNames.put("capital_letters", "capital-letters");
 		keyplaneNames.put("numbers_and_punctuation", "numbers-and-punctuation");
@@ -88,12 +86,11 @@ public final class Keyboard {
 		JSONObject data = new JSONObject();
 		data.put("key", text);
 		data.put("events", Utils.loadPlaybackData("touch_done"));
-		http.post("keyboard", data.toString());
 		Utils.sleep(10);
 	}
 
 	private void ensureKeyboardIsVisible() throws CalabashException {
-		UIElements keyboard = Utils.query("view:'UIKBKeyplaneView'");
+		UIElements keyboard = null;// Utils.query("view:'UIKBKeyplaneView'");
 		if (keyboard.size() == 0)
 			throw new CalabashException(
 					"Failed to get keyboard. No visible keyboard detected");
@@ -116,10 +113,10 @@ public final class Keyboard {
 		} catch (CalabashException e) {
 			visited.add(currentKeyplane);
 
-			JSONArray result = Utils.query("view:'UIKBKeyplaneView'",
-					findKeyplaneType() == KeyplaneType.UIKBTree ? new String[] {
-							"keyplane", "properties" } : new String[] {
-							"keyplane", "attributes", "dict" });
+			JSONArray result = null;// Utils.query("view:'UIKBKeyplaneView'",
+//					findKeyplaneType() == KeyplaneType.UIKBTree ? new String[] {
+//							"keyplane", "properties" } : new String[] {
+//							"keyplane", "attributes", "dict" });
 			if (result.length() == 0)
 				throw new CalabashException(
 						"Can't get alternative keyplane. view:'UIKBKeyplaneView' is empty");
@@ -146,15 +143,15 @@ public final class Keyboard {
 	private String getCurrentKeyplane() throws CalabashException {
 		KeyplaneType keyplaneType = findKeyplaneType();
 		if (keyplaneType == KeyplaneType.UIKBTree) {
-			JSONArray result = Utils.query("view:'UIKBKeyplaneView'",
-					"keyplane", "componentName");
+			JSONArray result = null;// Utils.query("view:'UIKBKeyplaneView'",
+//					"keyplane", "componentName");
 			if (result.length() == 0)
 				throw new CalabashException(
 						"Can't get current keyplane. view:'UIKBKeyplaneView' is empty");
 			return result.getString(0).toLowerCase();
 		} else if (keyplaneType == KeyplaneType.UIKBKeyPlane) {
-			JSONArray result = Utils.query("view:'UIKBKeyplaneView'",
-					"keyplane", "name");
+			JSONArray result = null;// Utils.query("view:'UIKBKeyplaneView'",
+//					"keyplane", "name");
 			if (result.length() == 0)
 				throw new CalabashException(
 						"Can't get current keyplane. view:'UIKBKeyplaneView' is empty");
@@ -165,8 +162,7 @@ public final class Keyboard {
 	}
 
 	private KeyplaneType findKeyplaneType() throws CalabashException {
-		JSONArray keyplanes = Utils
-				.query("view:'UIKBKeyplaneView'", "keyplane");
+		JSONArray keyplanes = null; 
 		if (keyplanes.length() == 0)
 			throw new CalabashException("No keyplane available");
 		if (keyplanes.length() > 1)
