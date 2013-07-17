@@ -76,50 +76,90 @@ final class Utils {
 		}
 	}
 
+	public static void unzip(File zipFile, File destination)
+			throws CalabashException {
+		if (!zipFile.exists())
+			throw new CalabashException("Zip file does not exists. "
+					+ zipFile.getAbsolutePath());
+		if (!zipFile.isFile())
+			throw new CalabashException("Zip file should be a file. "
+					+ zipFile.getAbsolutePath());
+
+		if (!destination.exists())
+			throw new CalabashException(
+					"Destination directory does not exists. "
+							+ destination.getAbsolutePath());
+		if (!destination.isDirectory())
+			throw new CalabashException("Destination is not a directory. "
+					+ destination.getAbsolutePath());
+		if (!destination.canWrite())
+			throw new CalabashException("Destination is readonly. "
+					+ destination.getAbsolutePath());
+
+		final String[] command = { "unzip", "-uo", "-qq",
+				zipFile.getAbsolutePath(), "-d", destination.getAbsolutePath() };
+		try {
+			Process process = Runtime.getRuntime().exec(command);
+			int exitCode = process.waitFor();
+			if (exitCode == 0 || exitCode == 1)
+				return;
+			else
+				throw new CalabashException(String.format(
+						"Failed to unzip %s to %s", zipFile.getAbsolutePath(),
+						destination.getAbsolutePath()));
+
+		} catch (Exception e) {
+			throw new CalabashException(String.format(
+					"Failed to unzip %s to %s. %s", zipFile.getAbsolutePath(),
+					destination.getAbsolutePath(), e.getMessage()), e);
+		}
+	}
+
 	public static void playback(String recordingName, String query)
 			throws CalabashException {
-		CalabashServerVersion version = CalabashRunner.getServerVersion();
-		String uiaGesture = null;
-		if (version.getiOSVersion().major().equals("7"))
-			uiaGesture = "tap";
-
-		String playbackData = loadPlaybackData(recordingName);
-		JSONObject postData = new JSONObject();
-		postData.put("events", playbackData);
-
-		if (query != null)
-			postData.put("query", query);
-
-		if (uiaGesture != null)
-			postData.put("uia_gesture", uiaGesture);
-
-		new Http(Config.endPoint()).post("play", postData.toString());
+		// CalabashServerVersion version = CalabashRunner.getServerVersion();
+		// String uiaGesture = null;
+		// if (version.getiOSVersion().major().equals("7"))
+		// uiaGesture = "tap";
+		//
+		// String playbackData = loadPlaybackData(recordingName);
+		// JSONObject postData = new JSONObject();
+		// postData.put("events", playbackData);
+		//
+		// if (query != null)
+		// postData.put("query", query);
+		//
+		// if (uiaGesture != null)
+		// postData.put("uia_gesture", uiaGesture);
+		//
+		// new Http(Config.endPoint()).post("play", postData.toString());
 	}
 
 	public static String loadPlaybackData(String recordingName)
 			throws CalabashException {
-		String os = Config.getOS();
-		if (os == null) {
-			os = "ios"
-					+ CalabashRunner.getServerVersion().getiOSVersion().major();
-		}
-
-		File file = getEventFile(recordingName, os);
-		if (!file.exists() && "ios6".equals(os))
-			file = getEventFile(recordingName, "ios5");
-
-		if (!file.exists())
-			throw new CalabashException(String.format(
-					"Can't load playback data. %s does not exists",
-					file.getAbsolutePath()));
-
-		try {
-			return readFileAsString(file);
-		} catch (IOException e) {
-			throw new CalabashException(String.format(
-					"Can't load playback data from %s. %s",
-					file.getAbsolutePath(), e.getMessage()), e);
-		}
+		// String os = Config.getOS();
+		// if (os == null) {
+		// os = "ios"
+		// + CalabashRunner.getServerVersion().getiOSVersion().major();
+		// }
+		//
+		// File file = getEventFile(recordingName, os);
+		// if (!file.exists() && "ios6".equals(os))
+		// file = getEventFile(recordingName, "ios5");
+		//
+		// if (!file.exists())
+		// throw new CalabashException(String.format(
+		// "Can't load playback data. %s does not exists",
+		// file.getAbsolutePath()));
+		//
+		// try {
+		// return readFileAsString(file);
+		// } catch (IOException e) {
+		// throw new CalabashException(String.format(
+		// "Can't load playback data from %s. %s",
+		// file.getAbsolutePath(), e.getMessage()), e);
+		// }
+		return null;
 	}
 
 	private static File getEventFile(String recordingName, String os) {

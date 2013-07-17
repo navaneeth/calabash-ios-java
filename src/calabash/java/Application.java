@@ -18,11 +18,14 @@ public final class Application {
 	}
 
 	private HomeButtonPosition homeButtonPosition = HomeButtonPosition.DOWN;
+	private final CalabashWrapper calabashWrapper;
 
 	/**
 	 * Initializes a new instance of Application
+	 * @param calabashWrapper 
 	 */
-	public Application() {
+	public Application(CalabashWrapper calabashWrapper) {
+		this.calabashWrapper = calabashWrapper;
 		this.http = new Http(Config.endPoint());
 	}
 

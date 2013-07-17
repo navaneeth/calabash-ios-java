@@ -1,8 +1,5 @@
 
-puts $LOAD_PATH
 require 'calabash-cucumber/launcher'
-
-
 
 @calabash_launcher = Calabash::Cucumber::Launcher.new
 unless @calabash_launcher.calabash_no_launch?

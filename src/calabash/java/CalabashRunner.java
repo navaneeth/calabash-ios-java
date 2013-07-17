@@ -2,13 +2,12 @@ package calabash.java;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import org.jruby.embed.PathType;
-import org.jruby.embed.ScriptingContainer;
+import net.lingala.zip4j.core.ZipFile;
 
 /**
  * Manages setting up calabash framework and launching the simulator
@@ -18,8 +17,7 @@ public final class CalabashRunner {
 
 	private final File pbxprojFile;
 	private final File projectDir;
-	private final ScriptingContainer container;
-	private static CalabashServerVersion serverVersion;
+	private final CalabashWrapper calabashWrapper;
 
 	/**
 	 * Initializes CalabashRunner
@@ -64,37 +62,107 @@ public final class CalabashRunner {
 		this.projectDir = projectPath;
 		this.pbxprojFile = projectFile;
 		xcodeProjectDir.getName().replace(".xcodeproj", "");
-		
-		this.container = new ScriptingContainer();
-		initializeScriptingContainer();
+
+		File gemPath = extractGemsFromBundle();
+		calabashWrapper = new CalabashWrapper(gemPath, projectDir);
 	}
-	
-	private final void initializeScriptingContainer() {
-		HashMap<String, String> environmentVariables = new HashMap<String, String>();
-		environmentVariables.put("PROJECT_DIR", projectDir.getAbsolutePath());
-		environmentVariables.put("HOME", System.getProperty("user.home"));
-		container.setEnvironment(environmentVariables);
-		
-		// Load paths points to the gem directory
-		container.getLoadPaths().addAll(getLoadPaths());
+
+	private File extractGemsFromBundle() throws CalabashException {
+		File dir = getGemsExtractionDir();
+		File extracted = new File(dir, "extracted");
+		if (extracted.exists()) {
+			// Already extracted
+			return dir;
+		}
+
+		copyFileFromBundleTo("scripts", "launcher.rb", dir);
+		copyFileFromBundleTo("scripts", "gems.zip", dir);
+		try {
+			File gemszip = new File(dir, "gems.zip");
+			Utils.unzip(gemszip, dir);
+			gemszip.delete();
+			extracted.createNewFile();
+		} catch (Exception e) {
+			throw new CalabashException("Failed to unzip gems", e);
+		}
+
+		return dir;
+	}
+
+	private void copyFileFromBundleTo(String sourceDir, String fileName,
+			File outDir) throws CalabashException {
+		final ClassLoader classLoader = Thread.currentThread()
+				.getContextClassLoader();
+		InputStream stream = classLoader.getResourceAsStream(sourceDir + "/"
+				+ fileName);
+		if (stream == null)
+			throw new CalabashException(
+					String.format(
+							"Can't copy %s from the bundle. Make sure you are using the correct JAR file",
+							fileName), null);
+
+		try {
+			File file = new File(outDir, fileName);
+			file.createNewFile();
+			FileOutputStream outFile = new FileOutputStream(file);
+			byte[] buffer = new byte[10240];
+			int len;
+			while ((len = stream.read(buffer)) != -1) {
+				outFile.write(buffer, 0, len);
+			}
+			outFile.close();
+		} catch (IOException e) {
+			throw new CalabashException(
+					String.format(
+							"Can't copy %s from the bundle to %s. Failed to create destination file",
+							fileName, outDir.getAbsolutePath()), e);
+		}
+	}
+
+	private File getGemsExtractionDir() throws CalabashException {
+		try {
+			File tempFile = File.createTempFile("foo", "bar");
+			tempFile.delete();
+
+			File gemsDir = new File(tempFile.getParentFile(),
+					"calabash-ios-gems");
+			if (!gemsDir.exists()) {
+				boolean created = gemsDir.mkdir();
+				if (!created)
+					throw new CalabashException(
+							"Can't create gems extraction directory. "
+									+ gemsDir.getAbsolutePath());
+			}
+
+			if (!gemsDir.isDirectory())
+				throw new CalabashException(String.format(
+						"Gems directory is invalid. %s is not a directory",
+						gemsDir.getAbsolutePath()));
+
+			return gemsDir;
+		} catch (IOException e) {
+			throw new CalabashException(
+					"Can't create gems extraction directory.", e);
+		}
 	}
 
 	private List<String> getLoadPaths() {
 		ArrayList<String> loadPaths = new ArrayList<String>();
-		File basePath = new File("/Users/navaneeth/.rvm/gems/ruby-1.9.3-p194@tmp/gems");
+		File basePath = new File(
+				"/Users/navaneeth/.rvm/gems/ruby-1.9.3-p194@tmp/gems");
 		File[] gems = basePath.listFiles(new FileFilter() {
-			
+
 			@Override
 			public boolean accept(File arg0) {
 				return arg0.isDirectory();
 			}
 		});
-		
+
 		for (File gem : gems) {
 			File libPath = new File(gem, "lib");
 			loadPaths.add(libPath.getAbsolutePath());
 		}
-		
+
 		return loadPaths;
 	}
 
@@ -107,12 +175,11 @@ public final class CalabashRunner {
 	public void setupCalabash() throws CalabashException {
 		if (this.pbxprojFile == null)
 			throw new CalabashException("Project path is not set");
-		
+
 		if (isCalabashSetup())
 			return;
 		
-		container.setArgv(new String[]{"setup", projectDir.getAbsolutePath()});
-		container.runScriptlet(PathType.ABSOLUTE, "/Users/navaneeth/.rvm/gems/ruby-1.9.3-p194@tmp/gems/calabash-cucumber-0.9.151/bin/calabash-ios");
+		calabashWrapper.setup();
 	}
 
 	/**
@@ -126,14 +193,8 @@ public final class CalabashRunner {
 		if (!isCalabashSetup())
 			setupCalabash();
 		
-		container.clear();
-		container.runScriptlet(PathType.ABSOLUTE, "/Users/navaneeth/projects/calabash/calabash-ios-java/scripts/launcher.rb");
-		serverVersion = new Http(Config.endPoint()).getServerVersion();
-		return new Application();
-	}
-
-	public static CalabashServerVersion getServerVersion() {
-		return serverVersion;
+		calabashWrapper.start();
+		return new Application(calabashWrapper);
 	}
 
 	private boolean isCalabashSetup() throws CalabashException {
