@@ -75,12 +75,49 @@ public final class CalabashWrapper {
 			if (args != null && args.length > 0)
 				queryResults = (RubyArray) container.runScriptlet("query(cjQueryString, cjQueryArgs)");
 			else
-				queryResults = (RubyArray) container.runScriptlet("puts cjQueryString\nquery(cjQueryString)");
+				queryResults = (RubyArray) container.runScriptlet("query(cjQueryString)");
 			
 			return queryResults;
 		}
 		catch (Exception e) {
 			throw new CalabashException(String.format("Failed to execute '%s'. %s", query, e.getMessage()), e);
+		}
+	}
+	
+	public void touch(String query) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::Operations");
+			container.put("cjQueryString", query);
+			container.runScriptlet("touch(cjQueryString)");
+		}
+		catch(Exception e) {
+			throw new CalabashException(String.format("Failed to touch '%s'. %s", query, e.getMessage()), e);
+		}
+	}
+	
+	public void flash(String query) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjQueryString", query);
+			container.runScriptlet("flash(cjQueryString)");
+		}
+		catch(Exception e) {
+			throw new CalabashException(String.format("Failed to flash '%s'. %s", query, e.getMessage()), e);
+		}
+	}
+	
+	public void scroll(String query, ScrollDirection direction) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjQueryString", query);
+			container.put("cjDirection", direction.getDirection());
+			container.runScriptlet("scroll(cjQueryString, cjDirection.to_sym)");
+		}
+		catch(Exception e) {
+			throw new CalabashException(String.format("Failed to scroll '%s'. %s", query, e.getMessage()), e);
 		}
 	}
 	

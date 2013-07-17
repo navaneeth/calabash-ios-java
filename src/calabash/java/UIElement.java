@@ -8,8 +8,6 @@ import static calabash.java.Utils.getStringFromHash;
 
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Represents an UI element.
@@ -108,7 +106,7 @@ public final class UIElement {
 	 * @throws CalabashException
 	 */
 	public void touch() throws CalabashException {
-		Utils.playback("touch", query);
+		calabashWrapper.touch(query);
 	}
 
 	/**
@@ -117,12 +115,7 @@ public final class UIElement {
 	 * @throws CalabashException
 	 */
 	public void flash() throws CalabashException {
-		JSONObject operation = new JSONObject();
-		operation.put("method_name", "flash");
-		operation.put("arguments", new JSONArray());
-		JSONObject postData = new JSONObject();
-		postData.put("query", query);
-		postData.put("operation", operation);
+		calabashWrapper.flash(query);
 	}
 
 	/**
@@ -163,7 +156,7 @@ public final class UIElement {
 	 * @throws CalabashException
 	 */
 	public void scroll(ScrollDirection direction) throws CalabashException {
-//		Utils.map(query, "scroll", direction.getDirection());
+		calabashWrapper.scroll(query, direction);
 	}
 
 	@Override
