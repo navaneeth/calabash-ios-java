@@ -125,4 +125,18 @@ public final class Application {
 	public Keyboard getKeyboard() throws CalabashException {
 		return new Keyboard(calabashWrapper);
 	}
+
+	public void waitFor(ICondition condition) throws CalabashException,
+			OperationTimedoutException {
+		waitFor(condition, null);
+	}
+
+	public void waitFor(ICondition condition, WaitOptions options)
+			throws CalabashException, OperationTimedoutException {
+		calabashWrapper.waitFor(condition, options);
+	}
+
+	public void waitForNoneAnimating() throws CalabashException {
+		calabashWrapper.waitForNoneAnimating();
+	}
 }
