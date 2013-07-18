@@ -114,7 +114,7 @@ public final class CalabashWrapper {
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjQueryString", query);
 			container.put("cjDirection", direction.getDirection());
-			container.runScriptlet("scroll(cjQueryString, cjDirection.to_sym)");
+			container.runScriptlet("scroll(cjQueryString, cjDirection)");
 		}
 		catch(Exception e) {
 			throw new CalabashException(String.format("Failed to scroll '%s'. %s", query, e.getMessage()), e);
