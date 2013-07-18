@@ -5,6 +5,7 @@ package calabash.java;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,6 +143,17 @@ public final class CalabashWrapper {
 		}
 	}
 	
+	public void serverVersion() throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.runScriptlet("server_version");
+		}
+		catch(Exception e) {
+			throw new CalabashException(String.format("Failed to check server version. %s", e.getMessage()), e);
+		}
+	}
+	
 	private void addRequiresAndIncludes(String... modules) {
 		StringBuilder script = new StringBuilder("require 'calabash-cucumber'\n");
 		for (String module : modules) {
@@ -160,6 +172,9 @@ public final class CalabashWrapper {
 
 		// Load paths points to the gem directory
 		container.getLoadPaths().addAll(getLoadPaths());
+		
+		// No stderr
+		container.setErrorWriter(new StringWriter());
 	}
 
 	private List<String> getLoadPaths() throws CalabashException {

@@ -11,11 +11,6 @@ import org.jruby.RubyArray;
  */
 public final class Application {
 
-	private enum HomeButtonPosition {
-		DOWN, UP, RIGHT, LEFT;
-	}
-
-	private HomeButtonPosition homeButtonPosition = HomeButtonPosition.DOWN;
 	private final CalabashWrapper calabashWrapper;
 
 	/**
@@ -71,8 +66,13 @@ public final class Application {
 	 * @return true if the application is running, false otherwise
 	 */
 	public boolean isRunning() {
-//		return http.tryPing();
-		return true;
+		try {
+			calabashWrapper.serverVersion();
+			return true;
+		}
+		catch(CalabashException e) {
+			return false;
+		}
 	}
 
 	/**
