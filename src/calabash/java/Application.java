@@ -17,7 +17,8 @@ public final class Application {
 
 	/**
 	 * Initializes a new instance of Application
-	 * @param calabashWrapper 
+	 * 
+	 * @param calabashWrapper
 	 */
 	public Application(CalabashWrapper calabashWrapper) {
 		this.calabashWrapper = calabashWrapper;
@@ -55,7 +56,8 @@ public final class Application {
 
 	/**
 	 * Kills the application
-	 * @throws CalabashException 
+	 * 
+	 * @throws CalabashException
 	 * 
 	 */
 	public void exit() throws CalabashException {
@@ -71,8 +73,7 @@ public final class Application {
 		try {
 			calabashWrapper.serverVersion();
 			return true;
-		}
-		catch(CalabashException e) {
+		} catch (CalabashException e) {
 			return false;
 		}
 	}
@@ -83,17 +84,20 @@ public final class Application {
 	 * @return
 	 * @throws CalabashException
 	 */
-	public void takeScreenshot(File dir, String fileName) throws CalabashException {
+	public void takeScreenshot(File dir, String fileName)
+			throws CalabashException {
 		if (dir == null)
 			throw new CalabashException("Empty directory name");
 		if (fileName == null)
 			throw new CalabashException("Empty file name");
-		
+
 		if (!dir.isDirectory())
-			throw new CalabashException(dir.getAbsolutePath() + " is not a directory");
+			throw new CalabashException(dir.getAbsolutePath()
+					+ " is not a directory");
 		if (!dir.canWrite())
-			throw new CalabashException(dir.getAbsolutePath() + " is not writeable");
-		
+			throw new CalabashException(dir.getAbsolutePath()
+					+ " is not writeable");
+
 		calabashWrapper.takeScreenShot(dir, fileName);
 	}
 
@@ -144,6 +148,16 @@ public final class Application {
 	public void waitForElementsExist(String[] queries, WaitOptions options)
 			throws OperationTimedoutException, CalabashException {
 		calabashWrapper.waitForElementsExist(queries, options);
+	}
+
+	public void waitForElementsToNotExist(String[] queries)
+			throws OperationTimedoutException, CalabashException {
+		waitForElementsToNotExist(queries, null);
+	}
+
+	public void waitForElementsToNotExist(String[] queries, WaitOptions options)
+			throws OperationTimedoutException, CalabashException {
+		calabashWrapper.waitForElementsToNotExist(queries, options);
 	}
 
 	public void waitForNoneAnimating() throws CalabashException {

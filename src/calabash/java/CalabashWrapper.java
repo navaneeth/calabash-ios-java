@@ -253,6 +253,27 @@ public final class CalabashWrapper {
 		}
 	}
 
+	public void waitForElementsToNotExist(String[] queries, WaitOptions options)
+			throws OperationTimedoutException, CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::WaitHelpers");
+			container.put("cjWaitQueries", queries);
+			String waitOptionsHash = getWaitOptionsHash(options);
+			if (waitOptionsHash == null)
+				container
+						.runScriptlet("wait_for_elements_do_not_exist(cjWaitQueries.to_a)");
+			else
+				container
+						.runScriptlet(String
+								.format("wait_for_elements_do_not_exist(cjWaitQueries.to_a, %s)",
+										waitOptionsHash));
+		} catch (Exception e) {
+			handleWaitException(e, options);
+		}
+	}
+
 	private void handleWaitException(Exception e, WaitOptions options)
 			throws OperationTimedoutException, CalabashException {
 		if (e.toString().contains("Calabash::Cucumber::WaitHelpers::WaitError")) {
