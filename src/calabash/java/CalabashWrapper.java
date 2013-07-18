@@ -220,34 +220,64 @@ public final class CalabashWrapper {
 			addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::WaitHelpers");
 			container.put("cjWaitCondition", condition);
-			if (options == null)
+			String waitOptionsHash = getWaitOptionsHash(options);
+			if (waitOptionsHash == null)
 				container.runScriptlet("wait_for { cjWaitCondition.test }");
 			else {
-				container.put("cjWaitTimeout", options.getTimeoutInSec());
-				container.put("cjWaitRetryFreq", options.getRetryFreqInSec());
-				container.put("cjWaitPostTimeout",
-						options.getPostTimeoutInSec());
-				container.put("cjWaitTimeoutMessage",
-						options.getTimeoutMessage());
-				container.put("cjWaitShouldTakeScreenshot",
-						options.shouldScreenshotOnError());
-				container
-						.runScriptlet("wait_for({:timeout => cjWaitTimeout, :retry_frequency => cjWaitRetryFreq, :post_timeout => cjWaitPostTimeout, :timeout_message => cjWaitTimeoutMessage, :screenshot_on_error => cjWaitShouldTakeScreenshot}) { cjWaitCondition.test }");
+				container.runScriptlet(String.format(
+						"wait_for(%s) { cjWaitCondition.test }",
+						waitOptionsHash));
 			}
 		} catch (Exception e) {
-			if (e.toString().contains(
-					"Calabash::Cucumber::WaitHelpers::WaitError")) {
-				String message = null;
-				if (options != null)
-					message = options.getTimeoutMessage();
+			handleWaitException(e, options);
+		}
+	}
 
-				throw new OperationTimedoutException(
-						message == null ? "Timed out waiting..." : message);
-			}
+	public void waitForElementsExist(String[] queries, WaitOptions options)
+			throws OperationTimedoutException, CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::WaitHelpers");
+			container.put("cjWaitQueries", queries);
+			String waitOptionsHash = getWaitOptionsHash(options);
+			if (waitOptionsHash == null)
+				container
+						.runScriptlet("wait_for_elements_exist(cjWaitQueries.to_a)");
 			else
-				throw new CalabashException(String.format(
-						"Failed to press wait for condition. %s",
-						e.getMessage()), e);
+				container.runScriptlet(String.format(
+						"wait_for_elements_exist(cjWaitQueries.to_a, %s)",
+						waitOptionsHash));
+		} catch (Exception e) {
+			handleWaitException(e, options);
+		}
+	}
+
+	private void handleWaitException(Exception e, WaitOptions options)
+			throws OperationTimedoutException, CalabashException {
+		if (e.toString().contains("Calabash::Cucumber::WaitHelpers::WaitError")) {
+			String message = null;
+			if (options != null)
+				message = options.getTimeoutMessage();
+
+			throw new OperationTimedoutException(
+					message == null ? "Timed out waiting..." : message);
+		} else
+			throw new CalabashException(String.format(
+					"Failed to wait for condition. %s", e.getMessage()), e);
+	}
+
+	private String getWaitOptionsHash(WaitOptions options) {
+		if (options == null)
+			return null;
+		else {
+			container.put("cjWaitTimeout", options.getTimeoutInSec());
+			container.put("cjWaitRetryFreq", options.getRetryFreqInSec());
+			container.put("cjWaitPostTimeout", options.getPostTimeoutInSec());
+			container.put("cjWaitTimeoutMessage", options.getTimeoutMessage());
+			container.put("cjWaitShouldTakeScreenshot",
+					options.shouldScreenshotOnError());
+			return "{:timeout => cjWaitTimeout, :retry_frequency => cjWaitRetryFreq, :post_timeout => cjWaitPostTimeout, :timeout_message => cjWaitTimeoutMessage, :screenshot_on_error => cjWaitShouldTakeScreenshot}";
 		}
 	}
 

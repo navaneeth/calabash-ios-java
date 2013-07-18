@@ -136,6 +136,16 @@ public final class Application {
 		calabashWrapper.waitFor(condition, options);
 	}
 
+	public void waitForElementsExist(String[] queries)
+			throws OperationTimedoutException, CalabashException {
+		waitForElementsExist(queries, null);
+	}
+
+	public void waitForElementsExist(String[] queries, WaitOptions options)
+			throws OperationTimedoutException, CalabashException {
+		calabashWrapper.waitForElementsExist(queries, options);
+	}
+
 	public void waitForNoneAnimating() throws CalabashException {
 		calabashWrapper.waitForNoneAnimating();
 	}
