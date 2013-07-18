@@ -58,13 +58,11 @@ public final class Application {
 
 	/**
 	 * Kills the application
+	 * @throws CalabashException 
 	 * 
 	 */
-	public void exit() {
-//		try {
-//			http.post("exit", "");
-//		} catch (CalabashException e) {
-//		}
+	public void exit() throws CalabashException {
+		calabashWrapper.exit();
 	}
 
 	/**
@@ -94,33 +92,7 @@ public final class Application {
 	 * @throws CalabashException
 	 */
 	public void rotateLeft() throws CalabashException {
-		String command = null;
-		HomeButtonPosition newPosition = null;
-		switch (homeButtonPosition) {
-		case DOWN:
-			command = "left_home_down";
-			newPosition = HomeButtonPosition.RIGHT;
-			break;
-		case RIGHT:
-			command = "left_home_right";
-			newPosition = HomeButtonPosition.UP;
-			break;
-		case LEFT:
-			command = "left_home_left";
-			newPosition = HomeButtonPosition.DOWN;
-			break;
-		case UP:
-			command = "left_home_up";
-			newPosition = HomeButtonPosition.LEFT;
-			break;
-		}
-
-		Utils.playback("rotate_" + command, null);
-		homeButtonPosition = newPosition;
-
-		// Remove this when we get proper way of knowing whether the rotation
-		// completed
-		waitFor(1000);
+		calabashWrapper.rotate("left");
 	}
 
 	/**
@@ -129,33 +101,7 @@ public final class Application {
 	 * @throws CalabashException
 	 */
 	public void rotateRight() throws CalabashException {
-		String command = null;
-		HomeButtonPosition newPosition = null;
-		switch (homeButtonPosition) {
-		case DOWN:
-			command = "right_home_down";
-			newPosition = HomeButtonPosition.LEFT;
-			break;
-		case RIGHT:
-			command = "right_home_right";
-			newPosition = HomeButtonPosition.DOWN;
-			break;
-		case LEFT:
-			command = "right_home_left";
-			newPosition = HomeButtonPosition.UP;
-			break;
-		case UP:
-			command = "right_home_up";
-			newPosition = HomeButtonPosition.DOWN;
-			break;
-		}
-
-		Utils.playback("rotate_" + command, null);
-		homeButtonPosition = newPosition;
-
-		// Remove this when we get proper way of knowing whether the rotation
-		// completed
-		waitFor(1000);
+		calabashWrapper.rotate("right");
 	}
 
 	/**
@@ -167,12 +113,5 @@ public final class Application {
 	 */
 	public Keyboard getKeyboard() throws CalabashException {
 		return new Keyboard();
-	}
-
-	private void waitFor(int ms) {
-		try {
-			Thread.sleep(ms);
-		} catch (InterruptedException e) {
-		}
 	}
 }

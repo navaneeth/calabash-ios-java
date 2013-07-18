@@ -23,7 +23,6 @@ public final class CalabashWrapper {
 	private final File rbScriptsDir;
 	private final File projectDir;
 	private final File gemsDir;
-	private final File binDir;
 
 	public CalabashWrapper(File rbScriptsDir, File projectDir)
 			throws CalabashException {
@@ -34,7 +33,6 @@ public final class CalabashWrapper {
 
 		this.rbScriptsDir = rbScriptsDir;
 		this.gemsDir = new File(rbScriptsDir, "gems");
-		this.binDir = new File(rbScriptsDir, "bin");
 		this.projectDir = projectDir;
 		this.initializeScriptingContainer();
 	}
@@ -118,6 +116,29 @@ public final class CalabashWrapper {
 		}
 		catch(Exception e) {
 			throw new CalabashException(String.format("Failed to scroll '%s'. %s", query, e.getMessage()), e);
+		}
+	}
+	
+	public void rotate(String direction) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::TestsHelpers");
+			container.put("cjDirection", direction);
+			container.runScriptlet("rotate(cjDirection.to_sym)");
+		}
+		catch (Exception e) {
+			throw new CalabashException(String.format("Failed to rotate application. %s", e.getMessage()), e);
+		}
+	}
+	
+	public void exit() throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.runScriptlet("calabash_exit");
+		}
+		catch(Exception e) {
+			throw new CalabashException(String.format("Failed to exit application. %s", e.getMessage()), e);
 		}
 	}
 	
