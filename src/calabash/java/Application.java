@@ -123,6 +123,6 @@ public final class Application {
 	 *             If no visible keyboards are available.
 	 */
 	public Keyboard getKeyboard() throws CalabashException {
-		return new Keyboard();
+		return new Keyboard(calabashWrapper);
 	}
 }

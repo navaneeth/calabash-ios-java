@@ -167,6 +167,41 @@ public final class CalabashWrapper {
 		}
 	}
 	
+	public void enterText(String text) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjTextToEnter", text);
+			container.runScriptlet("keyboard_enter_text(cjTextToEnter)");
+		}
+		catch (Exception e) {
+			throw new CalabashException(String.format("Failed to enter the text '%s'. %s", text, e.getMessage()), e);
+		}
+	}
+	
+	public void enterChar(String text) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjCharToEnter", text);
+			container.runScriptlet("keyboard_enter_char(cjCharToEnter)");
+		}
+		catch (Exception e) {
+			throw new CalabashException(String.format("Failed to enter the text '%s'. %s", text, e.getMessage()), e);
+		}
+	}
+	
+	public void done() throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.runScriptlet("done");
+		}
+		catch (Exception e) {
+			throw new CalabashException(String.format("Failed to press 'done'. %s", e.getMessage()), e);
+		}
+	}
+	
 	private void addRequiresAndIncludes(String... modules) {
 		StringBuilder script = new StringBuilder("require 'calabash-cucumber'\n");
 		for (String module : modules) {
