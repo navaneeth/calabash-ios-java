@@ -3,6 +3,8 @@
  */
 package calabash.java;
 
+import java.io.File;
+
 import org.jruby.RubyArray;
 
 /**
@@ -81,9 +83,18 @@ public final class Application {
 	 * @return
 	 * @throws CalabashException
 	 */
-	public byte[] takeScreenshot() throws CalabashException {
-//		return http.getBytes("screenshot", null);
-		return null;
+	public void takeScreenshot(File dir, String fileName) throws CalabashException {
+		if (dir == null)
+			throw new CalabashException("Empty directory name");
+		if (fileName == null)
+			throw new CalabashException("Empty file name");
+		
+		if (!dir.isDirectory())
+			throw new CalabashException(dir.getAbsolutePath() + " is not a directory");
+		if (!dir.canWrite())
+			throw new CalabashException(dir.getAbsolutePath() + " is not writeable");
+		
+		calabashWrapper.takeScreenShot(dir, fileName);
 	}
 
 	/**

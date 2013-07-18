@@ -154,6 +154,19 @@ public final class CalabashWrapper {
 		}
 	}
 	
+	public void takeScreenShot(File dir, String fileName) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjPrefix", dir.getAbsolutePath() + "/");
+			container.put("cjFileName", fileName);
+			container.runScriptlet("screenshot(options={:prefix => cjPrefix, :name => cjFileName})");
+		}
+		catch(Exception e) {
+			throw new CalabashException(String.format("Failed to take screenshot. %s", e.getMessage()), e);
+		}
+	}
+	
 	private void addRequiresAndIncludes(String... modules) {
 		StringBuilder script = new StringBuilder("require 'calabash-cucumber'\n");
 		for (String module : modules) {
