@@ -24,9 +24,11 @@ public final class CalabashWrapper {
 	private final File rbScriptsDir;
 	private final File projectDir;
 	private final File gemsDir;
+	private final CalabashConfiguration configuration;
 
-	public CalabashWrapper(File rbScriptsDir, File projectDir)
-			throws CalabashException {
+	public CalabashWrapper(File rbScriptsDir, File projectDir,
+			CalabashConfiguration configuration) throws CalabashException {
+		this.configuration = configuration;
 		if (!rbScriptsDir.isDirectory())
 			throw new CalabashException("Invalid ruby scripts directory");
 		if (!projectDir.isDirectory())
@@ -422,6 +424,17 @@ public final class CalabashWrapper {
 		HashMap<String, String> environmentVariables = new HashMap<String, String>();
 		environmentVariables.put("PROJECT_DIR", projectDir.getAbsolutePath());
 		environmentVariables.put("HOME", System.getProperty("user.home"));
+		if (configuration != null) {
+			environmentVariables.put("SCREENSHOT_PATH", configuration
+					.getScreenshotsDirectory().getAbsolutePath());
+
+			if (configuration.getDevice() != null)
+				environmentVariables.put("DEVICE", configuration.getDevice());
+
+			if (configuration.getAppBundlePath() != null)
+				environmentVariables.put("APP_BUNDLE_PATH",
+						configuration.getAppBundlePath());
+		}
 		container.setEnvironment(environmentVariables);
 
 		// Load paths points to the gem directory

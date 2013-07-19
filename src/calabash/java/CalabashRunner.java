@@ -24,6 +24,18 @@ public final class CalabashRunner {
 	 * @throws CalabashException
 	 */
 	public CalabashRunner(String path) throws CalabashException {
+		this(path, null);
+	}
+
+	/**
+	 * Initializes CalabashRunner
+	 * 
+	 * @param path
+	 *            full path to the project
+	 * @throws CalabashException
+	 */
+	public CalabashRunner(String path, CalabashConfiguration configuration)
+			throws CalabashException {
 		File projectPath = new File(path);
 		if (!projectPath.exists())
 			throw new CalabashException(String.format("'%s' doesn't exists",
@@ -61,7 +73,8 @@ public final class CalabashRunner {
 		xcodeProjectDir.getName().replace(".xcodeproj", "");
 
 		File gemPath = extractGemsFromBundle();
-		calabashWrapper = new CalabashWrapper(gemPath, projectDir);
+		calabashWrapper = new CalabashWrapper(gemPath, projectDir,
+				configuration);
 	}
 
 	private File extractGemsFromBundle() throws CalabashException {
@@ -155,7 +168,7 @@ public final class CalabashRunner {
 
 		if (isCalabashSetup())
 			return;
-		
+
 		calabashWrapper.setup();
 	}
 
@@ -169,9 +182,13 @@ public final class CalabashRunner {
 	public Application start() throws CalabashException {
 		if (!isCalabashSetup())
 			setupCalabash();
-		
+
 		calabashWrapper.start();
 		return new Application(calabashWrapper);
+	}
+
+	public void setScreenshotsDirectory() {
+
 	}
 
 	private boolean isCalabashSetup() throws CalabashException {
