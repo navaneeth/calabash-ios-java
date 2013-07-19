@@ -19,7 +19,8 @@ public final class UIElement {
 	private final String query;
 	private final CalabashWrapper calabashWrapper;
 
-	public UIElement(RubyHash data, String query, CalabashWrapper calabashWrapper) {
+	public UIElement(RubyHash data, String query,
+			CalabashWrapper calabashWrapper) {
 		this.data = data;
 		this.query = query;
 		this.calabashWrapper = calabashWrapper;
@@ -159,7 +160,37 @@ public final class UIElement {
 		calabashWrapper.scroll(query, direction);
 	}
 
-	@Override
+	/**
+	 * Scrolls through each cells and calling the callback for each cell This
+	 * method works only for tableviews
+	 * 
+	 * @param callback
+	 *            callback to be invoked
+	 * @throws CalabashException
+	 */
+	public void scrollThroughEachCell(CellIterator callback)
+			throws CalabashException {
+		scrollThroughEachCell(null, callback);
+	}
+
+	/**
+	 * Scrolls through each cells and calling the callback for each cell This
+	 * method works only for tableviews
+	 * 
+	 * @param options
+	 *            options to control scrolling
+	 * @param callback
+	 *            call to be invoked
+	 * @throws CalabashException
+	 */
+	public void scrollThroughEachCell(ScrollOptions options,
+			CellIterator callback) throws CalabashException {
+		if (callback == null)
+			throw new CalabashException("callback should be present");
+
+		calabashWrapper.scrollThroughEachCell(query, options, callback);
+	}
+
 	public String toString() {
 		return String.format(
 				"class: %s, label: %s, description: %s, rect: %s, frame: %s",

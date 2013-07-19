@@ -274,6 +274,81 @@ public final class CalabashWrapper {
 		}
 	}
 
+	public void scrollToRow(String query, int row) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjQueryString", query);
+			container.put("cjRow", row);
+			container.runScriptlet("scroll_to_row(cjQueryString, cjRow)");
+		} catch (Exception e) {
+			throw new CalabashException(String.format(
+					"Failed to scroll to row '%d' for query '%s'. %s", row,
+					query, e.getMessage()), e);
+		}
+	}
+
+	public void scrollToCell(String query, ScrollOptions options)
+			throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.runScriptlet(String.format("scroll_to_cell(%s)",
+					getScrollOptionsHash(query, options)));
+		} catch (Exception e) {
+			throw new CalabashException(String.format(
+					"Failed to scroll to cell for query '%s'. %s", query,
+					e.getMessage()), e);
+		}
+	}
+
+	public void scrollThroughEachCell(String query, ScrollOptions options,
+			CellIterator callback) throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjCallback", new ScrollThroughEachCellCallback(
+					callback, this));
+			String scrollOptionsHash = getScrollOptionsHash(query, options);
+			String script = "each_cell(%s) do |row, sec|\n"
+					+ "q = \"tableViewCell indexPath:#{row},#{sec} label\"\n"
+					+ "element = query(q)\n"
+					+ "cjCallback.onEachCell(row, sec, q, element)\n" + "end";
+			container.runScriptlet(String.format(script, scrollOptionsHash));
+		} catch (Exception e) {
+			throw new CalabashException(String.format(
+					"Failed to scroll through each cell for query '%s'. %s",
+					query, e.getMessage()), e);
+		}
+	}
+
+	public class ScrollThroughEachCellCallback {
+
+		private final CellIterator iterator;
+		private final CalabashWrapper wrapper;
+
+		public ScrollThroughEachCellCallback(CellIterator iterator,
+				CalabashWrapper wrapper) {
+			this.iterator = iterator;
+			this.wrapper = wrapper;
+		}
+
+		public void onEachCell(int row, int section, String query,
+				RubyArray array) throws Exception {
+			UIElement element = null;
+			try {
+				UIElements elements = new UIElements(array, query, wrapper);
+				if (elements.size() > 0)
+					element = elements.get(0);
+			} catch (CalabashException e) {
+				element = null;
+			}
+
+			iterator.onEachCell(row, section, element);
+		}
+
+	}
+
 	private void handleWaitException(Exception e, WaitOptions options)
 			throws OperationTimedoutException, CalabashException {
 		if (e.toString().contains("Calabash::Cucumber::WaitHelpers::WaitError")) {
@@ -300,6 +375,19 @@ public final class CalabashWrapper {
 					options.shouldScreenshotOnError());
 			return "{:timeout => cjWaitTimeout, :retry_frequency => cjWaitRetryFreq, :post_timeout => cjWaitPostTimeout, :timeout_message => cjWaitTimeoutMessage, :screenshot_on_error => cjWaitShouldTakeScreenshot}";
 		}
+	}
+
+	private String getScrollOptionsHash(String query, ScrollOptions options) {
+		container.put("cjQueryString", query);
+		if (options != null) {
+			container.put("cjScrollRow", options.getRow());
+			container.put("cjScrollSection", options.getSection());
+			container.put("cjScrollPosition", options.getDirection()
+					.getDirection());
+			container.put("cjScrollAnimate", options.shouldAnimate());
+			return "{:query => cjQueryString, :row => cjScrollRow, :section => cjScrollSection, :scroll_position => cjScrollPosition.to_sym, :animate => cjScrollAnimate}";
+		}
+		return "{:query => cjQueryString}";
 	}
 
 	public void waitForNoneAnimating() throws CalabashException {
