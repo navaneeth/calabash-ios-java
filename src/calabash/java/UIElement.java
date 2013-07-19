@@ -161,6 +161,19 @@ public final class UIElement {
 	}
 
 	/**
+	 * Scroll to the cell according to the specified options
+	 * 
+	 * @param options
+	 * @throws CalabashException
+	 */
+	public void scrollToCell(ScrollOptions options) throws CalabashException {
+		if (options == null)
+			throw new CalabashException("options should be present");
+
+		calabashWrapper.scrollToCell(query, options);
+	}
+
+	/**
 	 * Scrolls through each cells and calling the callback for each cell This
 	 * method works only for tableviews
 	 * 

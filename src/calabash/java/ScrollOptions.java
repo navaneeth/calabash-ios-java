@@ -16,6 +16,12 @@ public final class ScrollOptions {
 		this.postScrollWaitInsec = 1;
 	}
 
+	public ScrollOptions(int row, int section) {
+		this();
+		this.row = row;
+		this.section = section;
+	}
+
 	public int getRow() {
 		return row;
 	}
