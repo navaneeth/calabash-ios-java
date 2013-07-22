@@ -6,7 +6,7 @@ This project implements a calabash client in Java.
 Download
 =========
 
-[calabash-ios-java-1.0.0](https://dl.dropboxusercontent.com/u/52296034/calabash-ios/calabash-ios-java-1.0.0.zip)
+[calabash-ios-java](https://github.com/navaneeth/calabash-ios-java/releases/)
 
 Getting started
 ===============
@@ -42,7 +42,7 @@ import calabash.java.UIElement;
 
 public class Program {
     public static void main(String[] args) throws CalabashException {
-        CalabashRunner runner = new CalabashRunner("/Users/navaneeth/projects/scratch/EmpolyAdmin");
+        CalabashRunner runner = new CalabashRunner("/path/to/your/ios/project");
         runner.setupCalabash();
         
         Application application = runner.start();
@@ -52,7 +52,7 @@ public class Program {
 }
 ```
 
-For the query syntax, please take a look at [Calabash Wiki](https://github.com/calabash/calabash-ios/wiki/05-Query-syntax). You can use Junit asserts to perform assertions. 
+For the query syntax, please take a look at [Calabash Wiki](https://github.com/calabash/calabash-ios/wiki/05-Query-syntax). You can use Junit asserts to perform assertions. For more information, visit [Calabash](https://github.com/calabash/calabash-ios) page.
 
 Licence
 ==========
