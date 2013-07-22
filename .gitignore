@@ -5,3 +5,4 @@
 *.ear
 .DS_Store
 scripts/gems.zip
+build/
