@@ -5,6 +5,10 @@ import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * Manages setting up calabash framework and launching the simulator
@@ -135,7 +139,7 @@ public final class CalabashRunner {
 			tempFile.delete();
 
 			File gemsDir = new File(tempFile.getParentFile(),
-					"calabash-ios-gems");
+					"calabash-ios-gems-" + getCurrentVersion());
 			if (!gemsDir.exists()) {
 				boolean created = gemsDir.mkdir();
 				if (!created)
@@ -208,5 +212,33 @@ public final class CalabashRunner {
 		}
 
 		return false;
+	}
+
+	private String getCurrentVersion() {
+		try {
+			Enumeration<URL> resources = getClass().getClassLoader()
+					.getResources("META-INF/MANIFEST.MF");
+			while (resources.hasMoreElements()) {
+				try {
+					Manifest manifest = new Manifest(resources.nextElement()
+							.openStream());
+					Attributes mainAttributes = manifest.getMainAttributes();
+					if (mainAttributes != null
+							&& "calabash-ios-java".equals(mainAttributes
+									.getValue("Project-Name"))) {
+						String value = mainAttributes
+								.getValue("Implementation-Version");
+						if (value != null)
+							return value;
+					}
+				} catch (Exception E) {
+					// ignore
+				}
+			}
+		} catch (Exception e) {
+			// ignore
+		}
+
+		return "";
 	}
 }

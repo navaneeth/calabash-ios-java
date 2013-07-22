@@ -43,6 +43,7 @@
 		<mkdir dir="${jar.dir}" />
 		<jar destfile="${jar.file}" basedir="${classes.dir}">
 			<manifest>
+				<attribute name="Project-Name" value="calabash-ios-java" />
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Created-By" value="Navaneeth K N (navaneethkn@gmail.com)" />
 				<attribute name="Manifest-Version" value="${version}" />
