@@ -166,7 +166,7 @@ public final class CalabashRunner {
 	 * 
 	 * @throws CalabashException
 	 */
-	public void setupCalabash() throws CalabashException {
+	public void setup() throws CalabashException {
 		if (this.pbxprojFile == null)
 			throw new CalabashException("Project path is not set");
 
@@ -185,7 +185,7 @@ public final class CalabashRunner {
 	 */
 	public Application start() throws CalabashException {
 		if (!isCalabashSetup())
-			setupCalabash();
+			setup();
 
 		calabashWrapper.start();
 		return new Application(calabashWrapper);
