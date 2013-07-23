@@ -191,10 +191,6 @@ public final class CalabashRunner {
 		return new Application(calabashWrapper);
 	}
 
-	public void setScreenshotsDirectory() {
-
-	}
-
 	private boolean isCalabashSetup() throws CalabashException {
 		String[] cmd = { "grep", "calabash.framework",
 				pbxprojFile.getAbsolutePath() };

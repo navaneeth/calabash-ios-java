@@ -415,7 +415,13 @@ public final class CalabashWrapper {
 		// HACK - Calabash ruby calls embed method when there is a error.
 		// This is from cucumber and won't be available in the Jruby
 		// environment. So just defining a function to suppress the error
-		script.append("def embed(a,b,c)\nend\n");
+		if (configuration.getScreenshotListener() != null) {
+			container.put("@cjScreenshotCallback",
+					configuration.getScreenshotListener());
+			script.append("def embed(path,image_type,file_name)\n @cjScreenshotCallback.screenshotTaken(path, image_type, file_name)\n end\n");
+		} else {
+			script.append("def embed(path,image_type,file_name)\nend\n");
+		}
 
 		container.runScriptlet(script.toString());
 	}
@@ -426,7 +432,7 @@ public final class CalabashWrapper {
 		environmentVariables.put("HOME", System.getProperty("user.home"));
 		if (configuration != null) {
 			environmentVariables.put("SCREENSHOT_PATH", configuration
-					.getScreenshotsDirectory().getAbsolutePath());
+					.getScreenshotsDirectory().getAbsolutePath() + "/");
 
 			if (configuration.getDevice() != null)
 				environmentVariables.put("DEVICE", configuration.getDevice());
