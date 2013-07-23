@@ -167,11 +167,11 @@ public final class CalabashWrapper {
 			throws CalabashException {
 		try {
 			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::TestsHelpers");
 			container.put("cjPrefix", dir.getAbsolutePath() + "/");
 			container.put("cjFileName", fileName);
 			container
-					.runScriptlet("screenshot(options={:prefix => cjPrefix, :name => cjFileName})");
+					.runScriptlet("screenshot_embed(options={:prefix => cjPrefix, :name => cjFileName})");
 		} catch (Exception e) {
 			throw new CalabashException(String.format(
 					"Failed to take screenshot. %s", e.getMessage()), e);
