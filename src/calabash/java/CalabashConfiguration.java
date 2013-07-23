@@ -4,6 +4,7 @@
 package calabash.java;
 
 import java.io.File;
+import java.net.URI;
 
 /**
  * Configure calabash with various configuration options
@@ -15,6 +16,7 @@ public final class CalabashConfiguration {
 	private String device;
 	private String appBundlePath;
 	private ScreenshotListener listener;
+	private URI deviceEndPoint;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -101,5 +103,26 @@ public final class CalabashConfiguration {
 	 */
 	public ScreenshotListener getScreenshotListener() {
 		return listener;
+	}
+
+	/**
+	 * Gets the device endpoint.
+	 * 
+	 * @return URI if set, null otherwise
+	 */
+	public URI getDeviceEndPoint() {
+		return deviceEndPoint;
+	}
+
+	/**
+	 * Sets the device IP address. This is required only when the device that
+	 * needs to run the test is not in localhost. By default calabash uses
+	 * http://localhost:37265
+	 * 
+	 * @param deviceEndPoint
+	 *            A valid device endpoint
+	 */
+	public void setDeviceEndPoint(URI deviceEndPoint) {
+		this.deviceEndPoint = deviceEndPoint;
 	}
 }

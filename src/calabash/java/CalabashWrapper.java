@@ -167,7 +167,8 @@ public final class CalabashWrapper {
 			throws CalabashException {
 		try {
 			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::TestsHelpers");
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::TestsHelpers");
 			container.put("cjPrefix", dir.getAbsolutePath() + "/");
 			container.put("cjFileName", fileName);
 			container
@@ -440,6 +441,10 @@ public final class CalabashWrapper {
 			if (configuration.getAppBundlePath() != null)
 				environmentVariables.put("APP_BUNDLE_PATH",
 						configuration.getAppBundlePath());
+
+			if (configuration.getDeviceEndPoint() != null)
+				environmentVariables.put("DEVICE_ENDPOINT", configuration
+						.getDeviceEndPoint().toString());
 		}
 		container.setEnvironment(environmentVariables);
 
