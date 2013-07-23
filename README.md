@@ -54,6 +54,40 @@ public class Program {
 
 For the query syntax, please take a look at [Calabash Wiki](https://github.com/calabash/calabash-ios/wiki/05-Query-syntax). You can use Junit asserts to perform assertions. For more information, visit [Calabash](https://github.com/calabash/calabash-ios) page.
 
+Screenshots
+==============
+
+`takeScreenshot()` function can be used to take the screenshot. You can also listen to screenshot events which will be called whenever a screenshot is taken. Calabash ruby client takes screenshots when there is a failure. Hooking on to this event handler will let you know when screenshots are taken. 
+
+```java
+import calabash.java.Application;
+import calabash.java.CalabashException;
+import calabash.java.CalabashRunner;
+import calabash.java.UIElement;
+
+public class Program {
+    public static void main(String[] args) throws CalabashException {
+        CalabashConfiguration config = new CalabashConfiguration();
+		config.setScreenshotListener(new ScreenshotListener() {
+			public void screenshotTaken(String path, String imageType, String fileName) {
+				System.out.println("Path: " + path + ", image type: " + imageType + ", file name: " + fileName);
+			}
+		});
+        CalabashRunner runner = new CalabashRunner("/path/to/your/ios/project", config);
+        runner.setupCalabash();
+        
+        Application application = runner.start();
+        
+        // Wait for a false condition to simulate an error
+        application.waitFor(new ICondition() {
+			public boolean test() throws CalabashException {
+				return false;
+			}
+		});
+    }
+}
+```
+
 Licence
 ==========
 
