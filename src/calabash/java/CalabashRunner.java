@@ -191,6 +191,16 @@ public final class CalabashRunner {
 		return new Application(calabashWrapper);
 	}
 
+	/**
+	 * Gets the temporary directory used for keeping the gems required to run
+	 * calabash ruby client
+	 * 
+	 * @return Absolute path to the gems directory
+	 */
+	public String getGemsDir() {
+		return calabashWrapper.getGemsDir();
+	}
+
 	private boolean isCalabashSetup() throws CalabashException {
 		String[] cmd = { "grep", "calabash.framework",
 				pbxprojFile.getAbsolutePath() };

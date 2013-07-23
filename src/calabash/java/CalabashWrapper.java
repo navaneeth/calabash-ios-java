@@ -428,6 +428,10 @@ public final class CalabashWrapper {
 		container.runScriptlet(script.toString());
 	}
 
+	public String getGemsDir() {
+		return gemsDir.getAbsolutePath();
+	}
+
 	private final void initializeScriptingContainer() throws CalabashException {
 		HashMap<String, String> environmentVariables = new HashMap<String, String>();
 		environmentVariables.put("PROJECT_DIR", projectDir.getAbsolutePath());
