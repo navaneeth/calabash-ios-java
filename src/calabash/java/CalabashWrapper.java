@@ -42,11 +42,12 @@ public final class CalabashWrapper {
 
 	public void setup() throws CalabashException {
 		try {
-			container.setArgv(new String[] { "setup",
+			container.put("ARGV", new String[] { "setup",
 					projectDir.getAbsolutePath() });
-			container.runScriptlet(PathType.ABSOLUTE, new File(
+			String calabashIOS = new File(
 					getCalabashGemDirectory(), "bin/calabash-ios")
-					.getAbsolutePath());
+					.getAbsolutePath();
+			container.runScriptlet(PathType.ABSOLUTE, calabashIOS);
 		} catch (Exception e) {
 			throw new CalabashException(String.format(
 					"Failed to setup calabash. %s", e.getMessage()));
