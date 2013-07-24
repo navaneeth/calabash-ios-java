@@ -211,4 +211,30 @@ public final class UIElement {
 				getFrame());
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof UIElement) {
+			UIElement that = (UIElement) obj;
+			boolean equal = false;
+			if (this.getFrame() != null && that.getFrame() != null)
+				equal = this.getFrame().equals(that.getFrame());
+
+			if (equal && this.getRect() != null && that.getRect() != null)
+				equal = this.getRect().equals(that.getRect());
+
+			if (equal && this.getId() != null && that.getId() != null)
+				equal = this.getId().equals(that.getId());
+
+			if (equal && this.getLabel() != null && that.getLabel() != null)
+				equal = this.getLabel().equals(that.getLabel());
+
+			if (equal && this.getElementClass() != null
+					&& that.getElementClass() != null)
+				equal = this.getElementClass().equals(that.getElementClass());
+
+			return equal;
+		}
+
+		return super.equals(obj);
+	}
+
 }
