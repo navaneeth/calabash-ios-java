@@ -417,7 +417,7 @@ public final class CalabashWrapper {
 		// HACK - Calabash ruby calls embed method when there is a error.
 		// This is from cucumber and won't be available in the Jruby
 		// environment. So just defining a function to suppress the error
-		if (configuration.getScreenshotListener() != null) {
+		if (configuration != null && configuration.getScreenshotListener() != null) {
 			container.put("@cjScreenshotCallback",
 					configuration.getScreenshotListener());
 			script.append("def embed(path,image_type,file_name)\n @cjScreenshotCallback.screenshotTaken(path, image_type, file_name)\n end\n");
