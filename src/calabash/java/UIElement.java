@@ -216,6 +216,18 @@ public final class UIElement {
 		return new UIElements(result, q, calabashWrapper);
 	}
 
+	/**
+	 * Inspects the current element and it's child elements and call callback
+	 * for each element
+	 * 
+	 * @param callback
+	 *            Callback to be invoked
+	 * @throws CalabashException
+	 */
+	public void inspect(InspectCallback callback) throws CalabashException {
+		Utils.inspectElement(this, 0, callback);
+	}
+
 	public String toString() {
 		return String.format(
 				"class: %s, label: %s, description: %s, rect: %s, frame: %s",

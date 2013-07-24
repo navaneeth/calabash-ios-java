@@ -165,6 +165,24 @@ public final class Application {
 	}
 
 	/**
+	 * Fetches all elements in this application and executes callback for each
+	 * of them
+	 * 
+	 * @param callback
+	 *            Callback to be executed for each element
+	 * @throws CalabashException
+	 */
+	public void inspect(InspectCallback callback) throws CalabashException {
+		UIElements rootElements = getRootElements();
+		if (rootElements == null)
+			return;
+
+		for (UIElement root : rootElements) {
+			Utils.inspectElement(root, 0, callback);
+		}
+	}
+
+	/**
 	 * Gets all the root elements available This can be used to make a tree view
 	 * of all the elements available in the view currently
 	 * 

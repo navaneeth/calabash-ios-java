@@ -54,6 +54,35 @@ public class Program {
 
 For the query syntax, please take a look at [Calabash Wiki](https://github.com/calabash/calabash-ios/wiki/05-Query-syntax). You can use Junit asserts to perform assertions. For more information, visit [Calabash](https://github.com/calabash/calabash-ios) page.
 
+Inspecting elements
+===================
+
+If you need to know how elements are structured in your application, you can use `inspect()` method on `Application` or `UIElement` instances. It will iterate over each element and it's child elements from which you can build a tree view.
+
+```java
+import calabash.java.Application;
+import calabash.java.CalabashException;
+import calabash.java.CalabashRunner;
+import calabash.java.UIElement;
+
+public class Program {
+    public static void main(String[] args) throws CalabashException {
+        CalabashRunner runner = new CalabashRunner("/path/to/your/ios/project");
+        runner.setupCalabash();
+        
+        Application application = runner.start();
+        application.inspect(new InspectCallback() {
+			public void onEachElement(UIElement element, int nestingLevel) {
+				for (int i = 0; i < nestingLevel; i++) {
+					System.out.print("-");
+				}
+				System.out.print(element.getElementClass() + "\n");
+			}
+		});
+    }
+}
+```
+
 Screenshots
 ==============
 
