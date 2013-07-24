@@ -204,6 +204,18 @@ public final class UIElement {
 		calabashWrapper.scrollThroughEachCell(query, options, callback);
 	}
 
+	/**
+	 * Gets all the child elements for this element
+	 * 
+	 * @return List of UIElement
+	 * @throws CalabashException
+	 */
+	public UIElements children() throws CalabashException {
+		String q = query + " child *";
+		RubyArray result = calabashWrapper.query(q);
+		return new UIElements(result, q, calabashWrapper);
+	}
+
 	public String toString() {
 		return String.format(
 				"class: %s, label: %s, description: %s, rect: %s, frame: %s",

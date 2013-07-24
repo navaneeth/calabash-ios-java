@@ -18,6 +18,9 @@ public final class UIElements extends ArrayList<UIElement> {
 
 	private static final long serialVersionUID = 3506802535880079938L;
 
+	public UIElements() {
+	}
+
 	public UIElements(RubyArray elements, String query, CalabashWrapper wrapper)
 			throws CalabashException {
 		query = query.trim();
