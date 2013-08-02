@@ -35,7 +35,7 @@ Writting tests
 Finding an element and touching it
 
 ```java
-import calabash.java.Application;
+import calabash.java.IOSApplication;
 import calabash.java.CalabashException;
 import calabash.java.CalabashRunner;
 import calabash.java.UIElement;
@@ -45,7 +45,7 @@ public class Program {
         CalabashRunner runner = new CalabashRunner("/path/to/your/ios/project");
         runner.setupCalabash();
         
-        Application application = runner.start();
+        IOSApplication application = runner.start();
         UIElement element = application.query("button").get(0);
         element.touch();
     }
@@ -60,7 +60,7 @@ Inspecting elements
 If you need to know how elements are structured in your application, you can use `inspect()` method on `Application` or `UIElement` instances. It will iterate over each element and it's child elements from which you can build a tree view.
 
 ```java
-import calabash.java.Application;
+import calabash.java.IOSApplication;
 import calabash.java.CalabashException;
 import calabash.java.CalabashRunner;
 import calabash.java.UIElement;
@@ -70,7 +70,7 @@ public class Program {
         CalabashRunner runner = new CalabashRunner("/path/to/your/ios/project");
         runner.setupCalabash();
         
-        Application application = runner.start();
+        IOSApplication application = runner.start();
         application.inspect(new InspectCallback() {
 			public void onEachElement(UIElement element, int nestingLevel) {
 				for (int i = 0; i < nestingLevel; i++) {
@@ -89,7 +89,7 @@ Screenshots
 `takeScreenshot()` function can be used to take the screenshot. You can also listen to screenshot events which will be called whenever a screenshot is taken. Calabash ruby client takes screenshots when there is a failure. Hooking on to this event handler will let you know when screenshots are taken. 
 
 ```java
-import calabash.java.Application;
+import calabash.java.IOSApplication;
 import calabash.java.CalabashException;
 import calabash.java.CalabashRunner;
 import calabash.java.UIElement;
@@ -105,7 +105,7 @@ public class Program {
         CalabashRunner runner = new CalabashRunner("/path/to/your/ios/project", config);
         runner.setupCalabash();
         
-        Application application = runner.start();
+        IOSApplication application = runner.start();
         
         // Wait for a false condition to simulate an error
         application.waitFor(new ICondition() {

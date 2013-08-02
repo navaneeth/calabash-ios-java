@@ -11,7 +11,7 @@ import org.jruby.RubyArray;
  * Represents an iOS application
  * 
  */
-public final class Application {
+public final class IOSApplication {
 
 	private final CalabashWrapper calabashWrapper;
 
@@ -20,7 +20,7 @@ public final class Application {
 	 * 
 	 * @param calabashWrapper
 	 */
-	public Application(CalabashWrapper calabashWrapper) {
+	public IOSApplication(CalabashWrapper calabashWrapper) {
 		this.calabashWrapper = calabashWrapper;
 	}
 

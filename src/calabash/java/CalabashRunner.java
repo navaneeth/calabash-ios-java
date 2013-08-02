@@ -183,12 +183,12 @@ public final class CalabashRunner {
 	 * @return
 	 * @throws CalabashException
 	 */
-	public Application start() throws CalabashException {
+	public IOSApplication start() throws CalabashException {
 		if (!isCalabashSetup())
 			setup();
 
 		calabashWrapper.start();
-		return new Application(calabashWrapper);
+		return new IOSApplication(calabashWrapper);
 	}
 
 	/**
