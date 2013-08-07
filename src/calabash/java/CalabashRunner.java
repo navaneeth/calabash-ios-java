@@ -185,7 +185,9 @@ public final class CalabashRunner {
 	 */
 	public IOSApplication start() throws CalabashException {
 		if (!isCalabashSetup())
-			setup();
+			throw new CalabashException(String.format(
+					"Calabash is not setup for %s",
+					this.pbxprojFile.getAbsolutePath()));
 
 		calabashWrapper.start();
 		return new IOSApplication(calabashWrapper);
