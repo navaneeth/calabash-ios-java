@@ -81,6 +81,20 @@ public final class CalabashRunner {
 				configuration);
 	}
 
+	/**
+	 * Gets the XCode target where calabash.framework is embedded
+	 * 
+	 * @return target name
+	 * @throws CalabashException
+	 */
+	public String getXCodeTargetForCalabash() throws CalabashException {
+		if (!isCalabashSetup())
+			return null;
+
+		String parentName = pbxprojFile.getParentFile().getName();
+		return String.format("%s-cal", parentName.replace(".xcodeproj", ""));
+	}
+
 	private File extractGemsFromBundle() throws CalabashException {
 		File dir = getGemsExtractionDir();
 		File extracted = new File(dir, "extracted");
