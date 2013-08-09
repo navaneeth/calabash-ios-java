@@ -3,6 +3,9 @@
  */
 package calabash.java;
 
+import static calabash.java.CalabashLogger.error;
+import static calabash.java.CalabashLogger.info;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.StringWriter;
@@ -42,6 +45,7 @@ public final class CalabashWrapper {
 
 	public void setup() throws CalabashException {
 		try {
+			info("Setting up calabash for project - %s", projectDir.getAbsolutePath());
 			container.put("ARGV", new String[] { "setup",
 					projectDir.getAbsolutePath() });
 			String calabashIOS = new File(
@@ -49,6 +53,7 @@ public final class CalabashWrapper {
 					.getAbsolutePath();
 			container.runScriptlet(PathType.ABSOLUTE, calabashIOS);
 		} catch (Exception e) {
+			error("Failed to setup calabash for project - %s", e, projectDir.getAbsolutePath());
 			throw new CalabashException(String.format(
 					"Failed to setup calabash. %s", e.getMessage()));
 		}
@@ -56,19 +61,22 @@ public final class CalabashWrapper {
 
 	public void start() throws CalabashException {
 		try {
+			info("Starting the iOS application - %s", projectDir.getAbsolutePath());
 			container.clear();
 			String launcherScript = new File(rbScriptsDir, "launcher.rb")
 					.getAbsolutePath();
 			container.runScriptlet(PathType.ABSOLUTE, launcherScript);
 		} catch (Exception e) {
+			error("Could not start the iOS application - %s ", projectDir.getAbsolutePath());
 			throw new CalabashException(String.format(
-					"Failed to start simulator. %s", e.getMessage()), e);
+					"Failed to start iOS application. %s", e.getMessage()), e);
 		}
 	}
 
 	public RubyArray query(String query, String... args)
 			throws CalabashException {
 		try {
+			info("Executing query - %s", query);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 
@@ -85,6 +93,7 @@ public final class CalabashWrapper {
 
 			return queryResults;
 		} catch (Exception e) {
+			error("Execution of query '%s' failed", e, query);
 			throw new CalabashException(String.format(
 					"Failed to execute '%s'. %s", query, e.getMessage()), e);
 		}
@@ -92,12 +101,14 @@ public final class CalabashWrapper {
 
 	public void touch(String query) throws CalabashException {
 		try {
+			info("Touching - %s", query);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::Operations");
 			container.put("cjQueryString", query);
 			container.runScriptlet("touch(cjQueryString)");
 		} catch (Exception e) {
+			error("Touching on '%s' failed", e, query);
 			throw new CalabashException(String.format(
 					"Failed to touch '%s'. %s", query, e.getMessage()), e);
 		}
@@ -105,11 +116,13 @@ public final class CalabashWrapper {
 
 	public void flash(String query) throws CalabashException {
 		try {
+			info("Flashing - %s", query);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjQueryString", query);
 			container.runScriptlet("flash(cjQueryString)");
 		} catch (Exception e) {
+			error("Flashing on '%s' failed", e, query);
 			throw new CalabashException(String.format(
 					"Failed to flash '%s'. %s", query, e.getMessage()), e);
 		}
@@ -118,12 +131,14 @@ public final class CalabashWrapper {
 	public void scroll(String query, ScrollDirection direction)
 			throws CalabashException {
 		try {
+			info("Scrolling - %s", query);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjQueryString", query);
 			container.put("cjDirection", direction.getDirection());
 			container.runScriptlet("scroll(cjQueryString, cjDirection)");
 		} catch (Exception e) {
+			error("Scrolling on '%s' failed", e, query);
 			throw new CalabashException(String.format(
 					"Failed to scroll '%s'. %s", query, e.getMessage()), e);
 		}
@@ -131,12 +146,14 @@ public final class CalabashWrapper {
 
 	public void rotate(String direction) throws CalabashException {
 		try {
+			info("Rotating to %s", direction);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::TestsHelpers");
 			container.put("cjDirection", direction);
 			container.runScriptlet("rotate(cjDirection.to_sym)");
 		} catch (Exception e) {
+			error("Rotating to '%s' failed", e, direction);
 			throw new CalabashException(String.format(
 					"Failed to rotate application. %s", e.getMessage()), e);
 		}
@@ -144,10 +161,12 @@ public final class CalabashWrapper {
 
 	public void exit() throws CalabashException {
 		try {
+			info("Exiting iOS application");
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.runScriptlet("calabash_exit");
 		} catch (Exception e) {
+			error("Exitting iOS application failed.", e);
 			throw new CalabashException(String.format(
 					"Failed to exit application. %s", e.getMessage()), e);
 		}
@@ -167,6 +186,7 @@ public final class CalabashWrapper {
 	public void takeScreenShot(File dir, String fileName)
 			throws CalabashException {
 		try {
+			info("Taking screenshot");
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::TestsHelpers");
@@ -175,6 +195,7 @@ public final class CalabashWrapper {
 			container
 					.runScriptlet("screenshot_embed(options={:prefix => cjPrefix, :name => cjFileName})");
 		} catch (Exception e) {
+			error("Screenshot capture failed.", e);
 			throw new CalabashException(String.format(
 					"Failed to take screenshot. %s", e.getMessage()), e);
 		}
@@ -182,11 +203,13 @@ public final class CalabashWrapper {
 
 	public void enterText(String text) throws CalabashException {
 		try {
+			info("Entering text - %s", text);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjTextToEnter", text);
 			container.runScriptlet("keyboard_enter_text(cjTextToEnter)");
 		} catch (Exception e) {
+			error("Entering text '%s' failed", e, text);
 			throw new CalabashException(String.format(
 					"Failed to enter the text '%s'. %s", text, e.getMessage()),
 					e);
@@ -195,11 +218,13 @@ public final class CalabashWrapper {
 
 	public void enterChar(String text) throws CalabashException {
 		try {
+			info("Entering character '%s'", text);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjCharToEnter", text);
 			container.runScriptlet("keyboard_enter_char(cjCharToEnter)");
 		} catch (Exception e) {
+			error("Entering character '%s' failed", e, text);
 			throw new CalabashException(String.format(
 					"Failed to enter the text '%s'. %s", text, e.getMessage()),
 					e);
@@ -208,10 +233,12 @@ public final class CalabashWrapper {
 
 	public void done() throws CalabashException {
 		try {
+			info("Pressing done button");
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.runScriptlet("done");
 		} catch (Exception e) {
+			error("Failed to press done button");
 			throw new CalabashException(String.format(
 					"Failed to press 'done'. %s", e.getMessage()), e);
 		}
@@ -220,6 +247,7 @@ public final class CalabashWrapper {
 	public void waitFor(ICondition condition, WaitOptions options)
 			throws CalabashException, OperationTimedoutException {
 		try {
+			info("Waiting for condition");
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::WaitHelpers");
@@ -280,12 +308,14 @@ public final class CalabashWrapper {
 
 	public void scrollToRow(String query, int row) throws CalabashException {
 		try {
+			info("Scrolling to row '%d' for query - %s", row, query);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjQueryString", query);
 			container.put("cjRow", row);
 			container.runScriptlet("scroll_to_row(cjQueryString, cjRow)");
 		} catch (Exception e) {
+			error("Failed to scroll to row '%d' for query - %s", e, row, query);
 			throw new CalabashException(String.format(
 					"Failed to scroll to row '%d' for query '%s'. %s", row,
 					query, e.getMessage()), e);
@@ -295,11 +325,13 @@ public final class CalabashWrapper {
 	public void scrollToCell(String query, ScrollOptions options)
 			throws CalabashException {
 		try {
+			info("Scrolling to a cell for query - %s", query);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.runScriptlet(String.format("scroll_to_cell(%s)",
 					getScrollOptionsHash(query, options)));
 		} catch (Exception e) {
+			error("Failed to scroll to a cell for query - %s", e, query);
 			throw new CalabashException(String.format(
 					"Failed to scroll to cell for query '%s'. %s", query,
 					e.getMessage()), e);
@@ -309,6 +341,7 @@ public final class CalabashWrapper {
 	public void scrollThroughEachCell(String query, ScrollOptions options,
 			CellIterator callback) throws CalabashException {
 		try {
+			info("Starting to scroll through each cells for query - %s", query);
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjCallback", new ScrollThroughEachCellCallback(
@@ -320,6 +353,7 @@ public final class CalabashWrapper {
 					+ "cjCallback.onEachCell(row, sec, q, element)\n" + "end";
 			container.runScriptlet(String.format(script, scrollOptionsHash));
 		} catch (Exception e) {
+			error("Failed to scroll through each cells for query - %s", e, query);
 			throw new CalabashException(String.format(
 					"Failed to scroll through each cell for query '%s'. %s",
 					query, e.getMessage()), e);
@@ -360,11 +394,14 @@ public final class CalabashWrapper {
 			if (options != null)
 				message = options.getTimeoutMessage();
 
+			error("Timedout waiting");
 			throw new OperationTimedoutException(
 					message == null ? "Timed out waiting..." : message);
-		} else
+		} else {
+			error("Failed to wait for condition. %s", e, e.getMessage());
 			throw new CalabashException(String.format(
 					"Failed to wait for condition. %s", e.getMessage()), e);
+		}
 	}
 
 	private String getWaitOptionsHash(WaitOptions options) {
@@ -396,11 +433,13 @@ public final class CalabashWrapper {
 
 	public void waitForNoneAnimating() throws CalabashException {
 		try {
+			info("Waiting for all the animations to finish");
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::WaitHelpers");
 			container.runScriptlet("wait_for_none_animating");
 		} catch (Exception e) {
+			error("Error waiting for all the animations to finish", e);
 			throw new CalabashException(String.format("Failed to wait. %s",
 					e.getMessage()), e);
 		}

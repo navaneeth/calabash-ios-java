@@ -38,9 +38,24 @@ class CalabashLogger {
 			log.info(message);
 	}
 
+	public static void info(String message, Object... args) {
+		if (shouldLog)
+			log.info(String.format(message, args));
+	}
+
 	public static void error(Object message) {
 		if (shouldLog)
 			log.error(message);
+	}
+
+	public static void error(String message, Object... args) {
+		if (shouldLog)
+			log.error(String.format(message, args));
+	}
+
+	public static void error(String message, Throwable cause, Object... args) {
+		if (shouldLog)
+			log.error(String.format(message, args), cause);
 	}
 
 	public static void error(Object message, Throwable cause) {

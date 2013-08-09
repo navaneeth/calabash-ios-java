@@ -200,7 +200,6 @@ public final class CalabashRunner {
 	 * @throws CalabashException
 	 */
 	public IOSApplication start() throws CalabashException {
-		CalabashLogger.info("Starting iosApplication");
 		if (!isCalabashSetup()) {
 			String message = String.format(
 					"Calabash is not setup for %s",
