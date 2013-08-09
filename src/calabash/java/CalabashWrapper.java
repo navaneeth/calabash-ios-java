@@ -45,7 +45,8 @@ public final class CalabashWrapper {
 
 	public void setup() throws CalabashException {
 		try {
-			info("Setting up calabash for project - %s", projectDir.getAbsolutePath());
+			info("Setting up calabash for project: %s", projectDir.getAbsolutePath());
+			info("Gems directory: %s", gemsDir.getAbsolutePath());
 			container.put("ARGV", new String[] { "setup",
 					projectDir.getAbsolutePath() });
 			String calabashIOS = new File(
@@ -62,6 +63,8 @@ public final class CalabashWrapper {
 	public void start() throws CalabashException {
 		try {
 			info("Starting the iOS application - %s", projectDir.getAbsolutePath());
+			info("Gems directory: %s", gemsDir.getAbsolutePath());
+			
 			container.clear();
 			String launcherScript = new File(rbScriptsDir, "launcher.rb")
 					.getAbsolutePath();

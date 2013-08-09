@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 
 class CalabashLogger {
 
@@ -19,8 +19,9 @@ class CalabashLogger {
 			try {
 				String logFile = new File(configuration.getLogsDirectory(),
 						"calabash-ios-java.log").getAbsolutePath();
-				FileAppender fileAppender = new FileAppender(new PatternLayout(
+				RollingFileAppender fileAppender = new RollingFileAppender(new PatternLayout(
 						"%d %-5p - %m%n"), logFile);
+				fileAppender.setMaxFileSize("20MB");
 				fileAppender.setAppend(true);
 				fileAppender.activateOptions();
 
