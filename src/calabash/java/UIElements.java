@@ -41,5 +41,18 @@ public final class UIElements extends ArrayList<UIElement> {
 			}
 		}
 	}
+	
+	/**
+	 * Touches the first element in the elements
+	 * 
+	 * @throws CalabashException
+	 *             When elements are empty or any other happened during touch
+	 */
+	public void touch() throws CalabashException {
+		if (this.size() == 0) {
+			throw new CalabashException("Cannot perform touch on an empty list");
+		}
+		get(0).touch();
+	}
 
 }
