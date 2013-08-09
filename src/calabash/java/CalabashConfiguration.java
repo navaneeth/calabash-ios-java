@@ -17,6 +17,7 @@ public final class CalabashConfiguration {
 	private String appBundlePath;
 	private ScreenshotListener listener;
 	private URI deviceEndPoint;
+	private File logsDirectory;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -124,5 +125,47 @@ public final class CalabashConfiguration {
 	 */
 	public void setDeviceEndPoint(URI deviceEndPoint) {
 		this.deviceEndPoint = deviceEndPoint;
+	}
+
+	/**
+	 * Gets the logs directory
+	 * @return
+	 */
+	public File getLogsDirectory() {
+		return logsDirectory;
+	}
+
+	/**
+	 * Sets the logs directory. Setting null will disable logging
+	 * 
+	 * @param logsDirectory
+	 *            Logs directory to set
+	 * @throws CalabashException
+	 *             If the directory is invalid or not writable
+	 */
+	public void setLogsDirectory(File logsDirectory) throws CalabashException {
+		if (logsDirectory == null) {
+			this.logsDirectory = null;
+			return;
+		}
+
+		if (!logsDirectory.isDirectory())
+			throw new CalabashException(logsDirectory.getAbsolutePath()
+					+ " is not a directory");
+
+		if (!logsDirectory.canWrite())
+			throw new CalabashException(logsDirectory.getAbsolutePath()
+					+ " is not writable");
+
+		this.logsDirectory = logsDirectory;
+	}
+	
+	/**
+	 * Gets the boolean value indicating whether logging is enabled
+	 * 
+	 * @return true if logging is enabled, false otherwise
+	 */
+	public boolean isLoggingEnabled() {
+		return getLogsDirectory() != null;
 	}
 }

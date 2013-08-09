@@ -79,6 +79,8 @@ public final class CalabashRunner {
 		File gemPath = extractGemsFromBundle();
 		calabashWrapper = new CalabashWrapper(gemPath, projectDir,
 				configuration);
+
+		CalabashLogger.initialize(configuration);
 	}
 
 	/**
@@ -198,10 +200,14 @@ public final class CalabashRunner {
 	 * @throws CalabashException
 	 */
 	public IOSApplication start() throws CalabashException {
-		if (!isCalabashSetup())
-			throw new CalabashException(String.format(
+		CalabashLogger.info("Starting iosApplication");
+		if (!isCalabashSetup()) {
+			String message = String.format(
 					"Calabash is not setup for %s",
-					this.pbxprojFile.getAbsolutePath()));
+					this.pbxprojFile.getAbsolutePath());
+			CalabashLogger.error(message);
+			throw new CalabashException(message);
+		}
 
 		calabashWrapper.start();
 		return new IOSApplication(calabashWrapper);
