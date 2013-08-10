@@ -41,10 +41,15 @@ public final class CalabashConfiguration {
 	 */
 	public void setScreenshotsDirectory(File screenshotsDirectory)
 			throws CalabashException {
-		if (screenshotsDirectory.isDirectory())
-			this.screenshotsDirectory = screenshotsDirectory;
-		else
-			throw new CalabashException("Invalid screenshots directory");
+		if (!screenshotsDirectory.isDirectory())
+			throw new CalabashException(screenshotsDirectory.getAbsolutePath()
+					+ " is invalid");
+
+		if (!screenshotsDirectory.canWrite())
+			throw new CalabashException(screenshotsDirectory.getAbsolutePath()
+					+ " is not writable");
+
+		this.screenshotsDirectory = screenshotsDirectory;
 	}
 
 	/**
