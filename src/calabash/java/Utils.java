@@ -39,14 +39,6 @@ final class Utils {
 		return null;
 	}
 
-	public static String capitalize(String string) {
-		if (string == null || string.length() == 0)
-			return string;
-
-		return String.format("%c%s", Character.toUpperCase(string.charAt(0)),
-				string.substring(1, string.length()));
-	}
-
 	public static void unzip(File zipFile, File destination)
 			throws CalabashException {
 		if (!zipFile.exists())
@@ -84,26 +76,6 @@ final class Utils {
 					"Failed to unzip %s to %s. %s", zipFile.getAbsolutePath(),
 					destination.getAbsolutePath(), e.getMessage()), e);
 		}
-	}
-
-	public static void playback(String recordingName, String query)
-			throws CalabashException {
-		// CalabashServerVersion version = CalabashRunner.getServerVersion();
-		// String uiaGesture = null;
-		// if (version.getiOSVersion().major().equals("7"))
-		// uiaGesture = "tap";
-		//
-		// String playbackData = loadPlaybackData(recordingName);
-		// JSONObject postData = new JSONObject();
-		// postData.put("events", playbackData);
-		//
-		// if (query != null)
-		// postData.put("query", query);
-		//
-		// if (uiaGesture != null)
-		// postData.put("uia_gesture", uiaGesture);
-		//
-		// new Http(Config.endPoint()).post("play", postData.toString());
 	}
 
 	public static void sleep(int ms) {
