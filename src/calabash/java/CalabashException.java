@@ -4,7 +4,7 @@
 package calabash.java;
 
 /**
- * 
+ * Thrown when any error happened during calabash execution
  *
  */
 public final class CalabashException extends Exception {

@@ -130,16 +130,49 @@ public final class IOSApplication {
 		return new Keyboard(calabashWrapper);
 	}
 
+	/**
+	 * Waits for the specified condition. This uses default timeout period and
+	 * throws an exception when timeout reaches
+	 * 
+	 * @param condition
+	 *            Condition to wait for
+	 * @throws CalabashException
+	 *             When any calabash operations fails
+	 * @throws OperationTimedoutException
+	 *             When the operation elapsed the timeout period
+	 */
 	public void waitFor(ICondition condition) throws CalabashException,
 			OperationTimedoutException {
 		waitFor(condition, null);
 	}
 
+	/**
+	 * Waits for the specified condition with the options specified
+	 * 
+	 * @param condition
+	 *            Condition to wait for
+	 * @param options
+	 *            Wait options
+	 * @throws CalabashException
+	 *             When any calabash operations fails
+	 * @throws OperationTimedoutException
+	 *             When the operation elapsed the timeout period
+	 */
 	public void waitFor(ICondition condition, WaitOptions options)
 			throws CalabashException, OperationTimedoutException {
 		calabashWrapper.waitFor(condition, options);
 	}
 
+	/**
+	 * Wait for all the elements to exist in the specified array
+	 * 
+	 * @param queries
+	 *            Queries to perform
+	 * @throws OperationTimedoutException
+	 *             When the operation elapsed the timeout period
+	 * @throws CalabashException
+	 *             When any calabash operations fails
+	 */
 	public void waitForElementsExist(String[] queries)
 			throws OperationTimedoutException, CalabashException {
 		waitForElementsExist(queries, null);
@@ -160,6 +193,12 @@ public final class IOSApplication {
 		calabashWrapper.waitForElementsToNotExist(queries, options);
 	}
 
+	/**
+	 * Waits till all the animations finishes
+	 * 
+	 * @throws CalabashException
+	 *             When any calabash operation fails
+	 */
 	public void waitForNoneAnimating() throws CalabashException {
 		calabashWrapper.waitForNoneAnimating();
 	}
