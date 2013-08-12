@@ -1,5 +1,9 @@
 package calabash.java;
 
+/**
+ * Provides the scroll options
+ *
+ */
 public final class ScrollOptions {
 
 	private int row;

@@ -70,10 +70,19 @@ public final class CalabashWrapper {
 					.getAbsolutePath();
 			container.runScriptlet(PathType.ABSOLUTE, launcherScript);
 		} catch (Exception e) {
-			error("Could not start the iOS application - %s ", projectDir.getAbsolutePath());
+			error("Could not start the iOS application - %s ", e, projectDir.getAbsolutePath());
+			String message = removeUnWantedDetailsFromException(e);
 			throw new CalabashException(String.format(
-					"Failed to start iOS application. %s", e.getMessage()), e);
+					"Failed to start iOS application. %s", message));
 		}
+	}
+
+	private String removeUnWantedDetailsFromException(Exception e) {
+		String message = e.getMessage();
+		message = message.replace("Make sure you are running this command from your project directory, \n", "");
+		message = message.replace("i.e., the directory containing your .xcodeproj file.\n", "");
+		message = message.replace("In features/support/01_launch.rb set APP_BUNDLE_PATH to\n", "set APP_BUNDLE_PATH to\n");
+		return message;
 	}
 
 	public RubyArray query(String query, String... args)
