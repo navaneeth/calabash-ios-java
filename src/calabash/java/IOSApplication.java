@@ -11,7 +11,7 @@ import org.jruby.RubyArray;
  * Represents an iOS application
  * 
  */
-public final class IOSApplication {
+public class IOSApplication {
 
 	private final CalabashWrapper calabashWrapper;
 
