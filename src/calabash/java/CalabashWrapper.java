@@ -502,6 +502,10 @@ public final class CalabashWrapper {
 				environmentVariables.put("DEVICE_ENDPOINT", configuration
 						.getDeviceEndPoint().toString());
 		}
+
+		// Adding all system defined env variables
+		environmentVariables.putAll(System.getenv());
+
 		container.setEnvironment(environmentVariables);
 
 		// Load paths points to the gem directory
