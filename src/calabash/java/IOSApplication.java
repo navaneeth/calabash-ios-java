@@ -65,6 +65,16 @@ public final class IOSApplication {
 	}
 
 	/**
+	 * Restarts this application
+	 * 
+	 * @throws CalabashException
+	 */
+	public void restart() throws CalabashException {
+		exit();
+		calabashWrapper.start();
+	}
+
+	/**
 	 * Returns a value indicating whether the application is running
 	 * 
 	 * @return true if the application is running, false otherwise
