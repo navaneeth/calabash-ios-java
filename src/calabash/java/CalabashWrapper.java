@@ -491,10 +491,12 @@ public final class CalabashWrapper {
 			environmentVariables.put("SCREENSHOT_PATH", configuration
 					.getScreenshotsDirectory().getAbsolutePath() + "/");
 
-			if (configuration.getDevice() != null)
+			if (configuration.getDevice() != null
+					&& configuration.getDevice().length() != 0)
 				environmentVariables.put("DEVICE", configuration.getDevice());
 
-			if (configuration.getAppBundlePath() != null)
+			if (configuration.getAppBundlePath() != null
+					&& configuration.getAppBundlePath().length() != 0)
 				environmentVariables.put("APP_BUNDLE_PATH",
 						configuration.getAppBundlePath());
 
