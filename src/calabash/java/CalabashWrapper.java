@@ -98,7 +98,7 @@ public final class CalabashWrapper {
 			RubyArray queryResults = null;
 			if (args != null && args.length > 0)
 				queryResults = (RubyArray) container
-						.runScriptlet("query(cjQueryString, cjQueryArgs)");
+						.runScriptlet("query(cjQueryString, *cjQueryArgs)");
 			else
 				queryResults = (RubyArray) container
 						.runScriptlet("query(cjQueryString)");
