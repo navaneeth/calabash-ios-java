@@ -18,6 +18,7 @@ public final class CalabashConfiguration {
 	private ScreenshotListener listener;
 	private URI deviceEndPoint;
 	private File logsDirectory;
+	private boolean noLaunch = false;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -172,5 +173,24 @@ public final class CalabashConfiguration {
 	 */
 	public boolean isLoggingEnabled() {
 		return getLogsDirectory() != null;
+	}
+
+	/**
+	 * Determines test run should launch the application
+	 * 
+	 * @return true if it should launch, false otherwise
+	 */
+	public boolean getNoLaunch() {
+		return noLaunch;
+	}
+
+	/**
+	 * Setting this will stop launching the application every time test starts
+	 * 
+	 * @param noLaunch
+	 *            true will disable launching
+	 */
+	public void setNoLaunch(boolean noLaunch) {
+		this.noLaunch = noLaunch;
 	}
 }

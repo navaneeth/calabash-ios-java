@@ -501,6 +501,9 @@ public final class CalabashWrapper {
 			if (configuration.getDeviceEndPoint() != null)
 				environmentVariables.put("DEVICE_ENDPOINT", configuration
 						.getDeviceEndPoint().toString());
+
+			if (configuration.getNoLaunch())
+				environmentVariables.put("NO_LAUNCH", "1");
 		}
 
 		// Adding all system defined env variables
