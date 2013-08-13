@@ -14,7 +14,7 @@ import java.util.jar.Manifest;
  * Manages setting up calabash framework and launching the simulator
  * 
  */
-public final class CalabashRunner {
+public class CalabashRunner {
 
 	private final File pbxprojFile;
 	private final File projectDir;
@@ -209,6 +209,16 @@ public final class CalabashRunner {
 		}
 
 		calabashWrapper.start();
+		return launchApplication();
+	}
+
+	/**
+	 * Creates an iOS application. This can be overridden if custom Application
+	 * instances needs to be created
+	 * 
+	 * @return
+	 */
+	protected IOSApplication launchApplication() {
 		return new IOSApplication(calabashWrapper);
 	}
 
@@ -267,5 +277,14 @@ public final class CalabashRunner {
 		}
 
 		return "";
+	}
+
+	/**
+	 * Gets the underlying wrapper
+	 * 
+	 * @return the calabashWrapper
+	 */
+	protected CalabashWrapper getCalabashWrapper() {
+		return calabashWrapper;
 	}
 }

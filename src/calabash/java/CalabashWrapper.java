@@ -18,7 +18,7 @@ import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
 /**
- * 
+ * This is a one to one mapping with the Ruby calabash API
  *
  */
 public final class CalabashWrapper {
