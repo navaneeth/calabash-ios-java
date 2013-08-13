@@ -1,34 +1,21 @@
 package calabash.java;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.File;
-
 import static calabash.java.TestUtil.initializeAndStart;
 import static junit.framework.Assert.assertEquals;
 
-public class KeyboardTest {
+public class KeyboardTest extends CalabashBaseTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-    private IOSApplication iosApplication;
 
     @Before
     public void setUp() throws Exception {
-        CalabashConfiguration calabashConfiguration = new CalabashConfiguration();
-        calabashConfiguration.setLogsDirectory(new File("/tmp"));
-        iosApplication = initializeAndStart("FirstDemo", calabashConfiguration);
+        iosApplication = initializeAndStart("FirstDemo");
         iosApplication.waitForElementsExist(new String[]{"textField"});
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        if (iosApplication != null)
-            iosApplication.exit();
-        TestUtil.clearAppDir();
     }
 
     @Test

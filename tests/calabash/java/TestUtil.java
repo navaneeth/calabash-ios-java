@@ -9,6 +9,11 @@ import static calabash.java.Utils.runCommand;
 
 public class TestUtil {
 
+
+   public static IOSApplication initializeAndStart(String appName) throws IOException, CalabashException {
+        return initializeAndStart(appName, new CalabashConfiguration());
+    }
+
     public static IOSApplication initializeAndStart(String appName, CalabashConfiguration calabashConfiguration) throws CalabashException, IOException {
         String path = extractApp(appName);
         calabashConfiguration.setAppBundlePath(new File(path, "/Calabash/build/Calabash.app/").getAbsolutePath());
@@ -17,6 +22,7 @@ public class TestUtil {
         build(path, appName);
         return calabashRunner.start();
     }
+
 
     public static void build(String path, String appName) throws CalabashException {
         String xcodeProject = String.format("%s/%s.xcodeproj", path, appName);
