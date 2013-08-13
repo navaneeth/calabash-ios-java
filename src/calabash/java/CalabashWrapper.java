@@ -217,7 +217,7 @@ public final class CalabashWrapper {
 		try {
 			info("Entering text - %s", text);
 			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::KeyboardHelpers");
 			container.put("cjTextToEnter", text);
 			container.runScriptlet("keyboard_enter_text(cjTextToEnter)");
 		} catch (Exception e) {
@@ -231,7 +231,7 @@ public final class CalabashWrapper {
 		try {
 			info("Entering character '%s'", text);
 			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::KeyboardHelpers");
 			container.put("cjCharToEnter", text);
 			container.runScriptlet("keyboard_enter_char(cjCharToEnter)");
 		} catch (Exception e) {
