@@ -131,4 +131,17 @@ final class Utils {
 		}
 	}
 
+    public static void runCommand(String[] command, String onExceptionMessage) throws CalabashException {
+        int exitCode;
+        try {
+            Process changeDirProcess = Runtime.getRuntime().exec(command);
+            exitCode = changeDirProcess.waitFor();
+            if (exitCode == 0)
+                return;
+            else throw new CalabashException(onExceptionMessage);
+        } catch (Exception e) {
+            throw new CalabashException(onExceptionMessage);
+        }
+    }
+
 }

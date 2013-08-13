@@ -1,4 +1,4 @@
-package calabash.java.tests;
+package calabash.java;
 
 import static org.junit.Assert.*;
 
