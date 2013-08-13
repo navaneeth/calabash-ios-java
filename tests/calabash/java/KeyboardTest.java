@@ -25,8 +25,10 @@ public class KeyboardTest {
     }
 
     @After
-    public void tearDown() throws CalabashException {
-        iosApplication.exit();
+    public void tearDown() throws Exception {
+        if (iosApplication != null)
+            iosApplication.exit();
+        TestUtil.clearAppDir();
     }
 
     @Test
@@ -68,7 +70,7 @@ public class KeyboardTest {
     @Test
     public void shouldThrowExceptionWhenUsingKeyboardBeforeLaunchingKeyboard() throws CalabashException {
         expectedException.expect(CalabashException.class);
-        expectedException.expectMessage("Failed to enter the text 'hi'");
+        expectedException.expectMessage("Failed to enter text: hi. (RuntimeError) No visible keyboard");
         iosApplication.getKeyboard().enterText("hi");
     }
 
@@ -79,7 +81,7 @@ public class KeyboardTest {
         iosApplication.getKeyboard().pressSpecialKey(SpecialKeys.Return);
 
         expectedException.expect(CalabashException.class);
-        expectedException.expectMessage("Failed to enter the text 'after return'");
+        expectedException.expectMessage("Failed to enter text: after return. (RuntimeError) No visible keyboard");
         iosApplication.getKeyboard().enterText("after return");
     }
 
