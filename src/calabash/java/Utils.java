@@ -3,7 +3,11 @@
  */
 package calabash.java;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -131,17 +135,35 @@ final class Utils {
 		}
 	}
 
-    public static void runCommand(String[] command, String onExceptionMessage) throws CalabashException {
-        int exitCode;
-        try {
-            Process changeDirProcess = Runtime.getRuntime().exec(command);
-            exitCode = changeDirProcess.waitFor();
-            if (exitCode == 0)
-                return;
-            else throw new CalabashException(onExceptionMessage);
-        } catch (Exception e) {
-            throw new CalabashException(onExceptionMessage);
-        }
-    }
+	public static void runCommand(String[] command, String onExceptionMessage)
+			throws CalabashException {
+		int exitCode;
+		try {
+			Process Process = Runtime.getRuntime().exec(command);
+			exitCode = Process.waitFor();
+			if (exitCode == 0)
+				return;
+			else
+				throw new CalabashException(onExceptionMessage);
+		} catch (Exception e) {
+			throw new CalabashException(onExceptionMessage);
+		}
+	}
+
+	public static String toString(InputStream in) throws CalabashException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		StringBuilder sb = new StringBuilder();
+
+		String read;
+		try {
+			while ((read = br.readLine()) != null) {
+				sb.append(read);
+			}
+		} catch (IOException e) {
+			throw new CalabashException("Error reading from stream.", e);
+		}
+
+		return sb.toString();
+	}
 
 }

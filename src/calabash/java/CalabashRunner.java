@@ -6,9 +6,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+
+import xmlwise.Plist;
 
 /**
  * Manages setting up calabash framework and launching the simulator
@@ -95,6 +100,105 @@ public class CalabashRunner {
 
 		String parentName = pbxprojFile.getParentFile().getName();
 		return String.format("%s-cal", parentName.replace(".xcodeproj", ""));
+	}
+
+	/**
+	 * Gets the targets available in the XCode project
+	 * 
+	 * @return Collection of target names
+	 * @throws CalabashException
+	 */
+	@SuppressWarnings("unchecked")
+	public Collection<String> getTargets() throws CalabashException {
+		ArrayList<String> targets = new ArrayList<String>();
+
+		// Converting pbxproj file to XML so that we can make sense of it
+		File pbxProjXML = convertPbxProjectFileToXML();
+		Map<String, Object> pbxProjMap = null;
+		try {
+			pbxProjMap = Plist.load(pbxProjXML);
+		} catch (Exception e) {
+			throw new CalabashException(String.format(
+					"Failed to parse the plist content: %s", pbxProjXML), e);
+		}
+
+		if (pbxProjMap.get("objects") == null
+				|| !(pbxProjMap.get("objects") instanceof Map)) {
+			return targets;
+		}
+
+		// rootObject defines all the targets which will be an array of target
+		// IDs
+		// We pick each target ID and look that up in objects map to get the
+		// target name
+
+		Map<String, Object> objects = (Map<String, Object>) pbxProjMap
+				.get("objects");
+		String rootObjectId = (String) pbxProjMap.get("rootObject");
+		if (rootObjectId == null) {
+			return targets;
+		}
+
+		Map<String, Object> rootObject = (Map<String, Object>) objects
+				.get(rootObjectId);
+		Object object = rootObject.get("targets");
+		if (object == null || !(object instanceof ArrayList<?>)) {
+			return targets;
+		}
+
+		ArrayList<?> targetIds = (ArrayList<?>) object;
+		for (Object targetId : targetIds) {
+			if (objects.get(targetId) != null
+					&& objects.get(targetId) instanceof Map<?, ?>) {
+				Map<String, Object> target = (Map<String, Object>) objects
+						.get(targetId);
+				if (target.get("name") != null) {
+					targets.add(target.get("name").toString());
+				}
+			}
+		}
+
+		return targets;
+	}
+
+	private File convertPbxProjectFileToXML() throws CalabashException {
+		File xmlFile = null;
+		try {
+			xmlFile = File.createTempFile("calabash-ios", "temp");
+		} catch (IOException e) {
+			throw new CalabashException("Failed to make a temporay file", e);
+		}
+		String[] cmd = { "plutil", "-convert", "xml1", "-o",
+				xmlFile.getAbsolutePath(), pbxprojFile.getAbsolutePath() };
+		Process process = null;
+		try {
+			process = Runtime.getRuntime().exec(cmd);
+			int exitCode = process.waitFor();
+			if (exitCode != 0) {
+				String message = "";
+				InputStream errorStream = null;
+				try {
+					errorStream = process.getErrorStream();
+					message = Utils.toString(errorStream);
+				} finally {
+					if (errorStream != null)
+						errorStream.close();
+				}
+				throw new CalabashException(String.format(
+						"Failed to convert pbxproj file: %s. %s",
+						pbxprojFile.getAbsolutePath(), message));
+			}
+		} catch (IOException e) {
+			throw new CalabashException(String.format(
+					"Failed to convert pbxproj file: %s. %s",
+					pbxprojFile.getAbsolutePath(), e.getMessage()), e);
+		} catch (InterruptedException e) {
+			throw new CalabashException(String.format(
+					"Failed to convert pbxproj file: %s. %s",
+					pbxprojFile.getAbsolutePath(), e.getMessage()), e);
+		}
+
+		return xmlFile;
 	}
 
 	private File extractGemsFromBundle() throws CalabashException {
@@ -201,8 +305,7 @@ public class CalabashRunner {
 	 */
 	public IOSApplication start() throws CalabashException {
 		if (!isCalabashSetup()) {
-			String message = String.format(
-					"Calabash is not setup for %s",
+			String message = String.format("Calabash is not setup for %s",
 					this.pbxprojFile.getAbsolutePath());
 			CalabashLogger.error(message);
 			throw new CalabashException(message);

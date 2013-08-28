@@ -66,6 +66,7 @@
 		<copy file="${doc.jar}" todir="${distro.dir}" />
 		<copy file="${deps.dir}/jruby-complete-1.7.4.jar" todir="${distro.dir}" />
 		<copy file="${deps.dir}/log4j-1.2.17.jar" todir="${distro.dir}" />
+		<copy file="${deps.dir}/xmlwise-1_2.jar" todir="${distro.dir}" />
 		<copy file="LICENSE.txt" todir="${distro.dir}" />
 		<copy file="README.md" todir="${distro.dir}" />
 		<copy file="CONTRIBUTORS.txt" todir="${distro.dir}" />
