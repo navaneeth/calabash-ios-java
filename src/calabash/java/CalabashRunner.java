@@ -280,20 +280,27 @@ public class CalabashRunner {
 		}
 	}
 
+	public void setup() throws CalabashException {
+		setup(null);
+	}
+
 	/**
 	 * Setup calabash for the current project. This needs to be called only
 	 * once.
 	 * 
+	 * @param targetToDuplicate
+	 *            XCode target which will be duplicated to embed calabash
+	 *            framework
 	 * @throws CalabashException
 	 */
-	public void setup() throws CalabashException {
+	public void setup(String targetToDuplicate) throws CalabashException {
 		if (this.pbxprojFile == null)
 			throw new CalabashException("Project path is not set");
 
 		if (isCalabashSetup())
 			return;
 
-		calabashWrapper.setup();
+		calabashWrapper.setup(targetToDuplicate);
 	}
 
 	/**

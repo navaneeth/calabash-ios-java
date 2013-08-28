@@ -43,15 +43,20 @@ public final class CalabashWrapper {
 		this.initializeScriptingContainer();
 	}
 
-	public void setup() throws CalabashException {
+	public void setup(String targetToDuplicate) throws CalabashException {
 		try {
 			info("Setting up calabash for project: %s", projectDir.getAbsolutePath());
 			info("Gems directory: %s", gemsDir.getAbsolutePath());
+			info("Duplicating target: %s", targetToDuplicate == null ? "" : targetToDuplicate);
 			container.put("ARGV", new String[] { "setup",
 					projectDir.getAbsolutePath() });
 			String calabashIOS = new File(
 					getCalabashGemDirectory(), "bin/calabash-ios")
 					.getAbsolutePath();
+			if (targetToDuplicate != null) {
+				container.put("cjTargetToDuplicate", targetToDuplicate);
+				container.runScriptlet("ENV['TARGET']=cjTargetToDuplicate");
+			}
 			container.runScriptlet(PathType.ABSOLUTE, calabashIOS);
 		} catch (Exception e) {
 			error("Failed to setup calabash for project: %s", e, projectDir.getAbsolutePath());
