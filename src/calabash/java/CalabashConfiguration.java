@@ -22,6 +22,7 @@ public final class CalabashConfiguration {
 	private File playbackDir;
 	private String os;
 	private String bundleId;
+	private String sdkVersion;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -258,5 +259,24 @@ public final class CalabashConfiguration {
 	 */
 	public String getBundleId() {
 		return this.bundleId;
+	}
+
+	/**
+	 * Sets the iOS SDK version
+	 * 
+	 * @param sdkVersion
+	 * @return
+	 */
+	public void setSDKVersion(String sdkVersion) {
+		this.sdkVersion = sdkVersion;
+	}
+
+	/**
+	 * Gets the SDK version
+	 * 
+	 * @return
+	 */
+	public String getSDKVersion() {
+		return this.sdkVersion;
 	}
 }

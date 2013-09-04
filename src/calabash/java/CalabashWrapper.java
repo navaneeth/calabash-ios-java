@@ -580,6 +580,10 @@ public final class CalabashWrapper {
 			if (configuration.getBundleId() != null)
 				environmentVariables.put("BUNDLE_ID",
 						configuration.getBundleId());
+
+			if (configuration.getSDKVersion() != null)
+				environmentVariables.put("SDK_VERSION",
+						configuration.getSDKVersion());
 		}
 
 		// Adding all system defined env variables
