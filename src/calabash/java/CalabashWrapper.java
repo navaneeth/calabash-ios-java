@@ -189,6 +189,66 @@ public final class CalabashWrapper {
 		}
 	}
 
+	public void startRecording() throws CalabashException {
+		try {
+			info("Starting recording");
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.runScriptlet("record_begin");
+		} catch (Exception e) {
+			error("Failed to start recording.", e);
+			throw new CalabashException(String.format(
+					"Failed to start recording. %s", e.getMessage()));
+		}
+	}
+
+	public void stopRecording(String filename) throws CalabashException {
+		try {
+			info("Stopping recording");
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjFileName", filename);
+			container.runScriptlet("record_end cjFileName");
+		} catch (Exception e) {
+			error("Failed to stop recording.", e);
+			throw new CalabashException(String.format(
+					"Failed to stop recording. %s", e.getMessage()));
+		}
+	}
+
+	public void playback(String recording, String query, Offset offset)
+			throws CalabashException {
+		try {
+			info("Playback: %s", recording);
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::Operations");
+			container.put("cjRecording", recording);
+			if (query != null && offset != null) {
+				container.put("cjQuery", query);
+				container.put("cjOffsetX", offset.getX());
+				container.put("cjOffsetY", offset.getY());
+				container
+						.runScriptlet("playback cjRecording, :query => cjQuery, :offset => {:x => cjOffsetX, :y => cjOffsetY}");
+			} else if (query != null) {
+				container.put("cjQuery", query);
+				container
+						.runScriptlet("playback cjRecording, :query => cjQuery");
+			} else if (offset != null) {
+				container.put("cjOffsetX", offset.getX());
+				container.put("cjOffsetY", offset.getY());
+				container
+						.runScriptlet("playback cjRecording, :offset => {:x => cjOffsetX, :y => cjOffsetY}");
+			} else {
+				container.runScriptlet("playback cjRecording, {}");
+			}
+		} catch (Exception e) {
+			error("Failed to stop recording.", e);
+			throw new CalabashException(String.format(
+					"Failed to playback: %s. %s", recording, e.getMessage()));
+		}
+	}
+
 	public void serverVersion() throws CalabashException {
 		try {
 			container.clear();
@@ -509,6 +569,10 @@ public final class CalabashWrapper {
 
 			if (configuration.getNoLaunch())
 				environmentVariables.put("NO_LAUNCH", "1");
+
+			if (configuration.getPlaybackDirectory() != null)
+				environmentVariables.put("PLAYBACK_DIR", configuration
+						.getPlaybackDirectory().getAbsolutePath());
 		}
 
 		// Adding all system defined env variables

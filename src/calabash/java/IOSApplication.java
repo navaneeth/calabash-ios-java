@@ -37,6 +37,49 @@ public class IOSApplication {
 		RubyArray array = calabashWrapper.query(query);
 		return new UIElements(array, query, calabashWrapper);
 	}
+	
+	/**
+	 * Records a sequence of events and saves them to disk.
+	 * 
+	 * @throws CalabashException
+	 */
+	public void startRecording() throws CalabashException {
+		calabashWrapper.startRecording();
+	}
+
+	/**
+	 * Stops the recording and saves the data to the specified file
+	 * 
+	 * @param filename
+	 *            File name
+	 * @throws CalabashException
+	 */
+	public void stopRecording(String filename) throws CalabashException {
+		calabashWrapper.stopRecording(filename);
+	}
+
+	/**
+	 * Plays a pre-recorded sequence of events on the application
+	 * 
+	 * @param recording
+	 *            Name of the recording
+	 * @throws CalabashException
+	 */
+	public void playback(String recording) throws CalabashException {
+		calabashWrapper.playback(recording, null, null);
+	}
+	
+	/**
+	 * Plays a pre-recorded sequence of events on the application
+	 * 
+	 * @param recording
+	 *            Name of the recording
+	 * @param query Query to identify which view to playback the recorded touch-events on
+	 * @throws CalabashException
+	 */
+	public void playback(String recording, String query, Offset offset) throws CalabashException {
+		calabashWrapper.playback(recording, query, offset);
+	}
 
 	/**
 	 * Runs a query on the remote iOS application and returns results as JSON

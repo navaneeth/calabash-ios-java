@@ -19,6 +19,7 @@ public final class CalabashConfiguration {
 	private URI deviceEndPoint;
 	private File logsDirectory;
 	private boolean noLaunch = false;
+	private File playbackDir;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -192,5 +193,32 @@ public final class CalabashConfiguration {
 	 */
 	public void setNoLaunch(boolean noLaunch) {
 		this.noLaunch = noLaunch;
+	}
+
+	/**
+	 * Sets the directory where playback files should be read from
+	 * 
+	 * @param dir
+	 *            Directory where playback files are present
+	 * @throws CalabashException
+	 */
+	public void setPlaybackDirectory(File dir)
+			throws CalabashException {
+		if (!dir.isDirectory())
+			throw new CalabashException("Invalid recording directory");
+
+		if (!dir.canWrite())
+			throw new CalabashException("Recording directory is not writable");
+
+		this.playbackDir = dir;
+	}
+
+	/**
+	 * Gets the playback directory
+	 * 
+	 * @return
+	 */
+	public File getPlaybackDirectory() {
+		return playbackDir;
 	}
 }
