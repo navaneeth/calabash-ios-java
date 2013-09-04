@@ -20,6 +20,8 @@ public final class CalabashConfiguration {
 	private File logsDirectory;
 	private boolean noLaunch = false;
 	private File playbackDir;
+	private String os;
+	private String bundleId;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -136,6 +138,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the logs directory
+	 * 
 	 * @return
 	 */
 	public File getLogsDirectory() {
@@ -166,7 +169,7 @@ public final class CalabashConfiguration {
 
 		this.logsDirectory = logsDirectory;
 	}
-	
+
 	/**
 	 * Gets the boolean value indicating whether logging is enabled
 	 * 
@@ -202,8 +205,7 @@ public final class CalabashConfiguration {
 	 *            Directory where playback files are present
 	 * @throws CalabashException
 	 */
-	public void setPlaybackDirectory(File dir)
-			throws CalabashException {
+	public void setPlaybackDirectory(File dir) throws CalabashException {
 		if (!dir.isDirectory())
 			throw new CalabashException("Invalid recording directory");
 
@@ -220,5 +222,41 @@ public final class CalabashConfiguration {
 	 */
 	public File getPlaybackDirectory() {
 		return playbackDir;
+	}
+
+	/**
+	 * Sets the OS used by the device/simulator
+	 * 
+	 * @param os
+	 */
+	public void setOS(String os) {
+		this.os = os;
+	}
+
+	/**
+	 * Gets the OS used by the device/simulator
+	 * 
+	 * @return
+	 */
+	public String getOS() {
+		return this.os;
+	}
+
+	/**
+	 * Sets the application bundle id
+	 * 
+	 * @param bundleId
+	 */
+	public void setBundleId(String bundleId) {
+		this.bundleId = bundleId;
+	}
+
+	/**
+	 * Gets the bundle id
+	 * 
+	 * @return
+	 */
+	public String getBundleId() {
+		return this.bundleId;
 	}
 }

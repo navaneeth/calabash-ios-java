@@ -573,6 +573,13 @@ public final class CalabashWrapper {
 			if (configuration.getPlaybackDirectory() != null)
 				environmentVariables.put("PLAYBACK_DIR", configuration
 						.getPlaybackDirectory().getAbsolutePath());
+
+			if (configuration.getOS() != null)
+				environmentVariables.put("OS", configuration.getOS());
+
+			if (configuration.getBundleId() != null)
+				environmentVariables.put("BUNDLE_ID",
+						configuration.getBundleId());
 		}
 
 		// Adding all system defined env variables
