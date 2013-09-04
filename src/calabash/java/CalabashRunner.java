@@ -89,20 +89,6 @@ public class CalabashRunner {
 	}
 
 	/**
-	 * Gets the XCode target where calabash.framework is embedded
-	 * 
-	 * @return target name
-	 * @throws CalabashException
-	 */
-	public String getXCodeTargetForCalabash() throws CalabashException {
-		if (!isCalabashSetup())
-			return null;
-
-		String parentName = pbxprojFile.getParentFile().getName();
-		return String.format("%s-cal", parentName.replace(".xcodeproj", ""));
-	}
-
-	/**
 	 * Gets the targets available in the XCode project
 	 * 
 	 * @return Collection of target names
