@@ -328,7 +328,13 @@ public class CalabashRunner {
 		return calabashWrapper.getGemsDir();
 	}
 
-	private boolean isCalabashSetup() throws CalabashException {
+	/**
+	 * Gets whether calabash is setup for the project
+	 * 
+	 * @return true if calabash is setup, false otherwiser
+	 * @throws CalabashException
+	 */
+	public boolean isCalabashSetup() throws CalabashException {
 		String[] cmd = { "grep", "calabash.framework",
 				pbxprojFile.getAbsolutePath() };
 		try {
