@@ -23,6 +23,7 @@ public final class CalabashConfiguration {
 	private String os;
 	private String bundleId;
 	private String sdkVersion;
+	private int pauseInSec = -1;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -278,5 +279,27 @@ public final class CalabashConfiguration {
 	 */
 	public String getSDKVersion() {
 		return this.sdkVersion;
+	}
+
+	/**
+	 * Sets the pause time.
+	 * 
+	 * Calabash will pause for the specified seconds after performing every
+	 * actions
+	 * 
+	 * @param pauseInSec
+	 *            Seconds to wait after each actions
+	 */
+	public void setPauseTimeInSec(int pauseInSec) {
+		this.pauseInSec = pauseInSec;
+	}
+
+	/**
+	 * Gets the pause time
+	 * 
+	 * @return
+	 */
+	public int getPauseTimeInSec() {
+		return pauseInSec;
 	}
 }

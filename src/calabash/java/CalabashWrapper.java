@@ -28,6 +28,7 @@ public final class CalabashWrapper {
 	private final File projectDir;
 	private final File gemsDir;
 	private final CalabashConfiguration configuration;
+	private long pauseTimeInMilliSec = 1000; 
 
 	public CalabashWrapper(File rbScriptsDir, File projectDir,
 			CalabashConfiguration configuration) throws CalabashException {
@@ -41,6 +42,8 @@ public final class CalabashWrapper {
 		this.gemsDir = new File(rbScriptsDir, "gems");
 		this.projectDir = projectDir;
 		this.initializeScriptingContainer();
+		if (configuration != null && configuration.getPauseTimeInSec() >= 0)
+			pauseTimeInMilliSec = configuration.getPauseTimeInSec() * 1000;
 	}
 
 	public void setup(String targetToDuplicate) throws CalabashException {
@@ -124,6 +127,7 @@ public final class CalabashWrapper {
 					"Calabash::Cucumber::Operations");
 			container.put("cjQueryString", query);
 			container.runScriptlet("touch(cjQueryString)");
+			pause();
 		} catch (Exception e) {
 			error("Failed to touch on: %s", e, query);
 			throw new CalabashException(String.format(
@@ -154,6 +158,7 @@ public final class CalabashWrapper {
 			container.put("cjQueryString", query);
 			container.put("cjDirection", direction.getDirection());
 			container.runScriptlet("scroll(cjQueryString, cjDirection)");
+			pause();
 		} catch (Exception e) {
 			error("Failed to scroll: %s", e, query);
 			throw new CalabashException(String.format(
@@ -172,6 +177,7 @@ public final class CalabashWrapper {
 			container.put("cjDirection", direction.getDirection());
 			container
 					.runScriptlet("swipe(cjDirection, {:query => cjQueryString})");
+			pause();
 		} catch (Exception e) {
 			error("Failed to swipe: %s", e, query);
 			throw new CalabashException(String.format(
@@ -193,6 +199,7 @@ public final class CalabashWrapper {
 			} else {
 				container.runScriptlet("pinch(cjInOrOut.to_sym, {})");
 			}
+			pause();
 		} catch (Exception e) {
 			error("Failed to pinch: %s", e, query);
 			throw new CalabashException(String.format(
@@ -208,6 +215,7 @@ public final class CalabashWrapper {
 					"Calabash::Cucumber::TestsHelpers");
 			container.put("cjDirection", direction);
 			container.runScriptlet("rotate(cjDirection.to_sym)");
+			pause();
 		} catch (Exception e) {
 			error("Failed to rotate to: %s", e, direction);
 			throw new CalabashException(String.format(
@@ -324,6 +332,7 @@ public final class CalabashWrapper {
 			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::KeyboardHelpers");
 			container.put("cjTextToEnter", text);
 			container.runScriptlet("keyboard_enter_text(cjTextToEnter)");
+			pause();
 		} catch (Exception e) {
 			error("Failed to enter text: %s", e, text);
 			throw new CalabashException(String.format(
@@ -338,6 +347,7 @@ public final class CalabashWrapper {
 			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::KeyboardHelpers");
 			container.put("cjCharToEnter", text);
 			container.runScriptlet("keyboard_enter_char(cjCharToEnter)");
+			pause();
 		} catch (Exception e) {
 			error("Failed to enter character: %s", e, text);
 			throw new CalabashException(String.format(
@@ -428,6 +438,7 @@ public final class CalabashWrapper {
 			container.put("cjQueryString", query);
 			container.put("cjRow", row);
 			container.runScriptlet("scroll_to_row(cjQueryString, cjRow)");
+			pause();
 		} catch (Exception e) {
 			error("Failed to scroll to row '%d' for query - %s", e, row, query);
 			throw new CalabashException(String.format(
@@ -444,6 +455,7 @@ public final class CalabashWrapper {
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.runScriptlet(String.format("scroll_to_cell(%s)",
 					getScrollOptionsHash(query, options)));
+			pause();
 		} catch (Exception e) {
 			error("Failed to scroll to a cell for query - %s", e, query);
 			throw new CalabashException(String.format(
@@ -679,6 +691,13 @@ public final class CalabashWrapper {
 							gemsDir.getAbsolutePath()));
 
 		return calabashGemPath[0];
+	}
+	
+	private void pause() {
+		try {
+			Thread.sleep(pauseTimeInMilliSec);
+		} catch (InterruptedException e) {
+		}
 	}
 
 }
