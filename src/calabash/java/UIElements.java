@@ -41,7 +41,21 @@ public final class UIElements extends ArrayList<UIElement> {
 			}
 		}
 	}
-	
+
+	/**
+	 * Gets the first element
+	 * 
+	 * @return
+	 * @throws CalabashException
+	 */
+	public UIElement first() throws CalabashException {
+		if (this.size() == 0) {
+			throw new CalabashException("Empty elements collection");
+		}
+
+		return this.get(0);
+	}
+
 	/**
 	 * Touches the first element in the elements
 	 * 
