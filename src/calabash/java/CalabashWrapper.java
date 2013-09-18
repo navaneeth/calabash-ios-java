@@ -179,6 +179,27 @@ public final class CalabashWrapper {
 		}
 	}
 
+	public void pinch(String query, String inOrOut) throws CalabashException {
+		try {
+			info("Pinching: %s. In or out: %s", query, inOrOut);
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::Operations");
+			container.put("cjInOrOut", inOrOut);
+			if (query != null) {
+				container.put("cjQueryString", query);
+				container
+						.runScriptlet("pinch(cjInOrOut.to_sym, {:query => cjQueryString})");
+			} else {
+				container.runScriptlet("pinch(cjInOrOut.to_sym, {})");
+			}
+		} catch (Exception e) {
+			error("Failed to pinch: %s", e, query);
+			throw new CalabashException(String.format(
+					"Failed to pinch: %s. %s", query, e.getMessage()));
+		}
+	}
+
 	public void rotate(String direction) throws CalabashException {
 		try {
 			info("Rotating to %s", direction);

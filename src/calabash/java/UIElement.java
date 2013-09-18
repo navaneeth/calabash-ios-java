@@ -172,6 +172,24 @@ public final class UIElement {
 	}
 
 	/**
+	 * Pinches the element
+	 * 
+	 * @throws CalabashException
+	 */
+	public void pinchIn() throws CalabashException {
+		calabashWrapper.pinch(query, "in");
+	}
+
+	/**
+	 * Pinches the element
+	 * 
+	 * @throws CalabashException
+	 */
+	public void pinchOut() throws CalabashException {
+		calabashWrapper.pinch(query, "out");
+	}
+
+	/**
 	 * Scroll to the cell according to the specified options
 	 * 
 	 * @param options
