@@ -3,13 +3,13 @@
  */
 package calabash.java;
 
-public enum ScrollDirection {
+public enum Direction {
 
 	LEFT("left"), RIGHT("right"), UP("up"), DOWN("down");
 
 	private final String direction;
 
-	private ScrollDirection(String direction) {
+	private Direction(String direction) {
 		this.direction = direction;
 	}
 

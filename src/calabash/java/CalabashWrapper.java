@@ -145,7 +145,7 @@ public final class CalabashWrapper {
 		}
 	}
 
-	public void scroll(String query, ScrollDirection direction)
+	public void scroll(String query, Direction direction)
 			throws CalabashException {
 		try {
 			info("Scrolling: %s", query);
@@ -158,6 +158,24 @@ public final class CalabashWrapper {
 			error("Failed to scroll: %s", e, query);
 			throw new CalabashException(String.format(
 					"Failed to scroll: %s. %s", query, e.getMessage()));
+		}
+	}
+
+	public void swipe(String query, Direction direction)
+			throws CalabashException {
+		try {
+			info("Swiping: %s", query);
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::Operations");
+			container.put("cjQueryString", query);
+			container.put("cjDirection", direction.getDirection());
+			container
+					.runScriptlet("swipe(cjDirection, {:query => cjQueryString})");
+		} catch (Exception e) {
+			error("Failed to swipe: %s", e, query);
+			throw new CalabashException(String.format(
+					"Failed to swipe: %s. %s", query, e.getMessage()));
 		}
 	}
 

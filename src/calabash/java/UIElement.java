@@ -156,8 +156,19 @@ public final class UIElement {
 	 *            Direction to scroll
 	 * @throws CalabashException
 	 */
-	public void scroll(ScrollDirection direction) throws CalabashException {
+	public void scroll(Direction direction) throws CalabashException {
 		calabashWrapper.scroll(query, direction);
+	}
+
+	/**
+	 * Swipes the element to the specified direction
+	 * 
+	 * @param direction
+	 *            Direction to swipe to
+	 * @throws CalabashException
+	 */
+	public void swipe(Direction direction) throws CalabashException {
+		calabashWrapper.swipe(query, direction);
 	}
 
 	/**

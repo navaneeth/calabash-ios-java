@@ -8,14 +8,14 @@ public final class ScrollOptions {
 
 	private int row;
 	private int section;
-	private ScrollDirection direction;
+	private Direction direction;
 	private boolean animate;
 	private int postScrollWaitInsec;
 
 	public ScrollOptions() {
 		this.row = 0;
 		this.section = 0;
-		this.direction = ScrollDirection.DOWN;
+		this.direction = Direction.DOWN;
 		this.animate = true;
 		this.postScrollWaitInsec = 1;
 	}
@@ -34,7 +34,7 @@ public final class ScrollOptions {
 		return section;
 	}
 
-	public ScrollDirection getDirection() {
+	public Direction getDirection() {
 		return direction;
 	}
 
@@ -50,7 +50,7 @@ public final class ScrollOptions {
 		this.section = section;
 	}
 
-	public void setDirection(ScrollDirection direction) {
+	public void setDirection(Direction direction) {
 		this.direction = direction;
 	}
 
