@@ -264,6 +264,15 @@ public final class UIElement {
 				getFrame());
 	}
 
+	/**
+	 * Gets the underlying query used to locate this element
+	 * 
+	 * @return Query
+	 */
+	public String getQuery() {
+		return this.query;
+	}
+
 	public boolean equals(Object obj) {
 		if (obj instanceof UIElement) {
 			UIElement that = (UIElement) obj;
