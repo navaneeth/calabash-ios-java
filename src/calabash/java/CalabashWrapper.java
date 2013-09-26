@@ -119,6 +119,25 @@ public final class CalabashWrapper {
 		}
 	}
 
+	public String escapeQuotes(String source) throws CalabashException {
+		try {
+			info("Escape quotes - %s", source);
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::Operations");
+			container.put("cjToEscape", source);
+			Object value = container.runScriptlet("escape_quotes(cjToEscape)");
+			if (value != null)
+				return value.toString();
+
+			return null;
+		} catch (Exception e) {
+			error("Failed to escape quotes: %s", e, source);
+			throw new CalabashException(String.format(
+					"Failed to escape quotes: %s. %s", source, e.getMessage()));
+		}
+	}
+
 	public void touch(String query) throws CalabashException {
 		try {
 			info("Touching - %s", query);

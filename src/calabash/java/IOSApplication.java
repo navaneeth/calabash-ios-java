@@ -131,6 +131,17 @@ public class IOSApplication {
 			return false;
 		}
 	}
+	
+	/**
+	 * Escapes single quotes in the calabash query
+	 * See <a href="https://github.com/calabash/calabash-ios/wiki/08-Tips-and-Tricks#handling-quotes">Handling quotes</a>
+	 * @param source
+	 * @return
+	 * @throws CalabashException
+	 */
+	public String escapeQuotes(String source) throws CalabashException {
+		return calabashWrapper.escapeQuotes(source);
+	}
 
 	/**
 	 * Gets the calabash server & client details
