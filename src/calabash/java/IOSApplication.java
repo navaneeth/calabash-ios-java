@@ -6,6 +6,7 @@ package calabash.java;
 import java.io.File;
 
 import org.jruby.RubyArray;
+import org.jruby.RubyHash;
 
 /**
  * Represents an iOS application
@@ -129,6 +130,20 @@ public class IOSApplication {
 		} catch (CalabashException e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Gets the calabash server & client details
+	 * 
+	 * @return
+	 * @throws CalabashException
+	 */
+	public ServerInfo getCalabashServerDetails() throws CalabashException {
+		Object serverVersion = calabashWrapper.serverVersion();
+		if (serverVersion instanceof RubyHash)
+			return new ServerInfo((RubyHash) serverVersion);
+
+		return null;
 	}
 
 	/**

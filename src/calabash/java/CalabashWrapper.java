@@ -296,11 +296,11 @@ public final class CalabashWrapper {
 		}
 	}
 
-	public void serverVersion() throws CalabashException {
+	public Object serverVersion() throws CalabashException {
 		try {
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core");
-			container.runScriptlet("server_version");
+			return container.runScriptlet("server_version");
 		} catch (Exception e) {
 			throw new CalabashException(String.format(
 					"Failed to check server version. %s", e.getMessage()));
