@@ -143,7 +143,7 @@ public final class UIElement {
 	 * @return
 	 * @throws CalabashException
 	 */
-	public Object[] getProperyValues(String... properties)
+	public Object[] getPropertyValues(String... properties)
 			throws CalabashException {
 		RubyArray values = calabashWrapper.query(query, properties);
 		return Utils.toJavaArray(values);
