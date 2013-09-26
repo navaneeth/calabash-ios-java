@@ -13,7 +13,7 @@ import org.jruby.RubyHash;
  * Represents an UI element.
  * 
  */
-public final class UIElement {
+public final class UIElement implements IAction {
 
 	private final RubyHash data;
 	private final String query;
@@ -101,20 +101,10 @@ public final class UIElement {
 				null, null);
 	}
 
-	/**
-	 * Touches this element
-	 * 
-	 * @throws CalabashException
-	 */
 	public void touch() throws CalabashException {
 		calabashWrapper.touch(query);
 	}
 
-	/**
-	 * Flashes this UIElement
-	 * 
-	 * @throws CalabashException
-	 */
 	public void flash() throws CalabashException {
 		calabashWrapper.flash(query);
 	}
@@ -149,42 +139,18 @@ public final class UIElement {
 		return Utils.toJavaArray(values);
 	}
 
-	/**
-	 * Scrolls the element to the direction
-	 * 
-	 * @param direction
-	 *            Direction to scroll
-	 * @throws CalabashException
-	 */
 	public void scroll(Direction direction) throws CalabashException {
 		calabashWrapper.scroll(query, direction);
 	}
 
-	/**
-	 * Swipes the element to the specified direction
-	 * 
-	 * @param direction
-	 *            Direction to swipe to
-	 * @throws CalabashException
-	 */
 	public void swipe(Direction direction) throws CalabashException {
 		calabashWrapper.swipe(query, direction);
 	}
 
-	/**
-	 * Pinches the element
-	 * 
-	 * @throws CalabashException
-	 */
 	public void pinchIn() throws CalabashException {
 		calabashWrapper.pinch(query, "in");
 	}
 
-	/**
-	 * Pinches the element
-	 * 
-	 * @throws CalabashException
-	 */
 	public void pinchOut() throws CalabashException {
 		calabashWrapper.pinch(query, "out");
 	}

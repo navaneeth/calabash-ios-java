@@ -14,7 +14,7 @@ import org.jruby.RubyHash;
  * 
  *
  */
-public final class UIElements extends ArrayList<UIElement> {
+public final class UIElements extends ArrayList<UIElement> implements IAction {
 
 	private static final long serialVersionUID = 3506802535880079938L;
 
@@ -56,17 +56,41 @@ public final class UIElements extends ArrayList<UIElement> {
 		return this.get(0);
 	}
 
-	/**
-	 * Touches the first element in the elements
-	 * 
-	 * @throws CalabashException
-	 *             When elements are empty or any other happened during touch
-	 */
 	public void touch() throws CalabashException {
-		if (this.size() == 0) {
-			throw new CalabashException("Cannot perform touch on an empty list");
-		}
+		ensureCollectionIsNotEmpty();
 		get(0).touch();
+	}
+
+	public void flash() throws CalabashException {
+		for (UIElement element : this) {
+			element.flash();
+		}
+	}
+
+	public void scroll(Direction direction) throws CalabashException {
+		ensureCollectionIsNotEmpty();
+		this.first().scroll(direction);
+	}
+
+	public void swipe(Direction direction) throws CalabashException {
+		ensureCollectionIsNotEmpty();
+		this.first().swipe(direction);
+	}
+
+	public void pinchIn() throws CalabashException {
+		ensureCollectionIsNotEmpty();
+		this.first().pinchIn();
+	}
+
+	public void pinchOut() throws CalabashException {
+		ensureCollectionIsNotEmpty();
+		this.first().pinchOut();
+	}
+	
+	private void ensureCollectionIsNotEmpty() throws CalabashException {
+		if (this.size() == 0) {
+			throw new CalabashException("Cannot perform action on an empty list");
+		}
 	}
 
 }
