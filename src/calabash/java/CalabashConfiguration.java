@@ -24,6 +24,7 @@ public final class CalabashConfiguration {
 	private String bundleId;
 	private String sdkVersion;
 	private int pauseInSec = -1;
+	private String deviceTarget;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -75,6 +76,27 @@ public final class CalabashConfiguration {
 	 */
 	public void setDevice(String device) {
 		this.device = device;
+	}
+
+	/**
+	 * controls which device to launch on. When set Calabash uses instruments to
+	 * launch. The default is 'simulator' unless a device is plugged in via USB,
+	 * in which case it uses that device
+	 * 
+	 * @param target
+	 *            target to set to
+	 */
+	public void setDeviceTarget(String target) {
+		this.deviceTarget = target;
+	}
+
+	/**
+	 * Gets the device target
+	 * 
+	 * @return
+	 */
+	public String getDeviceTarget() {
+		return this.deviceTarget;
 	}
 
 	/**

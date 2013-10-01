@@ -19,7 +19,7 @@ import org.jruby.embed.ScriptingContainer;
 
 /**
  * This is a one to one mapping with the Ruby calabash API
- *
+ * 
  */
 public final class CalabashWrapper {
 
@@ -28,7 +28,7 @@ public final class CalabashWrapper {
 	private final File projectDir;
 	private final File gemsDir;
 	private final CalabashConfiguration configuration;
-	private long pauseTimeInMilliSec = 1000; 
+	private long pauseTimeInMilliSec = 1000;
 
 	public CalabashWrapper(File rbScriptsDir, File projectDir,
 			CalabashConfiguration configuration) throws CalabashException {
@@ -48,21 +48,23 @@ public final class CalabashWrapper {
 
 	public void setup(String targetToDuplicate) throws CalabashException {
 		try {
-			info("Setting up calabash for project: %s", projectDir.getAbsolutePath());
+			info("Setting up calabash for project: %s",
+					projectDir.getAbsolutePath());
 			info("Gems directory: %s", gemsDir.getAbsolutePath());
-			info("Duplicating target: %s", targetToDuplicate == null ? "" : targetToDuplicate);
-			container.put("ARGV", new String[] { "setup",
-					projectDir.getAbsolutePath() });
-			String calabashIOS = new File(
-					getCalabashGemDirectory(), "bin/calabash-ios")
-					.getAbsolutePath();
+			info("Duplicating target: %s", targetToDuplicate == null ? ""
+					: targetToDuplicate);
+			container.put("ARGV",
+					new String[] { "setup", projectDir.getAbsolutePath() });
+			String calabashIOS = new File(getCalabashGemDirectory(),
+					"bin/calabash-ios").getAbsolutePath();
 			if (targetToDuplicate != null) {
 				container.put("cjTargetToDuplicate", targetToDuplicate);
 				container.runScriptlet("ENV['TARGET']=cjTargetToDuplicate");
 			}
 			container.runScriptlet(PathType.ABSOLUTE, calabashIOS);
 		} catch (Exception e) {
-			error("Failed to setup calabash for project: %s", e, projectDir.getAbsolutePath());
+			error("Failed to setup calabash for project: %s", e,
+					projectDir.getAbsolutePath());
 			throw new CalabashException(String.format(
 					"Failed to setup calabash. %s", e.getMessage()));
 		}
@@ -70,26 +72,46 @@ public final class CalabashWrapper {
 
 	public void start() throws CalabashException {
 		try {
-			info("Starting the iOS application - %s", projectDir.getAbsolutePath());
+			info("Starting the iOS application - %s",
+					projectDir.getAbsolutePath());
 			info("Gems directory: %s", gemsDir.getAbsolutePath());
-			
+
 			container.clear();
+			hackForFork();
 			String launcherScript = new File(rbScriptsDir, "launcher.rb")
 					.getAbsolutePath();
 			container.runScriptlet(PathType.ABSOLUTE, launcherScript);
 		} catch (Exception e) {
-			error("Could not start the iOS application: %s ", e, projectDir.getAbsolutePath());
+			error("Could not start the iOS application: %s ", e,
+					projectDir.getAbsolutePath());
 			String message = removeUnWantedDetailsFromException(e);
 			throw new CalabashException(String.format(
 					"Failed to start iOS application. %s", message));
 		}
 	}
 
+	// JRUBY doesn't come up with fork() implementation
+	// Calabash does a fork while starting. We are writing a dummy method
+	// which will just call the callback passed to fork and exec will start the process in background
+	private void hackForFork() {
+		String forkImpl = "def fork\n" + "  yield if block_given?\n"
+				+ "  return -1\n" + "end\n";
+		String execImpl = "def exec(command)\n" + " `#{command} &`\n" + "end\n";
+		container.runScriptlet(forkImpl);
+		container.runScriptlet(execImpl);
+	}
+
 	private String removeUnWantedDetailsFromException(Exception e) {
 		String message = e.getMessage();
-		message = message.replace("Make sure you are running this command from your project directory, \n", "");
-		message = message.replace("i.e., the directory containing your .xcodeproj file.\n", "");
-		message = message.replace("In features/support/01_launch.rb set APP_BUNDLE_PATH to\n", "set APP_BUNDLE_PATH to\n");
+		message = message
+				.replace(
+						"Make sure you are running this command from your project directory, \n",
+						"");
+		message = message.replace(
+				"i.e., the directory containing your .xcodeproj file.\n", "");
+		message = message.replace(
+				"In features/support/01_launch.rb set APP_BUNDLE_PATH to\n",
+				"set APP_BUNDLE_PATH to\n");
 		return message;
 	}
 
@@ -348,7 +370,8 @@ public final class CalabashWrapper {
 		try {
 			info("Entering text - %s", text);
 			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::KeyboardHelpers");
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::KeyboardHelpers");
 			container.put("cjTextToEnter", text);
 			container.runScriptlet("keyboard_enter_text(cjTextToEnter)");
 			pause();
@@ -363,7 +386,8 @@ public final class CalabashWrapper {
 		try {
 			info("Entering character '%s'", text);
 			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core", "Calabash::Cucumber::KeyboardHelpers");
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::KeyboardHelpers");
 			container.put("cjCharToEnter", text);
 			container.runScriptlet("keyboard_enter_char(cjCharToEnter)");
 			pause();
@@ -498,7 +522,8 @@ public final class CalabashWrapper {
 					+ "cjCallback.onEachCell(row, sec, q, element)\n" + "end";
 			container.runScriptlet(String.format(script, scrollOptionsHash));
 		} catch (Exception e) {
-			error("Failed to scroll through each cells for query - %s", e, query);
+			error("Failed to scroll through each cells for query - %s", e,
+					query);
 			throw new CalabashException(String.format(
 					"Failed to scroll through each cell for query '%s'. %s",
 					query, e.getMessage()));
@@ -601,7 +626,8 @@ public final class CalabashWrapper {
 		// HACK - Calabash ruby calls embed method when there is a error.
 		// This is from cucumber and won't be available in the Jruby
 		// environment. So just defining a function to suppress the error
-		if (configuration != null && configuration.getScreenshotListener() != null) {
+		if (configuration != null
+				&& configuration.getScreenshotListener() != null) {
 			container.put("@cjScreenshotCallback",
 					configuration.getScreenshotListener());
 			script.append("def embed(path,image_type,file_name)\n @cjScreenshotCallback.screenshotTaken(path, image_type, file_name)\n end\n");
@@ -627,6 +653,11 @@ public final class CalabashWrapper {
 			if (configuration.getDevice() != null
 					&& configuration.getDevice().length() != 0)
 				environmentVariables.put("DEVICE", configuration.getDevice());
+
+			if (configuration.getDeviceTarget() != null
+					&& configuration.getDeviceTarget().length() != 0)
+				environmentVariables.put("DEVICE_TARGET",
+						configuration.getDeviceTarget());
 
 			if (configuration.getAppBundlePath() != null
 					&& configuration.getAppBundlePath().length() != 0)
@@ -654,6 +685,8 @@ public final class CalabashWrapper {
 			if (configuration.getSDKVersion() != null)
 				environmentVariables.put("SDK_VERSION",
 						configuration.getSDKVersion());
+			
+			
 		}
 
 		// Adding all system defined env variables
@@ -711,7 +744,7 @@ public final class CalabashWrapper {
 
 		return calabashGemPath[0];
 	}
-	
+
 	private void pause() {
 		try {
 			Thread.sleep(pauseTimeInMilliSec);
