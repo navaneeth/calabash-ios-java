@@ -347,6 +347,17 @@ public final class CalabashWrapper {
 					"Failed to check server version. %s", e.getMessage()));
 		}
 	}
+	
+	public Object clientVersion() throws CalabashException {
+		try {
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			return container.runScriptlet("client_version");
+		} catch (Exception e) {
+			throw new CalabashException(String.format(
+					"Failed to check client version. %s", e.getMessage()));
+		}
+	}
 
 	public void takeScreenShot(File dir, String fileName)
 			throws CalabashException {

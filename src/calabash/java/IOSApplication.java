@@ -149,10 +149,16 @@ public class IOSApplication {
 	 * @return
 	 * @throws CalabashException
 	 */
-	public ServerInfo getCalabashServerDetails() throws CalabashException {
+	public CalabashInfo getCalabashInfo() throws CalabashException {
 		Object serverVersion = calabashWrapper.serverVersion();
-		if (serverVersion instanceof RubyHash)
-			return new ServerInfo((RubyHash) serverVersion);
+		if (serverVersion instanceof RubyHash) {
+			Object clientVersion = calabashWrapper.clientVersion();
+			if (clientVersion != null)
+				((RubyHash) serverVersion).put("client_version",
+						clientVersion.toString());
+
+			return new CalabashInfo((RubyHash) serverVersion);
+		}
 
 		return null;
 	}

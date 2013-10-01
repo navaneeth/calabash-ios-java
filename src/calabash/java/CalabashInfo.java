@@ -6,14 +6,14 @@ package calabash.java;
 import org.jruby.RubyHash;
 
 /**
- * Provides information about the calabash server
+ * Provides information about calabash
  * 
  */
-public final class ServerInfo {
+public final class CalabashInfo {
 
 	private final RubyHash hash;
 
-	public ServerInfo(RubyHash hash) {
+	public CalabashInfo(RubyHash hash) {
 		this.hash = hash;
 	}
 
@@ -41,8 +41,12 @@ public final class ServerInfo {
 		return getValue("app_id");
 	}
 
-	public String getClientVersion() {
+	public String getServerVersion() {
 		return getValue("version");
+	}
+	
+	public String getClientVersion() {
+		return getValue("client_version");
 	}
 
 	public String getSimulator() {
@@ -60,10 +64,10 @@ public final class ServerInfo {
 	@Override
 	public String toString() {
 		return String
-				.format("ServerInfo [ApplicationName = %s, SimulatorDevice = %s, IOSVersion = %s, ApplicationVersion = %s, System = %s, ApplicationId = %s, ClientVersion = %s, Simulator = %s]",
+				.format("ServerInfo [ApplicationName = %s, SimulatorDevice = %s, IOSVersion = %s, ApplicationVersion = %s, System = %s, ApplicationId = %s, ServerVersion = %s, ClientVersion = %s, Simulator = %s]",
 						getApplicationName(), getSimulatorDevice(),
 						getIOSVersion(), getApplicationVersion(), getSystem(),
-						getApplicationId(), getClientVersion(), getSimulator());
+						getApplicationId(), getServerVersion(), getClientVersion(), getSimulator());
 	}
 
 }
