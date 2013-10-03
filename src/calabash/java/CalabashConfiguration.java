@@ -25,6 +25,7 @@ public final class CalabashConfiguration {
 	private String sdkVersion;
 	private int pauseInSec = -1;
 	private String deviceTarget;
+	private boolean detectConnectedDevice;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -323,5 +324,26 @@ public final class CalabashConfiguration {
 	 */
 	public int getPauseTimeInSec() {
 		return pauseInSec;
+	}
+
+	/**
+	 * Setting this to true will enable calabash to search for devices connected
+	 * via USB. If no devices are connected, setting this will hang the calabash
+	 * launch
+	 * 
+	 * @param value
+	 */
+	public void setDetectConnectedDevice(boolean value) {
+		this.detectConnectedDevice = value;
+	}
+
+	/**
+	 * Gets a value indicating whether calabash will search for devices
+	 * connected via USB.
+	 * 
+	 * @return
+	 */
+	public boolean getDetectConnectedDevice() {
+		return this.detectConnectedDevice;
 	}
 }

@@ -674,6 +674,7 @@ public final class CalabashWrapper {
 		HashMap<String, String> environmentVariables = new HashMap<String, String>();
 		environmentVariables.put("PROJECT_DIR", projectDir.getAbsolutePath());
 		environmentVariables.put("HOME", System.getProperty("user.home"));
+		environmentVariables.put("DETECT_CONNECTED_DEVICE", "0");
 		if (configuration != null) {
 			environmentVariables.put("SCREENSHOT_PATH", configuration
 					.getScreenshotsDirectory().getAbsolutePath() + "/");
@@ -713,6 +714,9 @@ public final class CalabashWrapper {
 			if (configuration.getSDKVersion() != null)
 				environmentVariables.put("SDK_VERSION",
 						configuration.getSDKVersion());
+
+			if (configuration.getDetectConnectedDevice())
+				environmentVariables.put("DETECT_CONNECTED_DEVICE", "1");
 		}
 
 		// Adding all system defined env variables
