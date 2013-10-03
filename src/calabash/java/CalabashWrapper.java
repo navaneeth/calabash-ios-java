@@ -92,7 +92,8 @@ public final class CalabashWrapper {
 
 	// JRUBY doesn't come up with fork() implementation
 	// Calabash does a fork while starting. We are writing a dummy method
-	// which will just call the callback passed to fork and exec will start the process in background
+	// which will just call the callback passed to fork and exec will start the
+	// process in background
 	private void hackForFork() {
 		String forkImpl = "def fork\n" + "  yield if block_given?\n"
 				+ "  return -1\n" + "end\n";
@@ -347,7 +348,7 @@ public final class CalabashWrapper {
 					"Failed to check server version. %s", e.getMessage()));
 		}
 	}
-	
+
 	public Object clientVersion() throws CalabashException {
 		try {
 			container.clear();
@@ -374,6 +375,22 @@ public final class CalabashWrapper {
 			error("Failed to take screenshot.", e);
 			throw new CalabashException(String.format(
 					"Failed to take screenshot. %s", e.getMessage()));
+		}
+	}
+
+	public boolean elementExists(String query) throws CalabashException {
+		try {
+			info("Checking element exists: %s", query);
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core",
+					"Calabash::Cucumber::TestsHelpers");
+			container.put("cjQuery", query);
+			Object result = container.runScriptlet("element_exists(cjQuery)");
+			return (Boolean) result;
+		} catch (Exception e) {
+			error("Failed to check element exists.", e);
+			throw new CalabashException(String.format(
+					"Failed to check element exists. %s", e.getMessage()));
 		}
 	}
 
@@ -696,8 +713,6 @@ public final class CalabashWrapper {
 			if (configuration.getSDKVersion() != null)
 				environmentVariables.put("SDK_VERSION",
 						configuration.getSDKVersion());
-			
-			
 		}
 
 		// Adding all system defined env variables

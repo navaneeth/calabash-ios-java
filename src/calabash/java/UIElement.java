@@ -101,6 +101,16 @@ public final class UIElement implements IAction {
 				null, null);
 	}
 
+	/**
+	 * Checks if this element exists
+	 * 
+	 * @return true if it exists, false otherwise
+	 * @throws CalabashException
+	 */
+	public boolean exists() throws CalabashException {
+		return calabashWrapper.elementExists(query);
+	}
+
 	public void touch() throws CalabashException {
 		calabashWrapper.touch(query);
 	}

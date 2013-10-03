@@ -329,6 +329,18 @@ public class IOSApplication {
 		return rootElements;
 	}
 
+	/**
+	 * Checks if the element exists
+	 * 
+	 * @param query
+	 *            Query to check
+	 * @return true if the element is available
+	 * @throws CalabashException
+	 */
+	public boolean elementExists(String query) throws CalabashException {
+		return calabashWrapper.elementExists(query);
+	}
+
 	private UIElement getRootElement(String query) throws CalabashException {
 		UIElement rootElement = null;
 		RubyArray result = calabashWrapper.query(query);
