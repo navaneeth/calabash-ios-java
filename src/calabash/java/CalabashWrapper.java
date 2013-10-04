@@ -671,6 +671,9 @@ public final class CalabashWrapper {
 	}
 
 	private final void initializeScriptingContainer() throws CalabashException {
+		// We manage JRuby home to work around a bug in JRuby (https://github.com/jruby/jruby/issues/1051)
+		container.setHomeDirectory(new File(rbScriptsDir, "jruby.home").getAbsolutePath());
+		
 		HashMap<String, String> environmentVariables = new HashMap<String, String>();
 		environmentVariables.put("PROJECT_DIR", projectDir.getAbsolutePath());
 		environmentVariables.put("HOME", System.getProperty("user.home"));

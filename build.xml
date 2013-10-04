@@ -38,7 +38,7 @@
 		<property name="scripts.dir" value="${classes.dir}/scripts" />
 		<mkdir dir="${scripts.dir}" />
 		<copy file="scripts/launcher.rb" todir="${scripts.dir}" />
-		<copy file="${gems.zip.path}" todir="${scripts.dir}/gems.zip" />
+		<copy file="${gems.zip.path}" todir="${scripts.dir}" />
 
 		<mkdir dir="${jar.dir}" />
 		<jar destfile="${jar.file}" basedir="${classes.dir}">
@@ -64,7 +64,7 @@
 		<mkdir dir="${distro.dir}" />
 		<copy file="${jar.file}" todir="${distro.dir}" />
 		<copy file="${doc.jar}" todir="${distro.dir}" />
-		<copy file="${deps.dir}/jruby-complete-1.7.4.jar" todir="${distro.dir}" />
+		<copy file="${deps.dir}/jruby-1.7.4.jar" todir="${distro.dir}" />
 		<copy file="${deps.dir}/log4j-1.2.17.jar" todir="${distro.dir}" />
 		<copy file="${deps.dir}/xmlwise-1_2.jar" todir="${distro.dir}" />
 		<copy file="LICENSE.txt" todir="${distro.dir}" />
