@@ -18,10 +18,19 @@ Install the calabash-cucumber gem. This will install the gem and it's dependenci
 gem install calabash-cucumber --no-ri --no-rdoc
 ```
 
-Goto the gemset directory and create a zip of all the contents.
+Download latest JRuby from `http://jruby.org.s3.amazonaws.com/downloads/<version>/jruby-bin-<version>.tar.gz`. Unzip and move this directory to the gemset directory as `jruby.home`. 
 
 ```shell
 cd ~/.rvm/gems/ruby-1.9.3-p194@calabash-cucumber-latest-gems
+wget http://jruby.org.s3.amazonaws.com/downloads/1.7.5/jruby-bin-1.7.5.tar.gz
+tar -zxvf jruby-bin-1.7.5.tar.gz
+mv jruby-1.7.5  jruby.home
+rm jruby-bin-1.7.5.tar.gz
+```
+
+Delete unwanted files from the `jruby.home` directory. Create a zip of all the contents.
+
+```shell
 zip -r gems.zip .
 ```
 

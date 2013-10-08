@@ -113,22 +113,6 @@ public class IOSApplication {
 	}
 
 	/**
-	 * Runs a query on the remote iOS application and returns results as JSON
-	 * 
-	 * @param query
-	 *            Calabash iOS supported query
-	 * @param filter
-	 *            Properties to be fetched
-	 * @return
-	 * @throws CalabashException
-	 */
-	public Object[] query(String query, String... filter)
-			throws CalabashException {
-		RubyArray rubyArray = calabashWrapper.query(query, filter);
-		return Utils.toJavaArray(rubyArray);
-	}
-
-	/**
 	 * Kills the application
 	 * 
 	 * @throws CalabashException
