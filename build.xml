@@ -64,7 +64,7 @@
 		<mkdir dir="${distro.dir}" />
 		<copy file="${jar.file}" todir="${distro.dir}" />
 		<copy file="${doc.jar}" todir="${distro.dir}" />
-		<copy file="${deps.dir}/jruby-1.7.4.jar" todir="${distro.dir}" />
+		<copy file="${deps.dir}/jruby-1.7.5.jar" todir="${distro.dir}" />
 		<copy file="${deps.dir}/log4j-1.2.17.jar" todir="${distro.dir}" />
 		<copy file="${deps.dir}/xmlwise-1_2.jar" todir="${distro.dir}" />
 		<copy file="LICENSE.txt" todir="${distro.dir}" />
