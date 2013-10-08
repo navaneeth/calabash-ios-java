@@ -28,6 +28,11 @@ public class IOSApplication {
 	/**
 	 * Runs a query on the remote iOS application and returns a list of
 	 * UIElement
+	 * <p>
+	 * Eg:
+	 * <pre>
+	 * iosApplication.query(&quot;button index:0&quot;)
+	 * </pre>
 	 * 
 	 * @param query
 	 *            Calabash iOS supported query
@@ -38,7 +43,32 @@ public class IOSApplication {
 		RubyArray array = calabashWrapper.query(query);
 		return new UIElements(array, query, calabashWrapper);
 	}
-	
+
+	/**
+	 * Runs a query on the remote iOS application and returns a list of
+	 * UIElement
+	 * <p>
+	 * Eg:
+	 * <pre>
+	 * String label = &quot;Foo&quot;;
+	 * iosApplication.query(&quot;label marked:'%s'&quot;, label);
+	 * </pre>
+	 * 
+	 * @param query
+	 *            Calabash iOS supported query
+	 * @param args
+	 *            Arguments referenced by the format specifiers in the format
+	 *            string. If there are more arguments than format specifiers,
+	 *            the extra arguments are ignored. The number of arguments is
+	 *            variable and may be zero
+	 * @return
+	 * @throws CalabashException
+	 */
+	public UIElements query(String query, Object... args)
+			throws CalabashException {
+		return query(String.format(query, args));
+	}
+
 	/**
 	 * Records a sequence of events and saves them to disk.
 	 * 

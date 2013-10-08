@@ -42,8 +42,8 @@ public final class CalabashWrapper {
 		this.gemsDir = new File(rbScriptsDir, "gems");
 		this.projectDir = projectDir;
 		this.initializeScriptingContainer();
-		if (configuration != null && configuration.getPauseTimeInSec() >= 0)
-			pauseTimeInMilliSec = configuration.getPauseTimeInSec() * 1000;
+		if (configuration != null && configuration.getPauseTime() >= 0)
+			pauseTimeInMilliSec = configuration.getPauseTime();
 	}
 
 	public void setup(String targetToDuplicate) throws CalabashException {
