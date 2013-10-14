@@ -25,11 +25,4 @@ public class QueryTest extends CalabashBaseTest {
         UIElements buttons = iosApplication.query("buttonLabel text:'Touch me'");
         assertEquals(1, buttons.size());
     }
-
-    @Test
-    public void shouldQueryWithFiltersAndSelector() throws CalabashException {
-        Object[] field = iosApplication.query("buttonLabel text:'Touch me'", "text");
-        assertEquals("Touch me", field[0].toString());
-
-    }
 }

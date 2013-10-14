@@ -309,6 +309,15 @@ public class CalabashRunner {
 	}
 
 	/**
+	 * Releases resources associated with this runner
+	 * 
+	 * @throws CalabashException
+	 */
+	public void dispose() throws CalabashException {
+		calabashWrapper.dispose();
+	}
+
+	/**
 	 * Creates an iOS application. This can be overridden if custom Application
 	 * instances needs to be created
 	 * 

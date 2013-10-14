@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.jruby.RubyArray;
+import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
@@ -23,12 +24,13 @@ import org.jruby.embed.ScriptingContainer;
  */
 public final class CalabashWrapper {
 
-	private final ScriptingContainer container = new ScriptingContainer();
+	private final ScriptingContainer container = new ScriptingContainer(LocalContextScope.THREADSAFE);
 	private final File rbScriptsDir;
 	private final File projectDir;
 	private final File gemsDir;
 	private final CalabashConfiguration configuration;
 	private long pauseTimeInMilliSec = 1000;
+	private boolean disposed = false;
 
 	public CalabashWrapper(File rbScriptsDir, File projectDir,
 			CalabashConfiguration configuration) throws CalabashException {
@@ -118,6 +120,7 @@ public final class CalabashWrapper {
 
 	public RubyArray query(String query, String... args)
 			throws CalabashException {
+		ensureNotDisposed();
 		try {
 			info("Executing query - %s", query);
 			container.clear();
@@ -379,6 +382,7 @@ public final class CalabashWrapper {
 	}
 
 	public boolean elementExists(String query) throws CalabashException {
+		ensureNotDisposed();
 		try {
 			info("Checking element exists: %s", query);
 			container.clear();
@@ -670,10 +674,24 @@ public final class CalabashWrapper {
 		return gemsDir.getAbsolutePath();
 	}
 
+	public void dispose() throws CalabashException {
+		try {
+			container.clear();
+			container.getProvider().getRuntime().tearDown(true);
+			container.terminate();
+			disposed = true;
+		} catch (Throwable e) {
+			throw new CalabashException("Failed to dispose container. "
+					+ e.getMessage());
+		}
+	}
+
 	private final void initializeScriptingContainer() throws CalabashException {
-		// We manage JRuby home to work around a bug in JRuby (https://github.com/jruby/jruby/issues/1051)
-		container.setHomeDirectory(new File(rbScriptsDir, "jruby.home").getAbsolutePath());
-		
+		// We manage JRuby home to work around a bug in JRuby
+		// (https://github.com/jruby/jruby/issues/1051)
+		container.setHomeDirectory(new File(rbScriptsDir, "jruby.home")
+				.getAbsolutePath());
+
 		HashMap<String, String> environmentVariables = new HashMap<String, String>();
 		environmentVariables.put("PROJECT_DIR", projectDir.getAbsolutePath());
 		environmentVariables.put("HOME", System.getProperty("user.home"));
@@ -783,6 +801,11 @@ public final class CalabashWrapper {
 			Thread.sleep(pauseTimeInMilliSec);
 		} catch (InterruptedException e) {
 		}
+	}
+
+	private void ensureNotDisposed() throws CalabashException {
+		if (disposed)
+			throw new CalabashException("Object is disposed.");
 	}
 
 }
