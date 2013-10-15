@@ -681,6 +681,7 @@ public final class CalabashWrapper {
 			container.terminate();
 			disposed = true;
 		} catch (Throwable e) {
+			error("Failed to dispose container. ", e);
 			throw new CalabashException("Failed to dispose container. "
 					+ e.getMessage());
 		}
