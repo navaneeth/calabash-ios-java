@@ -738,6 +738,9 @@ public final class CalabashWrapper {
 
 			if (configuration.getDetectConnectedDevice())
 				environmentVariables.put("DETECT_CONNECTED_DEVICE", "1");
+			
+			if(configuration.getCalabashDebug())
+				environmentVariables.put("DEBUG", "1");
 		}
 
 		// Adding all system defined env variables
