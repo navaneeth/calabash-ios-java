@@ -4,9 +4,7 @@
 package calabash.java;
 
 import java.io.File;
-
-import org.jruby.RubyArray;
-import org.jruby.RubyHash;
+import java.util.Map;
 
 /**
  * Represents an iOS application
@@ -40,7 +38,7 @@ public class IOSApplication {
 	 * @throws CalabashException
 	 */
 	public UIElements query(String query) throws CalabashException {
-		RubyArray array = calabashWrapper.query(query);
+		Object[] array = calabashWrapper.query(query);
 		return new UIElements(array, query, calabashWrapper);
 	}
 
@@ -164,16 +162,17 @@ public class IOSApplication {
 	 * @throws CalabashException
 	 */
 	public CalabashInfo getCalabashInfo() throws CalabashException {
-		Object serverVersion = calabashWrapper.serverVersion();
-		if (serverVersion instanceof RubyHash) {
+		Object object = calabashWrapper.serverVersion();
+		if (object instanceof Map) {
+			@SuppressWarnings("unchecked")
+			Map<Object, Object> serverVersion = (Map<Object, Object>) object;
 			Object clientVersion = calabashWrapper.clientVersion();
 			if (clientVersion != null)
-				((RubyHash) serverVersion).put("client_version",
-						clientVersion.toString());
+				serverVersion.put("client_version", clientVersion.toString());
 
-			return new CalabashInfo((RubyHash) serverVersion);
+			return new CalabashInfo(serverVersion);
 		}
-
+		
 		return null;
 	}
 
@@ -328,12 +327,12 @@ public class IOSApplication {
 	 * @throws CalabashException
 	 */
 	public UIElements getRootElements() throws CalabashException {
-		RubyArray allElements = calabashWrapper.query("*");
-		if (allElements.size() == 0)
+		Object[] allElements = calabashWrapper.query("*");
+		if (allElements.length == 0)
 			return null;
 
 		UIElements rootElements = new UIElements();
-		for (int i = 0; i < allElements.size(); i++) {
+		for (int i = 0; i < allElements.length; i++) {
 			String query = String.format("* index:%d", i);
 			UIElement rootElement = getRootElement(query);
 			if (rootElement != null && !rootElements.contains(rootElement))
@@ -357,8 +356,8 @@ public class IOSApplication {
 
 	private UIElement getRootElement(String query) throws CalabashException {
 		UIElement rootElement = null;
-		RubyArray result = calabashWrapper.query(query);
-		if (result.size() == 0)
+		Object[] result = calabashWrapper.query(query);
+		if (result.length == 0)
 			return null;
 		else {
 			rootElement = new UIElements(result, query, calabashWrapper).get(0);

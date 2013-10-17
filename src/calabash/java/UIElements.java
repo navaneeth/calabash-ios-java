@@ -4,11 +4,9 @@
 package calabash.java;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.jruby.RubyArray;
-import org.jruby.RubyHash;
 
 /**
  * 
@@ -21,16 +19,17 @@ public final class UIElements extends ArrayList<UIElement> implements IAction {
 	public UIElements() {
 	}
 
-	public UIElements(RubyArray elements, String query, CalabashWrapper wrapper)
+	public UIElements(Object[] elements, String query, CalabashWrapper wrapper)
 			throws CalabashException {
 		query = query.trim();
 		Pattern pattern = Pattern.compile("^.+index:[0-9]+$");
 		Matcher matcher = pattern.matcher(query);
 		boolean indexedQuery = matcher.matches();
 
-		for (int i = 0; i < elements.size(); i++) {
+		for (int i = 0; i < elements.length; i++) {
 			try {
-				RubyHash object = (RubyHash) elements.get(i);
+				@SuppressWarnings("unchecked")
+				Map<Object, Object> object = (Map<Object, Object>) elements[i];
 				String q = query;
 				if (!indexedQuery)
 					q += " index:" + i;

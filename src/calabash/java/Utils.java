@@ -19,7 +19,7 @@ import org.jruby.RubyObject;
 
 final class Utils {
 
-	public static String getStringFromHash(RubyHash target, String key) {
+	public static String getStringFromHash(Map<Object, Object> target, String key) {
 		try {
 			Object value = target.get(key);
 			if (value != null)
@@ -30,7 +30,7 @@ final class Utils {
 		}
 	}
 
-	public static Integer getIntFromHash(RubyHash target, String key) {
+	public static Integer getIntFromHash(Map<Object, Object> target, String key) {
 		String value = getStringFromHash(target, key);
 		if (value != null) {
 			try {

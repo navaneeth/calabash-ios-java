@@ -6,8 +6,7 @@ package calabash.java;
 import static calabash.java.Utils.getIntFromHash;
 import static calabash.java.Utils.getStringFromHash;
 
-import org.jruby.RubyArray;
-import org.jruby.RubyHash;
+import java.util.Map;
 
 /**
  * Represents an UI element.
@@ -15,11 +14,11 @@ import org.jruby.RubyHash;
  */
 public final class UIElement implements IAction {
 
-	private final RubyHash data;
+	private final Map<Object, Object> data;
 	private final String query;
 	private final CalabashWrapper calabashWrapper;
 
-	public UIElement(RubyHash data, String query,
+	public UIElement(Map<Object, Object> data, String query,
 			CalabashWrapper calabashWrapper) {
 		this.data = data;
 		this.query = query;
@@ -67,10 +66,11 @@ public final class UIElement implements IAction {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public Rect getRect() {
-		RubyHash rect;
+		Map<Object, Object> rect;
 		try {
-			rect = (RubyHash) data.get("rect");
+			rect = (Map<Object, Object>) data.get("rect");
 			if (rect == null)
 				return null;
 		} catch (Exception e) {
@@ -88,10 +88,11 @@ public final class UIElement implements IAction {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public Rect getFrame() {
-		RubyHash rect;
+		Map<Object, Object> rect;
 		try {
-			rect = (RubyHash) data.get("frame");
+			rect = (Map<Object, Object>) data.get("frame");
 		} catch (Exception e) {
 			return null;
 		}
@@ -126,9 +127,9 @@ public final class UIElement implements IAction {
 	 * @throws CalabashException
 	 */
 	public String getText() throws CalabashException {
-		RubyArray result = calabashWrapper.query(query, "text");
-		if (result.size() > 0) {
-			return result.get(0).toString();
+		Object[] result = calabashWrapper.query(query, "text");
+		if (result.length > 0) {
+			return result[0].toString();
 		}
 
 		return null;
@@ -145,8 +146,8 @@ public final class UIElement implements IAction {
 	 */
 	public Object[] getPropertyValues(String... properties)
 			throws CalabashException {
-		RubyArray values = calabashWrapper.query(query, properties);
-		return Utils.toJavaArray(values);
+		Object[] values = calabashWrapper.query(query, properties);
+		return values;
 	}
 
 	public void scroll(Direction direction) throws CalabashException {
@@ -217,7 +218,7 @@ public final class UIElement implements IAction {
 	 */
 	public UIElements children() throws CalabashException {
 		String q = query + " child *";
-		RubyArray result = calabashWrapper.query(q);
+		Object[] result = calabashWrapper.query(q);
 		return new UIElements(result, q, calabashWrapper);
 	}
 

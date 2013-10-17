@@ -3,7 +3,7 @@
  */
 package calabash.java;
 
-import org.jruby.RubyHash;
+import java.util.Map;
 
 /**
  * Provides information about calabash
@@ -11,9 +11,9 @@ import org.jruby.RubyHash;
  */
 public final class CalabashInfo {
 
-	private final RubyHash hash;
+	private final Map<Object, Object> hash;
 
-	public CalabashInfo(RubyHash hash) {
+	public CalabashInfo(Map<Object, Object> hash) {
 		this.hash = hash;
 	}
 

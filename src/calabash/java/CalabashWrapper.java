@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.jruby.RubyArray;
-import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.PathType;
-import org.jruby.embed.ScriptingContainer;
 
 /**
  * This is a one to one mapping with the Ruby calabash API
@@ -24,7 +21,7 @@ import org.jruby.embed.ScriptingContainer;
  */
 public final class CalabashWrapper {
 
-	private final ScriptingContainer container = new ScriptingContainer(LocalContextScope.THREADSAFE);
+	private final IScriptingContainer container;
 	private final File rbScriptsDir;
 	private final File projectDir;
 	private final File gemsDir;
@@ -43,7 +40,10 @@ public final class CalabashWrapper {
 		this.rbScriptsDir = rbScriptsDir;
 		this.gemsDir = new File(rbScriptsDir, "gems");
 		this.projectDir = projectDir;
+
+		container = new DefaultScriptingContainer();
 		this.initializeScriptingContainer();
+
 		if (configuration != null && configuration.getPauseTime() >= 0)
 			pauseTimeInMilliSec = configuration.getPauseTime();
 	}
@@ -118,7 +118,7 @@ public final class CalabashWrapper {
 		return message;
 	}
 
-	public RubyArray query(String query, String... args)
+	public Object[] query(String query, String... args)
 			throws CalabashException {
 		ensureNotDisposed();
 		try {
@@ -129,12 +129,12 @@ public final class CalabashWrapper {
 			container.put("cjQueryString", query);
 			container.put("cjQueryArgs", args);
 
-			RubyArray queryResults = null;
+			Object[] queryResults = null;
 			if (args != null && args.length > 0)
-				queryResults = (RubyArray) container
+				queryResults = (Object[]) container
 						.runScriptlet("query(cjQueryString, *cjQueryArgs)");
 			else
-				queryResults = (RubyArray) container
+				queryResults = (Object[]) container
 						.runScriptlet("query(cjQueryString)");
 
 			return queryResults;
@@ -390,7 +390,7 @@ public final class CalabashWrapper {
 					"Calabash::Cucumber::TestsHelpers");
 			container.put("cjQuery", query);
 			Object result = container.runScriptlet("element_exists(cjQuery)");
-			return (Boolean) result;
+			return Boolean.parseBoolean(result.toString());
 		} catch (Exception e) {
 			error("Failed to check element exists.", e);
 			throw new CalabashException(String.format(
@@ -574,7 +574,7 @@ public final class CalabashWrapper {
 		}
 
 		public void onEachCell(int row, int section, String query,
-				RubyArray array) throws Exception {
+				Object[] array) throws Exception {
 			UIElement element = null;
 			try {
 				UIElements elements = new UIElements(array, query, wrapper);
@@ -676,8 +676,6 @@ public final class CalabashWrapper {
 
 	public void dispose() throws CalabashException {
 		try {
-			container.clear();
-			container.getProvider().getRuntime().tearDown(true);
 			container.terminate();
 			disposed = true;
 		} catch (Throwable e) {
