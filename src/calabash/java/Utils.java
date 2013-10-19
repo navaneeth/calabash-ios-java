@@ -16,6 +16,10 @@ import java.util.Set;
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
 import org.jruby.RubyObject;
+import org.jruby.embed.PathType;
+
+
+import com.esotericsoftware.kryo.Kryo;
 
 final class Utils {
 
@@ -164,6 +168,23 @@ final class Utils {
 		}
 
 		return sb.toString();
+	}
+	
+	public static void registerClasses(Kryo kryo) {
+		kryo.register(Request.class);
+		kryo.register(PutRequest.class);
+		kryo.register(ClearRequest.class);
+		kryo.register(TerminateRequest.class);
+		kryo.register(SetHomeDirectoryRequest.class);
+		kryo.register(RunScriptletRequest.class);
+		kryo.register(SetEnvironmentVariablesRequest.class);
+		kryo.register(AddLoadPathRequest.class);
+		kryo.register(GetLoadPathRequest.class);
+		kryo.register(Response.class);
+		kryo.register(RunScriptletResponse.class);
+		kryo.register(ExceptionResponse.class);
+		kryo.register(PathType.class);
+		kryo.register(org.jruby.embed.EvalFailedException.class);
 	}
 
 }

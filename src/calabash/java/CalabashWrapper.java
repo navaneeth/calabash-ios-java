@@ -96,7 +96,7 @@ public final class CalabashWrapper {
 	// Calabash does a fork while starting. We are writing a dummy method
 	// which will just call the callback passed to fork and exec will start the
 	// process in background
-	private void hackForFork() {
+	private void hackForFork() throws InterruptedException {
 		String forkImpl = "def fork\n" + "  yield if block_given?\n"
 				+ "  return -1\n" + "end\n";
 		String execImpl = "def exec(command)\n" + " `#{command} &`\n" + "end\n";
@@ -647,7 +647,7 @@ public final class CalabashWrapper {
 		}
 	}
 
-	private void addRequiresAndIncludes(String... modules) {
+	private void addRequiresAndIncludes(String... modules) throws InterruptedException {
 		StringBuilder script = new StringBuilder(
 				"require 'calabash-cucumber'\n");
 		for (String module : modules) {

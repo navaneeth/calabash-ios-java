@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="deps/xmlwise-1_2.jar"/>
 	<classpathentry kind="lib" path="deps/jruby-1.7.5.jar"/>
 	<classpathentry kind="lib" path="deps/kryonet-2.18-all.jar"/>
+	<classpathentry kind="lib" path="deps/commons-exec-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
