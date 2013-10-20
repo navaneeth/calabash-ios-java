@@ -1,10 +1,21 @@
 package calabash.java;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.ScriptingContainer;
+
+import calabash.java.RemoteScriptingContainer.AddLoadPathRequest;
+import calabash.java.RemoteScriptingContainer.ClearRequest;
+import calabash.java.RemoteScriptingContainer.GetLoadPathRequest;
+import calabash.java.RemoteScriptingContainer.PutRequest;
+import calabash.java.RemoteScriptingContainer.RunScriptletRequest;
+import calabash.java.RemoteScriptingContainer.SetEnvironmentVariablesRequest;
+import calabash.java.RemoteScriptingContainer.SetHomeDirectoryRequest;
+import calabash.java.RemoteScriptingContainer.TerminateRequest;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -73,6 +84,59 @@ public class CalabashScriptExecutor {
 		@Override
 		public void disconnected(Connection arg0) {
 			System.exit(0);
+		}
+	}
+
+	static class GetLoadPathsResponse extends Response {
+		private static final long serialVersionUID = -7001653582480568128L;
+		public List<String> loadPaths;
+
+		public GetLoadPathsResponse() {
+		}
+
+		public GetLoadPathsResponse(String requestId, List<String> loadPaths) {
+			super(requestId);
+			this.loadPaths = loadPaths;
+		}
+	}
+
+	static class Response implements Serializable {
+		private static final long serialVersionUID = 1654428568551188101L;
+		public String responseId;
+		public String requestId;
+
+		public Response() {
+		}
+
+		public Response(String requestId) {
+			this.requestId = requestId;
+			responseId = UUID.randomUUID().toString();
+		}
+	}
+
+	static class RunScriptletResponse extends Response {
+		private static final long serialVersionUID = -1340817688151164183L;
+		public Object data;
+
+		public RunScriptletResponse() {
+		}
+
+		public RunScriptletResponse(String requestId, Object data) {
+			super(requestId);
+			this.data = data;
+		}
+	}
+
+	static class ExceptionResponse extends Response {
+		private static final long serialVersionUID = 8949922243139635015L;
+		public String error;
+
+		public ExceptionResponse() {
+		}
+
+		public ExceptionResponse(String requestId, Throwable error) {
+			super(requestId);
+			this.error = error.getMessage();
 		}
 	}
 }

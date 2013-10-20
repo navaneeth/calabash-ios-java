@@ -20,6 +20,20 @@ import org.jruby.RubyObject;
 import org.jruby.RubySymbol;
 import org.jruby.embed.PathType;
 
+import calabash.java.CalabashScriptExecutor.ExceptionResponse;
+import calabash.java.CalabashScriptExecutor.GetLoadPathsResponse;
+import calabash.java.CalabashScriptExecutor.Response;
+import calabash.java.CalabashScriptExecutor.RunScriptletResponse;
+import calabash.java.RemoteScriptingContainer.AddLoadPathRequest;
+import calabash.java.RemoteScriptingContainer.ClearRequest;
+import calabash.java.RemoteScriptingContainer.GetLoadPathRequest;
+import calabash.java.RemoteScriptingContainer.PutRequest;
+import calabash.java.RemoteScriptingContainer.Request;
+import calabash.java.RemoteScriptingContainer.RunScriptletRequest;
+import calabash.java.RemoteScriptingContainer.SetEnvironmentVariablesRequest;
+import calabash.java.RemoteScriptingContainer.SetHomeDirectoryRequest;
+import calabash.java.RemoteScriptingContainer.TerminateRequest;
+
 import com.esotericsoftware.kryo.Kryo;
 
 final class Utils {
@@ -179,6 +193,11 @@ final class Utils {
 		kryo.register(HashMap.class);
 		kryo.register(Object.class);
 		kryo.register(Request.class);
+		kryo.register(PathType.class);
+		kryo.register(org.jruby.embed.EvalFailedException.class);
+		kryo.register(List.class);
+		kryo.register(ArrayList.class);
+
 		kryo.register(PutRequest.class);
 		kryo.register(ClearRequest.class);
 		kryo.register(TerminateRequest.class);
@@ -187,14 +206,11 @@ final class Utils {
 		kryo.register(SetEnvironmentVariablesRequest.class);
 		kryo.register(AddLoadPathRequest.class);
 		kryo.register(GetLoadPathRequest.class);
+
 		kryo.register(GetLoadPathsResponse.class);
 		kryo.register(Response.class);
 		kryo.register(RunScriptletResponse.class);
 		kryo.register(ExceptionResponse.class);
-		kryo.register(PathType.class);
-		kryo.register(org.jruby.embed.EvalFailedException.class);
-		kryo.register(List.class);
-		kryo.register(ArrayList.class);
 	}
 
 }

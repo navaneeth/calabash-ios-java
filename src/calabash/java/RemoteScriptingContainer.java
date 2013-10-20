@@ -3,6 +3,7 @@ package calabash.java;
 import static calabash.java.CalabashLogger.error;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -10,12 +11,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
 import org.jruby.embed.PathType;
+
+import calabash.java.CalabashScriptExecutor.ExceptionResponse;
+import calabash.java.CalabashScriptExecutor.GetLoadPathsResponse;
+import calabash.java.CalabashScriptExecutor.Response;
+import calabash.java.CalabashScriptExecutor.RunScriptletResponse;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -271,6 +278,99 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 			sendRequest(new AddLoadPathRequest(c));
 			return true;
 		}
+	}
+
+	static abstract class Request implements Serializable {
+		private static final long serialVersionUID = 867883264433337973L;
+		public String requestId;
+
+		public Request() {
+			this.requestId = UUID.randomUUID().toString();
+		}
+	}
+
+	static class RunScriptletRequest extends Request {
+		private static final long serialVersionUID = -5771451238821585307L;
+		public String script;
+		public String fileName;
+		public PathType pathType;
+
+		public RunScriptletRequest() {
+		}
+
+		public RunScriptletRequest(String script) {
+			this.script = script;
+		}
+
+		public RunScriptletRequest(PathType pathType, String fileName) {
+			this.pathType = pathType;
+			this.fileName = fileName;
+		}
+	}
+
+	static class AddLoadPathRequest extends Request {
+		private static final long serialVersionUID = -8572541727990523058L;
+		public List<String> loadPath;
+
+		public AddLoadPathRequest() {
+		}
+
+		public AddLoadPathRequest(Collection<? extends String> c) {
+			this.loadPath = new ArrayList<String>(c);
+		}
+	}
+
+	static class ClearRequest extends Request {
+		private static final long serialVersionUID = 798797505174962279L;
+	}
+
+	static class PutRequest extends Request {
+		private static final long serialVersionUID = 3337038131308201283L;
+		public String key;
+		public Object value;
+
+		public PutRequest() {
+		}
+
+		public PutRequest(String key, Object value) {
+			this.key = key;
+			this.value = value;
+		}
+	}
+
+	static class SetHomeDirectoryRequest extends Request {
+		private static final long serialVersionUID = -3877240401760381576L;
+		public String homeDirectory;
+
+		public SetHomeDirectoryRequest() {
+		}
+
+		public SetHomeDirectoryRequest(String homeDirectory) {
+			this.homeDirectory = homeDirectory;
+		}
+	}
+
+	static class TerminateRequest extends Request {
+		private static final long serialVersionUID = 2056011144800940447L;
+	}
+
+	static class SetEnvironmentVariablesRequest extends Request {
+		public HashMap<String, String> environmentVariables;
+
+		public SetEnvironmentVariablesRequest() {
+		}
+
+		public SetEnvironmentVariablesRequest(
+				HashMap<String, String> environmentVariables) {
+			this.environmentVariables = environmentVariables;
+		}
+
+		private static final long serialVersionUID = -8587548120543298977L;
+	}
+
+	static class GetLoadPathRequest extends Request {
+		private static final long serialVersionUID = 6351574977055274197L;
+		public List<String> loadPath;
 	}
 
 }
