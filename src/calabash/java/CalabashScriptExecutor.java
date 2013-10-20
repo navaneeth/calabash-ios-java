@@ -36,13 +36,13 @@ public class CalabashScriptExecutor {
 	class RequestListener extends Listener {
 		@Override
 		public void received(Connection connection, Object object) {
-			System.out.println("Client got - " + object);
 			if (object instanceof ClearRequest) {
 				container.clear();
 			} else if (object instanceof RunScriptletRequest) {
 				RunScriptletRequest r = (RunScriptletRequest) object;
 				try {
-					Object result = container.runScriptlet(r.script);
+					Object runScriptlet = container.runScriptlet(r.script);
+					Object result = Utils.toJavaObject(runScriptlet);
 					client.sendTCP(new RunScriptletResponse(r.requestId, result));
 				} catch (Exception e) {
 					client.sendTCP(new ExceptionResponse(r.requestId, e));

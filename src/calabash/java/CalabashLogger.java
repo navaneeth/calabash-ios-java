@@ -33,6 +33,16 @@ class CalabashLogger {
 			}
 		}
 	}
+	
+	public static void debug(Object message) {
+		if (shouldLog)
+			log.info(message);
+	}
+
+	public static void debug(String message, Object... args) {
+		if (shouldLog)
+			log.info(String.format(message, args));
+	}
 
 	public static void info(Object message) {
 		if (shouldLog)

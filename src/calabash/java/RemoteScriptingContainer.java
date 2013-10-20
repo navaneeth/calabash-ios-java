@@ -4,6 +4,8 @@ import static calabash.java.CalabashLogger.error;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,11 +44,12 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 		}
 
 		// Launch the client program which hosts the ScriptingContainer
-		CommandLine cmdLine = new CommandLine("java");
+		CommandLine cmdLine = new CommandLine(System.getProperty("java.home")
+				+ "/bin/java");
 		cmdLine.addArgument("-Dcalabash.remote.port=" + port);
 		cmdLine.addArgument("-Dcalabash.remote.ip=" + ip);
 		cmdLine.addArgument("-cp");
-		cmdLine.addArgument(System.getProperty("java.class.path"));
+		cmdLine.addArgument(getClassPath());
 		cmdLine.addArgument(CalabashScriptExecutor.class.getCanonicalName());
 		DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 		DefaultExecutor executor = new DefaultExecutor();
@@ -66,6 +69,22 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 		} catch (InterruptedException e) {
 			throw new CalabashException(
 					"Failed to wait till client connected. Interrupted.", e);
+		}
+	}
+
+	private String getClassPath() {
+		try {
+			URL[] urls = ((URLClassLoader) Thread.currentThread()
+					.getContextClassLoader()).getURLs();
+			String classPath = "";
+			for (int i = 0; i < urls.length; i++) {
+				classPath += urls[i].toString();
+				if ((i + 1) != urls.length)
+					classPath += java.io.File.pathSeparator;
+			}
+			return classPath;
+		} catch (Exception e) {
+			return System.getProperty("java.class.path");
 		}
 	}
 
@@ -126,7 +145,8 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 		sendRequest(request);
 		waitForResults(monitor);
 		try {
-			return (List<String>) getResult(request.requestId);
+			List<String> result = (List<String>) getResult(request.requestId);
+			return new RemoteList(result);
 		} catch (Throwable e) {
 			return new RemoteList();
 		}
@@ -189,7 +209,6 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	class ServerEventListener extends Listener {
 		@Override
 		public void received(Connection connection, Object message) {
-			System.out.println("Received - " + message);
 			if (message instanceof String) {
 				String m = (String) message;
 				if ("ping".equals(m))
@@ -208,6 +227,13 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 				ExceptionResponse r = (ExceptionResponse) message;
 				Object monitor = popMonitor(r.requestId);
 				results.put(r.requestId, new Throwable(r.error));
+				synchronized (monitor) {
+					monitor.notify();
+				}
+			} else if (message instanceof GetLoadPathsResponse) {
+				GetLoadPathsResponse r = (GetLoadPathsResponse) message;
+				Object monitor = popMonitor(r.requestId);
+				results.put(r.requestId, r.loadPaths);
 				synchronized (monitor) {
 					monitor.notify();
 				}
@@ -232,6 +258,13 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 
 	class RemoteList extends ArrayList<String> {
 		private static final long serialVersionUID = -8479645165780638416L;
+
+		public RemoteList() {
+		}
+
+		public RemoteList(Collection<String> c) {
+			super(c);
+		}
 
 		@Override
 		public boolean addAll(Collection<? extends String> c) {

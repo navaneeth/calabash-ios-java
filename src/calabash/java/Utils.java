@@ -10,20 +10,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
 import org.jruby.RubyObject;
+import org.jruby.RubySymbol;
 import org.jruby.embed.PathType;
-
 
 import com.esotericsoftware.kryo.Kryo;
 
 final class Utils {
 
-	public static String getStringFromHash(Map<Object, Object> target, String key) {
+	public static String getStringFromHash(Map<Object, Object> target,
+			String key) {
 		try {
 			Object value = target.get(key);
 			if (value != null)
@@ -112,13 +114,15 @@ final class Utils {
 			return toJavaArray((RubyArray) rubyObject);
 		if (rubyObject instanceof RubyHash)
 			return toJavaHash((RubyHash) rubyObject);
+		if (rubyObject instanceof RubySymbol)
+			return rubyObject.toString();
 		if (rubyObject instanceof RubyObject)
 			return ((RubyObject) rubyObject).toJava(Object.class);
 
 		return rubyObject.toString();
 	}
 
-	public static Map<?, ?> toJavaHash(RubyHash rubyHash) {
+	public static HashMap<Object, Object> toJavaHash(RubyHash rubyHash) {
 		HashMap<Object, Object> map = new HashMap<Object, Object>();
 		Set<?> keySet = rubyHash.keySet();
 		for (Object rubyKey : keySet) {
@@ -169,8 +173,11 @@ final class Utils {
 
 		return sb.toString();
 	}
-	
+
 	public static void registerClasses(Kryo kryo) {
+		kryo.register(Object[].class);
+		kryo.register(HashMap.class);
+		kryo.register(Object.class);
 		kryo.register(Request.class);
 		kryo.register(PutRequest.class);
 		kryo.register(ClearRequest.class);
@@ -180,11 +187,14 @@ final class Utils {
 		kryo.register(SetEnvironmentVariablesRequest.class);
 		kryo.register(AddLoadPathRequest.class);
 		kryo.register(GetLoadPathRequest.class);
+		kryo.register(GetLoadPathsResponse.class);
 		kryo.register(Response.class);
 		kryo.register(RunScriptletResponse.class);
 		kryo.register(ExceptionResponse.class);
 		kryo.register(PathType.class);
 		kryo.register(org.jruby.embed.EvalFailedException.class);
+		kryo.register(List.class);
+		kryo.register(ArrayList.class);
 	}
 
 }
