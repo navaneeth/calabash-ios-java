@@ -15,7 +15,6 @@ import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
 import org.jruby.embed.PathType;
 
-
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -25,13 +24,14 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	private final Server server;
 	private final ConcurrentHashMap<String, Object> monitors = new ConcurrentHashMap<String, Object>();
 	private final ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<String, Object>();
+	private final Object clientConnectedMonitor = new Object();
 
 	public RemoteScriptingContainer() throws CalabashException {
 		int port = 54555;
 		String ip = "127.0.0.1";
 		server = new Server();
 		Utils.registerClasses(server.getKryo());
-
+		server.addListener(new ServerEventListener());
 		server.start();
 		try {
 			server.bind(port);
@@ -57,6 +57,15 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 			throw new CalabashException(
 					"Failed to launch remote script execution environment. "
 							+ e.getMessage());
+		}
+
+		try {
+			synchronized (clientConnectedMonitor) {
+				clientConnectedMonitor.wait(5000);
+			}
+		} catch (InterruptedException e) {
+			throw new CalabashException(
+					"Failed to wait till client connected. Interrupted.", e);
 		}
 	}
 
@@ -94,6 +103,8 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	@Override
 	public void terminate() {
 		sendRequest(new TerminateRequest());
+		server.stop();
+		server.close();
 	}
 
 	@Override
@@ -126,7 +137,14 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	}
 
 	private void sendRequest(Request request) {
-		server.getConnections()[0].sendTCP(request);
+		getConnection().sendTCP(request);
+	}
+
+	private Connection getConnection() {
+		if (server.getConnections().length > 0)
+			return server.getConnections()[0];
+
+		throw new RuntimeException("No client connected");
 	}
 
 	private Object getResult(String requestId) {
@@ -171,7 +189,7 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	class ServerEventListener extends Listener {
 		@Override
 		public void received(Connection connection, Object message) {
-			System.out.println(message);
+			System.out.println("Received - " + message);
 			if (message instanceof String) {
 				String m = (String) message;
 				if ("ping".equals(m))
@@ -179,7 +197,8 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 			} else if (message instanceof RunScriptletResponse) {
 				RunScriptletResponse r = (RunScriptletResponse) message;
 				Object monitor = popMonitor(r.requestId);
-				results.put(r.requestId, r.data);
+				if (r.data != null)
+					results.put(r.requestId, r.data);
 				if (monitor != null) {
 					synchronized (monitor) {
 						monitor.notify();
@@ -200,6 +219,13 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 						monitor.notify();
 					}
 				}
+			}
+		}
+
+		@Override
+		public void connected(Connection arg0) {
+			synchronized (clientConnectedMonitor) {
+				clientConnectedMonitor.notify();
 			}
 		}
 	}
