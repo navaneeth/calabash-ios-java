@@ -39,13 +39,16 @@ public class CalabashScriptExecutor {
 
 	private final ScriptingContainer container = new ScriptingContainer(
 			LocalContextScope.SINGLETHREAD);
+	private String ipAddress;
+	private int port;
 
 	public CalabashScriptExecutor() throws NumberFormatException, IOException {
 		Utils.registerClasses(client.getKryo());
 		client.addListener(new RequestListener());
 		client.start();
-		client.connect(5000, System.getProperty("calabash.remote.ip"),
-				Integer.parseInt(System.getProperty("calabash.remote.port")));
+		ipAddress = System.getProperty("calabash.remote.ip");
+		port = Integer.parseInt(System.getProperty("calabash.remote.port"));
+		client.connect(5000, ipAddress, port);
 	}
 
 	class RequestListener extends Listener {
@@ -58,6 +61,7 @@ public class CalabashScriptExecutor {
 				try {
 					config.setLogsDirectory(new File(r.logFile));
 					CalabashLogger.initialize(config);
+					CalabashLogger.info("Host address: %s, Port: %d", ipAddress, port);
 					client.sendTCP(new Response(r.requestId));
 				} catch (CalabashException e) {
 					client.sendTCP(new ExceptionResponse(r.requestId, e));

@@ -8,7 +8,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,6 +221,70 @@ final class Utils {
 		kryo.register(Response.class);
 		kryo.register(RunScriptletResponse.class);
 		kryo.register(ExceptionResponse.class);
+	}
+
+	public static int findFreePort() throws CalabashException {
+		ServerSocket socket = null;
+		try {
+			socket = new ServerSocket(0);
+			return socket.getLocalPort();
+		} catch (IOException e) {
+
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+
+		throw new CalabashException("Unable to find a free port");
+	}
+
+	public static List<InetSocketAddress> getAllAddresses(int port)
+			throws CalabashException {
+		Enumeration<NetworkInterface> n;
+		try {
+			n = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException e) {
+			throw new CalabashException("Could not get all network addresses.",
+					e);
+		}
+
+		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
+		try {
+			addresses.add(new InetSocketAddress(InetAddress.getLocalHost(),
+					port));
+		} catch (UnknownHostException e) {
+			System.err.println("Unable to get localhost InetAddress."
+					+ e.getMessage());
+		}
+
+		for (; n.hasMoreElements();) {
+			NetworkInterface e = n.nextElement();
+			Enumeration<InetAddress> a = e.getInetAddresses();
+			for (; a.hasMoreElements();) {
+				InetAddress addr = a.nextElement();
+				if (addr.isLinkLocalAddress()
+						|| !isAddressReachable(addr, 1500)) {
+					continue;
+				}
+
+				addresses
+						.add(new InetSocketAddress(addr.getHostAddress(), port));
+			}
+		}
+
+		return addresses;
+	}
+
+	private static boolean isAddressReachable(InetAddress address, int timeout) {
+		try {
+			return address.isReachable(timeout);
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }

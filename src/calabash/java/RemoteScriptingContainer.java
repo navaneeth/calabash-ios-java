@@ -4,9 +4,9 @@ import static calabash.java.CalabashLogger.error;
 import static calabash.java.CalabashLogger.info;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -38,18 +38,26 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	private final Object clientConnectedMonitor = new Object();
 
 	public RemoteScriptingContainer() throws CalabashException {
-		int port = 54555;
-		String ip = "127.0.0.1";
+		int port = Utils.findFreePort();
+		String ip = null;
 		server = new Server(1048576, 1048576);
 		Utils.registerClasses(server.getKryo());
 		server.addListener(new ServerEventListener());
 		server.start();
-		try {
-			server.bind(port);
-		} catch (IOException e) {
-			error("Failed to bind to port", e);
-			throw new CalabashException("Failed to bind to port. "
-					+ e.getMessage());
+
+		List<InetSocketAddress> addresses = Utils.getAllAddresses(port);
+		boolean bound = false;
+		for (InetSocketAddress inetSocketAddress : addresses) {
+			bound = tryToBind(server, inetSocketAddress);
+			if (bound) {
+				ip = inetSocketAddress.getAddress().getHostAddress();
+				break;
+			}
+		}
+
+		if (!bound) {
+			error("Failed to bind to an address and port");
+			throw new CalabashException("Failed to bind to an address and port");
 		}
 
 		// Launch the client program which hosts the ScriptingContainer
@@ -78,6 +86,15 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 		} catch (InterruptedException e) {
 			throw new CalabashException(
 					"Failed to wait till client connected. Interrupted.", e);
+		}
+	}
+
+	private boolean tryToBind(Server s, InetSocketAddress address) {
+		try {
+			s.bind(address, null);
+			return true;
+		} catch (Exception e) {
+			return false;
 		}
 	}
 
@@ -145,7 +162,8 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 
 	@Override
 	public void setHomeDirectory(String absolutePath) {
-		SetHomeDirectoryRequest request = new SetHomeDirectoryRequest(absolutePath);
+		SetHomeDirectoryRequest request = new SetHomeDirectoryRequest(
+				absolutePath);
 		Object monitor = new Object();
 		monitors.put(request.requestId, monitor);
 		sendRequest(request);
@@ -154,7 +172,8 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 
 	@Override
 	public void setEnvironment(HashMap<String, String> environmentVariables) {
-		SetEnvironmentVariablesRequest request = new SetEnvironmentVariablesRequest(environmentVariables);
+		SetEnvironmentVariablesRequest request = new SetEnvironmentVariablesRequest(
+				environmentVariables);
 		Object monitor = new Object();
 		monitors.put(request.requestId, monitor);
 		sendRequest(request);
@@ -176,10 +195,11 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 			return new RemoteList();
 		}
 	}
-	
+
 	@Override
 	public void setLogsDirectory(File logFile) {
-		EnableLoggingRequest request = new EnableLoggingRequest(logFile.getAbsolutePath());
+		EnableLoggingRequest request = new EnableLoggingRequest(
+				logFile.getAbsolutePath());
 		Object monitor = new Object();
 		monitors.put(request.requestId, monitor);
 		sendRequest(request);
@@ -400,14 +420,14 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 		private static final long serialVersionUID = 6351574977055274197L;
 		public List<String> loadPath;
 	}
-	
+
 	static class EnableLoggingRequest extends Request {
 		private static final long serialVersionUID = -1701602165823249504L;
 		public String logFile;
-		
+
 		public EnableLoggingRequest() {
 		}
-		
+
 		public EnableLoggingRequest(String logFile) {
 			this.logFile = logFile;
 		}
