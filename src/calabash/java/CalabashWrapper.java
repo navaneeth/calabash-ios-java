@@ -41,7 +41,12 @@ public final class CalabashWrapper {
 		this.gemsDir = new File(rbScriptsDir, "gems");
 		this.projectDir = projectDir;
 
-		container = new DefaultScriptingContainer();
+		if (configuration != null
+				&& configuration.shouldEnableContainerIsolation())
+			container = new RemoteScriptingContainer();
+		else
+			container = new DefaultScriptingContainer();
+
 		this.initializeScriptingContainer();
 
 		if (configuration != null && configuration.getPauseTime() >= 0)
@@ -647,7 +652,8 @@ public final class CalabashWrapper {
 		}
 	}
 
-	private void addRequiresAndIncludes(String... modules) throws InterruptedException {
+	private void addRequiresAndIncludes(String... modules)
+			throws InterruptedException {
 		StringBuilder script = new StringBuilder(
 				"require 'calabash-cucumber'\n");
 		for (String module : modules) {
@@ -737,8 +743,8 @@ public final class CalabashWrapper {
 
 			if (configuration.getDetectConnectedDevice())
 				environmentVariables.put("DETECT_CONNECTED_DEVICE", "1");
-			
-			if(configuration.getCalabashDebug())
+
+			if (configuration.getCalabashDebug())
 				environmentVariables.put("DEBUG", "1");
 		}
 

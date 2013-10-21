@@ -27,6 +27,7 @@ public final class CalabashConfiguration {
 	private String deviceTarget;
 	private boolean detectConnectedDevice;
 	private boolean calabashDebug;
+	private boolean runInNewProcess = false;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -348,11 +349,30 @@ public final class CalabashConfiguration {
 		return this.detectConnectedDevice;
 	}
 
+	/**
+	 * Gets a value indicating whether debug messages are turned on
+	 * 
+	 * @return
+	 */
 	public boolean getCalabashDebug() {
 		return calabashDebug;
 	}
 
+	/**
+	 * Controls debug information emitted by calabash
+	 * 
+	 * @param calabashDebug
+	 *            true to enable more debug output, false otherwise
+	 */
 	public void setCalabashDebug(boolean calabashDebug) {
 		this.calabashDebug = calabashDebug;
+	}
+
+	public void enableContainerIsolation() {
+		this.runInNewProcess = true;
+	}
+
+	public boolean shouldEnableContainerIsolation() {
+		return this.runInNewProcess;
 	}
 }

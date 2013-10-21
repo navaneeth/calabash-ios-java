@@ -38,7 +38,7 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	public RemoteScriptingContainer() throws CalabashException {
 		int port = 54555;
 		String ip = "127.0.0.1";
-		server = new Server();
+		server = new Server(1048576, 1048576);
 		Utils.registerClasses(server.getKryo());
 		server.addListener(new ServerEventListener());
 		server.start();
@@ -97,7 +97,11 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 
 	@Override
 	public void put(String key, Object value) {
-		sendRequest(new PutRequest(key, value));
+		PutRequest request = new PutRequest(key, value);
+		Object monitor = new Object();
+		monitors.put(request.requestId, monitor);
+		sendRequest(request);
+		waitForResults(monitor);
 	}
 
 	@Override
@@ -123,7 +127,11 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 
 	@Override
 	public void clear() {
-		sendRequest(new ClearRequest());
+		ClearRequest request = new ClearRequest();
+		Object monitor = new Object();
+		monitors.put(request.requestId, monitor);
+		sendRequest(request);
+		waitForResults(monitor);
 	}
 
 	@Override
@@ -135,12 +143,20 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 
 	@Override
 	public void setHomeDirectory(String absolutePath) {
-		sendRequest(new SetHomeDirectoryRequest(absolutePath));
+		SetHomeDirectoryRequest request = new SetHomeDirectoryRequest(absolutePath);
+		Object monitor = new Object();
+		monitors.put(request.requestId, monitor);
+		sendRequest(request);
+		waitForResults(monitor);
 	}
 
 	@Override
 	public void setEnvironment(HashMap<String, String> environmentVariables) {
-		sendRequest(new SetEnvironmentVariablesRequest(environmentVariables));
+		SetEnvironmentVariablesRequest request = new SetEnvironmentVariablesRequest(environmentVariables);
+		Object monitor = new Object();
+		monitors.put(request.requestId, monitor);
+		sendRequest(request);
+		waitForResults(monitor);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -216,6 +232,7 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	class ServerEventListener extends Listener {
 		@Override
 		public void received(Connection connection, Object message) {
+//			System.out.println(message);
 			if (message instanceof String) {
 				String m = (String) message;
 				if ("ping".equals(m))

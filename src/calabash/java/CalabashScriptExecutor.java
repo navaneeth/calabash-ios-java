@@ -23,7 +23,7 @@ import com.esotericsoftware.kryonet.Listener;
 
 public class CalabashScriptExecutor {
 
-	private final Client client = new Client();
+	private final Client client = new Client(1048576, 1048576);
 	private final static Object monitor = new Object();
 
 	public static void main(String[] args) throws Exception {
@@ -47,13 +47,22 @@ public class CalabashScriptExecutor {
 	class RequestListener extends Listener {
 		@Override
 		public void received(Connection connection, Object object) {
+//			System.out.println(object);
 			if (object instanceof ClearRequest) {
+				ClearRequest r = (ClearRequest) object;
 				container.clear();
+				client.sendTCP(new Response(r.requestId));
 			} else if (object instanceof RunScriptletRequest) {
 				RunScriptletRequest r = (RunScriptletRequest) object;
 				try {
-					Object runScriptlet = container.runScriptlet(r.script);
-					Object result = Utils.toJavaObject(runScriptlet);
+					Object result = null;
+					if (r.fileName != null && r.pathType != null) {
+						container.runScriptlet(r.pathType, r.fileName);
+					} else {
+						Object runScriptlet = container.runScriptlet(r.script);
+						result = Utils.toJavaObject(runScriptlet);
+					}
+
 					client.sendTCP(new RunScriptletResponse(r.requestId, result));
 				} catch (Exception e) {
 					client.sendTCP(new ExceptionResponse(r.requestId, e));
@@ -61,9 +70,11 @@ public class CalabashScriptExecutor {
 			} else if (object instanceof SetEnvironmentVariablesRequest) {
 				SetEnvironmentVariablesRequest r = (SetEnvironmentVariablesRequest) object;
 				container.setEnvironment(r.environmentVariables);
+				client.sendTCP(new Response(r.requestId));
 			} else if (object instanceof SetHomeDirectoryRequest) {
 				SetHomeDirectoryRequest r = (SetHomeDirectoryRequest) object;
 				container.setHomeDirectory(r.homeDirectory);
+				client.sendTCP(new Response(r.requestId));
 			} else if (object instanceof TerminateRequest) {
 				container.terminate();
 				System.exit(0);
@@ -78,12 +89,13 @@ public class CalabashScriptExecutor {
 			} else if (object instanceof AddLoadPathRequest) {
 				AddLoadPathRequest r = (AddLoadPathRequest) object;
 				container.getLoadPaths().addAll(r.loadPath);
+				client.sendTCP(new Response(r.requestId));
 			}
 		}
 
 		@Override
 		public void disconnected(Connection arg0) {
-			System.exit(0);
+			 System.exit(0);
 		}
 	}
 

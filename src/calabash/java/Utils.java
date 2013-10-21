@@ -190,6 +190,7 @@ final class Utils {
 
 	public static void registerClasses(Kryo kryo) {
 		kryo.register(Object[].class);
+		kryo.register(String[].class);
 		kryo.register(HashMap.class);
 		kryo.register(Object.class);
 		kryo.register(Request.class);
