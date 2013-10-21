@@ -746,6 +746,9 @@ public final class CalabashWrapper {
 
 			if (configuration.getCalabashDebug())
 				environmentVariables.put("DEBUG", "1");
+
+			if (configuration.isLoggingEnabled())
+				container.setLogsDirectory(configuration.getLogsDirectory()); // Required for RemoteScriptingContainer
 		}
 
 		// Adding all system defined env variables

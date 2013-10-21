@@ -1,5 +1,6 @@
 package calabash.java;
 
+import java.io.File;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
@@ -25,5 +26,7 @@ interface IScriptingContainer {
 	List<java.lang.String> getLoadPaths();
 
 	void setErrorWriter(Writer writer);
+	
+	void setLogsDirectory(File logFile);
 
 }

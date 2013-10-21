@@ -26,6 +26,7 @@ import calabash.java.CalabashScriptExecutor.Response;
 import calabash.java.CalabashScriptExecutor.RunScriptletResponse;
 import calabash.java.RemoteScriptingContainer.AddLoadPathRequest;
 import calabash.java.RemoteScriptingContainer.ClearRequest;
+import calabash.java.RemoteScriptingContainer.EnableLoggingRequest;
 import calabash.java.RemoteScriptingContainer.GetLoadPathRequest;
 import calabash.java.RemoteScriptingContainer.PutRequest;
 import calabash.java.RemoteScriptingContainer.Request;
@@ -207,6 +208,7 @@ final class Utils {
 		kryo.register(SetEnvironmentVariablesRequest.class);
 		kryo.register(AddLoadPathRequest.class);
 		kryo.register(GetLoadPathRequest.class);
+		kryo.register(EnableLoggingRequest.class);
 
 		kryo.register(GetLoadPathsResponse.class);
 		kryo.register(Response.class);

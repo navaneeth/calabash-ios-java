@@ -1,5 +1,6 @@
 package calabash.java;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.jruby.embed.ScriptingContainer;
 
 import calabash.java.RemoteScriptingContainer.AddLoadPathRequest;
 import calabash.java.RemoteScriptingContainer.ClearRequest;
+import calabash.java.RemoteScriptingContainer.EnableLoggingRequest;
 import calabash.java.RemoteScriptingContainer.GetLoadPathRequest;
 import calabash.java.RemoteScriptingContainer.PutRequest;
 import calabash.java.RemoteScriptingContainer.RunScriptletRequest;
@@ -20,6 +22,8 @@ import calabash.java.RemoteScriptingContainer.TerminateRequest;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+
+import static calabash.java.CalabashLogger.info;
 
 public class CalabashScriptExecutor {
 
@@ -47,8 +51,18 @@ public class CalabashScriptExecutor {
 	class RequestListener extends Listener {
 		@Override
 		public void received(Connection connection, Object object) {
-//			System.out.println(object);
-			if (object instanceof ClearRequest) {
+			info("Client: " + object);
+			if (object instanceof EnableLoggingRequest) {
+				EnableLoggingRequest r = (EnableLoggingRequest) object;
+				CalabashConfiguration config = new CalabashConfiguration();
+				try {
+					config.setLogsDirectory(new File(r.logFile));
+					CalabashLogger.initialize(config);
+					client.sendTCP(new Response(r.requestId));
+				} catch (CalabashException e) {
+					client.sendTCP(new ExceptionResponse(r.requestId, e));
+				}
+			} else if (object instanceof ClearRequest) {
 				ClearRequest r = (ClearRequest) object;
 				container.clear();
 				client.sendTCP(new Response(r.requestId));
@@ -95,7 +109,7 @@ public class CalabashScriptExecutor {
 
 		@Override
 		public void disconnected(Connection arg0) {
-			 System.exit(0);
+			System.exit(0);
 		}
 	}
 

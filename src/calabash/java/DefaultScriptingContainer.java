@@ -1,5 +1,6 @@
 package calabash.java;
 
+import java.io.File;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,11 @@ class DefaultScriptingContainer implements IScriptingContainer {
 	@Override
 	public void setErrorWriter(Writer writer) {
 		container.setErrorWriter(writer);
+	}
+
+	@Override
+	public void setLogsDirectory(File logFile) {
+		// Not implemented as this runs in the same process and no need to configure logging separately
 	}
 
 }

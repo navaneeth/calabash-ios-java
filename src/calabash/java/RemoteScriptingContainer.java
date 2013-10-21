@@ -1,7 +1,9 @@
 package calabash.java;
 
 import static calabash.java.CalabashLogger.error;
+import static calabash.java.CalabashLogger.info;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
@@ -174,6 +176,15 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 			return new RemoteList();
 		}
 	}
+	
+	@Override
+	public void setLogsDirectory(File logFile) {
+		EnableLoggingRequest request = new EnableLoggingRequest(logFile.getAbsolutePath());
+		Object monitor = new Object();
+		monitors.put(request.requestId, monitor);
+		sendRequest(request);
+		waitForResults(monitor);
+	}
 
 	@Override
 	public void setErrorWriter(Writer writer) {
@@ -232,7 +243,7 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	class ServerEventListener extends Listener {
 		@Override
 		public void received(Connection connection, Object message) {
-//			System.out.println(message);
+			info("Server: " + message);
 			if (message instanceof String) {
 				String m = (String) message;
 				if ("ping".equals(m))
@@ -389,5 +400,16 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 		private static final long serialVersionUID = 6351574977055274197L;
 		public List<String> loadPath;
 	}
-
+	
+	static class EnableLoggingRequest extends Request {
+		private static final long serialVersionUID = -1701602165823249504L;
+		public String logFile;
+		
+		public EnableLoggingRequest() {
+		}
+		
+		public EnableLoggingRequest(String logFile) {
+			this.logFile = logFile;
+		}
+	}
 }
