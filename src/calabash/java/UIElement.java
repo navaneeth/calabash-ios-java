@@ -13,7 +13,7 @@ import org.jruby.RubyHash;
  * Represents an UI element.
  * 
  */
-public final class UIElement implements IAction {
+public class UIElement implements IAction {
 
 	private final RubyHash data;
 	private final String query;
