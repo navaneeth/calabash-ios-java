@@ -3,8 +3,7 @@
  */
 package calabash.java;
 
-import static calabash.java.CalabashLogger.error;
-import static calabash.java.CalabashLogger.info;
+import org.jruby.embed.PathType;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -13,7 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.jruby.embed.PathType;
+import static calabash.java.CalabashLogger.error;
+import static calabash.java.CalabashLogger.info;
 
 /**
  * This is a one to one mapping with the Ruby calabash API
@@ -43,7 +43,7 @@ public final class CalabashWrapper {
 
 		if (configuration != null
 				&& configuration.shouldEnableContainerIsolation())
-			container = new RemoteScriptingContainer();
+			container = new RemoteScriptingContainer(configuration.getAdditionalClasspath());
 		else
 			container = new DefaultScriptingContainer();
 

@@ -1,34 +1,26 @@
 package calabash.java;
 
-import static calabash.java.CalabashLogger.error;
-import static calabash.java.CalabashLogger.info;
-
-import java.io.File;
-import java.io.Serializable;
-import java.io.Writer;
-import java.net.InetSocketAddress;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
+import calabash.java.CalabashScriptExecutor.ExceptionResponse;
+import calabash.java.CalabashScriptExecutor.GetLoadPathsResponse;
+import calabash.java.CalabashScriptExecutor.Response;
+import calabash.java.CalabashScriptExecutor.RunScriptletResponse;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Server;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
 import org.jruby.embed.PathType;
 
-import calabash.java.CalabashScriptExecutor.ExceptionResponse;
-import calabash.java.CalabashScriptExecutor.GetLoadPathsResponse;
-import calabash.java.CalabashScriptExecutor.Response;
-import calabash.java.CalabashScriptExecutor.RunScriptletResponse;
+import java.io.File;
+import java.io.Serializable;
+import java.io.Writer;
+import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Server;
+import static calabash.java.CalabashLogger.error;
+import static calabash.java.CalabashLogger.info;
 
 public class RemoteScriptingContainer implements IScriptingContainer {
 
@@ -37,7 +29,7 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 	private final ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<String, Object>();
 	private final Object clientConnectedMonitor = new Object();
 
-	public RemoteScriptingContainer() throws CalabashException {
+	public RemoteScriptingContainer(List<File> additionalClasspath) throws CalabashException {
 		int port = Utils.findFreePort();
 		String ip = null;
 		server = new Server(1048576, 1048576);
@@ -66,8 +58,8 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 		cmdLine.addArgument("-Dcalabash.remote.port=" + port);
 		cmdLine.addArgument("-Dcalabash.remote.ip=" + ip);
 		cmdLine.addArgument("-cp");
-		cmdLine.addArgument(getClassPath());
-		cmdLine.addArgument(CalabashScriptExecutor.class.getCanonicalName());
+        cmdLine.addArgument(getClassPath(additionalClasspath));
+        cmdLine.addArgument(CalabashScriptExecutor.class.getCanonicalName());
 		DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 		DefaultExecutor executor = new DefaultExecutor();
 		try {
@@ -98,20 +90,15 @@ public class RemoteScriptingContainer implements IScriptingContainer {
 		}
 	}
 
-	private String getClassPath() {
-		try {
-			URL[] urls = ((URLClassLoader) Thread.currentThread()
-					.getContextClassLoader()).getURLs();
-			String classPath = "";
-			for (int i = 0; i < urls.length; i++) {
-				classPath += urls[i].toString();
-				if ((i + 1) != urls.length)
-					classPath += java.io.File.pathSeparator;
-			}
-			return classPath;
-		} catch (Exception e) {
-			return System.getProperty("java.class.path");
-		}
+	private String getClassPath(List<File> additionalClasspath) {
+        String classPath = "";
+            for (int i = 0; i < additionalClasspath.size(); i++) {
+                File classpathEntries = additionalClasspath.get(i);
+                classPath += classpathEntries.getAbsolutePath();
+                if ((i + 1) != additionalClasspath.size())
+                    classPath += java.io.File.pathSeparator;
+            }
+            return classPath;
 	}
 
 	@Override

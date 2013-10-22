@@ -1,14 +1,16 @@
 /**
- * 
+ *
  */
 package calabash.java;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Configure calabash with various configuration options
- * 
+ *
  */
 public final class CalabashConfiguration {
 
@@ -28,11 +30,12 @@ public final class CalabashConfiguration {
 	private boolean detectConnectedDevice;
 	private boolean calabashDebug;
 	private boolean runInNewProcess = false;
+    private List<File> additionalClasspath = new ArrayList<File>();
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
 	 * working directory
-	 * 
+	 *
 	 * @return
 	 */
 	public File getScreenshotsDirectory() {
@@ -44,7 +47,7 @@ public final class CalabashConfiguration {
 	/**
 	 * Sets the screenshot directory. Screenshots will be written to this
 	 * directory
-	 * 
+	 *
 	 * @param screenshotsDirectory
 	 *            Directory
 	 * @throws CalabashException
@@ -64,7 +67,8 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the device if set
-	 * 
+	 *
+
 	 * @return
 	 */
 	public String getDevice() {
@@ -73,7 +77,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Sets the device which has to be used when running tests
-	 * 
+	 *
 	 * @param device
 	 *            Valid values are ios, ipad, iphone
 	 */
@@ -85,7 +89,7 @@ public final class CalabashConfiguration {
 	 * controls which device to launch on. When set Calabash uses instruments to
 	 * launch. The default is 'simulator' unless a device is plugged in via USB,
 	 * in which case it uses that device
-	 * 
+	 *
 	 * @param target
 	 *            target to set to
 	 */
@@ -95,7 +99,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the device target
-	 * 
+	 *
 	 * @return
 	 */
 	public String getDeviceTarget() {
@@ -104,7 +108,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the APP bundle path
-	 * 
+	 *
 	 * @return path if set, null otherwise
 	 */
 	public String getAppBundlePath() {
@@ -114,7 +118,7 @@ public final class CalabashConfiguration {
 	/**
 	 * Sets the APP bundle path. This is required only when calabash fails to
 	 * auto detect the app bundle path.
-	 * 
+	 *
 	 * @param appBundlePath
 	 *            Path to the bundle
 	 */
@@ -125,7 +129,7 @@ public final class CalabashConfiguration {
 	/**
 	 * Sets the screenshot listener. Listener will be invoked whenever calabash
 	 * takes a screenshot.
-	 * 
+	 *
 	 * @param listener
 	 *            ScreenshotListener instance
 	 */
@@ -135,7 +139,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the current screenshot listener
-	 * 
+	 *
 	 * @return ScreenshotListener if set, null otherwise
 	 */
 	public ScreenshotListener getScreenshotListener() {
@@ -144,7 +148,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the device endpoint.
-	 * 
+	 *
 	 * @return URI if set, null otherwise
 	 */
 	public URI getDeviceEndPoint() {
@@ -155,7 +159,7 @@ public final class CalabashConfiguration {
 	 * Sets the device IP address. This is required only when the device that
 	 * needs to run the test is not in localhost. By default calabash uses
 	 * http://localhost:37265
-	 * 
+	 *
 	 * @param deviceEndPoint
 	 *            A valid device endpoint
 	 */
@@ -165,7 +169,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the logs directory
-	 * 
+	 *
 	 * @return
 	 */
 	public File getLogsDirectory() {
@@ -174,7 +178,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Sets the logs directory. Setting null will disable logging
-	 * 
+	 *
 	 * @param logsDirectory
 	 *            Logs directory to set
 	 * @throws CalabashException
@@ -199,7 +203,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the boolean value indicating whether logging is enabled
-	 * 
+	 *
 	 * @return true if logging is enabled, false otherwise
 	 */
 	public boolean isLoggingEnabled() {
@@ -208,7 +212,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Determines test run should launch the application
-	 * 
+	 *
 	 * @return true if it should launch, false otherwise
 	 */
 	public boolean getNoLaunch() {
@@ -217,7 +221,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Setting this will stop launching the application every time test starts
-	 * 
+	 *
 	 * @param noLaunch
 	 *            true will disable launching
 	 */
@@ -227,7 +231,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Sets the directory where playback files should be read from
-	 * 
+	 *
 	 * @param dir
 	 *            Directory where playback files are present
 	 * @throws CalabashException
@@ -244,7 +248,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the playback directory
-	 * 
+	 *
 	 * @return
 	 */
 	public File getPlaybackDirectory() {
@@ -253,7 +257,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Sets the OS used by the device/simulator
-	 * 
+	 *
 	 * @param os
 	 */
 	public void setOS(String os) {
@@ -262,7 +266,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the OS used by the device/simulator
-	 * 
+	 *
 	 * @return
 	 */
 	public String getOS() {
@@ -271,7 +275,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Sets the application bundle id
-	 * 
+	 *
 	 * @param bundleId
 	 */
 	public void setBundleId(String bundleId) {
@@ -280,7 +284,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the bundle id
-	 * 
+	 *
 	 * @return
 	 */
 	public String getBundleId() {
@@ -289,7 +293,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Sets the iOS SDK version
-	 * 
+	 *
 	 * @param sdkVersion
 	 * @return
 	 */
@@ -299,7 +303,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the SDK version
-	 * 
+	 *
 	 * @return
 	 */
 	public String getSDKVersion() {
@@ -308,10 +312,10 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Sets the pause time in milliseconds.
-	 * 
+	 *
 	 * Calabash will pause for the specified seconds after performing every
 	 * actions
-	 * 
+	 *
 	 * @param pauseInSec
 	 *            Seconds to wait after each actions
 	 */
@@ -321,7 +325,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets the pause time in milliseconds
-	 * 
+	 *
 	 * @return
 	 */
 	public long getPauseTime() {
@@ -332,7 +336,7 @@ public final class CalabashConfiguration {
 	 * Setting this to true will enable calabash to search for devices connected
 	 * via USB. If no devices are connected, setting this will hang the calabash
 	 * launch
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setDetectConnectedDevice(boolean value) {
@@ -342,7 +346,7 @@ public final class CalabashConfiguration {
 	/**
 	 * Gets a value indicating whether calabash will search for devices
 	 * connected via USB.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean getDetectConnectedDevice() {
@@ -351,7 +355,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Gets a value indicating whether debug messages are turned on
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean getCalabashDebug() {
@@ -360,7 +364,7 @@ public final class CalabashConfiguration {
 
 	/**
 	 * Controls debug information emitted by calabash
-	 * 
+	 *
 	 * @param calabashDebug
 	 *            true to enable more debug output, false otherwise
 	 */
@@ -375,4 +379,12 @@ public final class CalabashConfiguration {
 	public boolean shouldEnableContainerIsolation() {
 		return this.runInNewProcess;
 	}
+
+    public List<File> getAdditionalClasspath() {
+        return additionalClasspath;
+    }
+
+    public void setAdditionalClasspath(List<File> additionalClasspath) {
+        this.additionalClasspath = additionalClasspath;
+    }
 }
