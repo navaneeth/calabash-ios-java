@@ -311,8 +311,8 @@ public final class CalabashConfiguration {
 	 * Calabash will pause for the specified seconds after performing every
 	 * actions
 	 * 
-	 * @param pauseInSec
-	 *            Seconds to wait after each actions
+	 * @param pauseTimeInMs
+	 *            Milliseconds to wait after each actions
 	 */
 	public void setPauseTime(long pauseTimeInMs) {
 		this.pauseTimeInMs = pauseTimeInMs;
@@ -321,7 +321,7 @@ public final class CalabashConfiguration {
 	/**
 	 * Gets the pause time in milliseconds
 	 * 
-	 * @return
+	 * @return Pause time in milliseconds
 	 */
 	public long getPauseTime() {
 		return pauseTimeInMs;
