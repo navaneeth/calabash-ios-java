@@ -24,7 +24,8 @@ import org.jruby.embed.ScriptingContainer;
  */
 public final class CalabashWrapper {
 
-	private final ScriptingContainer container = new ScriptingContainer(LocalContextScope.THREADSAFE);
+	private final ScriptingContainer container = new ScriptingContainer(
+			LocalContextScope.SINGLETHREAD);
 	private final File rbScriptsDir;
 	private final File projectDir;
 	private final File gemsDir;
@@ -739,9 +740,12 @@ public final class CalabashWrapper {
 
 			if (configuration.getDetectConnectedDevice())
 				environmentVariables.put("DETECT_CONNECTED_DEVICE", "1");
-			
-			if(configuration.getCalabashDebug())
+
+			if (configuration.getDebug()) {
 				environmentVariables.put("DEBUG", "1");
+				environmentVariables.put("CALABASH_FULL_CONSOLE_OUTPUT", "1");
+				environmentVariables.put("DEBUG_HTTP", "1");
+			}
 		}
 
 		// Adding all system defined env variables

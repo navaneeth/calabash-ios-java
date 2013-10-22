@@ -26,7 +26,7 @@ public final class CalabashConfiguration {
 	private long pauseTimeInMs = -1;
 	private String deviceTarget;
 	private boolean detectConnectedDevice;
-	private boolean calabashDebug;
+	private boolean debug;
 
 	/**
 	 * Gets the screenshots directory. If not set, this returns the current
@@ -348,11 +348,21 @@ public final class CalabashConfiguration {
 		return this.detectConnectedDevice;
 	}
 
-	public boolean getCalabashDebug() {
-		return calabashDebug;
+	/**
+	 * Gets a value indicating whether debug level output is enabled
+	 * 
+	 * @return true if enabled, false otherwise
+	 */
+	public boolean getDebug() {
+		return debug;
 	}
 
-	public void setCalabashDebug(boolean calabashDebug) {
-		this.calabashDebug = calabashDebug;
+	/**
+	 * Setting debug will output debug information from calabash to console
+	 * 
+	 * @param value
+	 */
+	public void setDebug(boolean value) {
+		this.debug = value;
 	}
 }
