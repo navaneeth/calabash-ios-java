@@ -135,18 +135,34 @@ public class UIElement implements IAction {
 	}
 
 	/**
-	 * Gets the property from this UIElement. This method can be used to fetch
-	 * any properties which are present in the UIElement
+	 * Get additional properties for this element. This helps you to get
+	 * specific property value by performing selectors on the query result
+	 * <p>
+	 * Example:
 	 * 
-	 * @param properties
-	 *            list of required properties
-	 * @return
+	 * <pre>
+	 * UIElement element = iosApplication.query(&quot;tableView&quot;).first();
+	 * Object value = element.getPropertyValue(&quot;numberOfSections&quot;);
+	 * </pre>
+	 * <p>
+	 * This method doesn't support advanced selectors like the ones that are
+	 * supported by calabash Ruby. Support for advanced selectors will be added
+	 * in the later versions.
+	 * 
+	 * @param selector
+	 *            Selector to apply to the query.
+	 * @return Value for the property after applying the selector. Type of this
+	 *         value depends on the selector.
 	 * @throws CalabashException
 	 */
-	public Object[] getPropertyValues(String... properties)
-			throws CalabashException {
-		RubyArray values = calabashWrapper.query(query, properties);
-		return Utils.toJavaArray(values);
+	public Object getPropertyValue(String selector) throws CalabashException {
+		RubyArray values = calabashWrapper.query(query, selector);
+		if (values != null && !values.isEmpty()) {
+			Object object = values.get(0);
+			return Utils.toJavaObject(object);
+		}
+
+		return null;
 	}
 
 	public void scroll(Direction direction) throws CalabashException {
