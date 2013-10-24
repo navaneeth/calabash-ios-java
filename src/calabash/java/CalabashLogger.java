@@ -18,6 +18,8 @@ class CalabashLogger {
 			throws CalabashException {
 		if (configuration != null && configuration.isLoggingEnabled()) {
 			try {
+				BasicConfigurator.configure();
+
 				String logFile = new File(configuration.getLogsDirectory(),
 						"calabash-ios-java.log").getAbsolutePath();
 				RollingFileAppender fileAppender = new RollingFileAppender(
@@ -26,7 +28,8 @@ class CalabashLogger {
 				fileAppender.setAppend(true);
 				fileAppender.activateOptions();
 
-				BasicConfigurator.configure(fileAppender);
+				Logger.getRootLogger().removeAllAppenders();
+				Logger.getRootLogger().addAppender(fileAppender);
 				log = Logger.getLogger(CalabashLogger.class);
 				log.setLevel(Level.INFO);
 				shouldLog = true;
