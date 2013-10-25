@@ -368,6 +368,15 @@ public class IOSApplication {
 		calabashWrapper.sendAppToBackground(seconds);
 	}
 
+	/**
+	 * Waits for keyboard to appear
+	 * 
+	 * @throws CalabashException
+	 */
+	public void awaitKeyboard() throws CalabashException {
+		calabashWrapper.awaitKeyboard();
+	}
+
 	private UIElement getRootElement(String query) throws CalabashException {
 		UIElement rootElement = null;
 		RubyArray result = calabashWrapper.query(query);
