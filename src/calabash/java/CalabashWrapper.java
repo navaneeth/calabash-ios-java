@@ -444,6 +444,22 @@ public final class CalabashWrapper {
 		}
 	}
 
+	public void sendAppToBackground(int seconds) throws CalabashException {
+		try {
+			info("Sending application to background for '%d' seconds", seconds);
+			container.clear();
+			addRequiresAndIncludes("Calabash::Cucumber::Core");
+			container.put("cjSeconds", seconds);
+			container.runScriptlet("send_app_to_background(cjSeconds)");
+			pause((seconds + 2) * 1000);
+		} catch (Exception e) {
+			error("Failed to send application to background", e);
+			throw new CalabashException(String.format(
+					"Failed to send application to background. %s",
+					e.getMessage()));
+		}
+	}
+
 	public void waitFor(ICondition condition, WaitOptions options)
 			throws CalabashException, OperationTimedoutException {
 		try {
@@ -807,6 +823,13 @@ public final class CalabashWrapper {
 	private void pause() {
 		try {
 			Thread.sleep(pauseTimeInMilliSec);
+		} catch (InterruptedException e) {
+		}
+	}
+
+	private void pause(int milliseconds) {
+		try {
+			Thread.sleep(milliseconds);
 		} catch (InterruptedException e) {
 		}
 	}

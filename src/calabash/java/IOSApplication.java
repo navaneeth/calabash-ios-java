@@ -355,6 +355,19 @@ public class IOSApplication {
 		return calabashWrapper.elementExists(query);
 	}
 
+	/**
+	 * Sends the application to background for specified seconds. Application
+	 * will be activated after the specified seconds This method blocks for
+	 * specified seconds
+	 * 
+	 * @param seconds
+	 *            Seconds to put the application in the background
+	 * @throws CalabashException
+	 */
+	public void sendToBackground(int seconds) throws CalabashException {
+		calabashWrapper.sendAppToBackground(seconds);
+	}
+
 	private UIElement getRootElement(String query) throws CalabashException {
 		UIElement rootElement = null;
 		RubyArray result = calabashWrapper.query(query);
