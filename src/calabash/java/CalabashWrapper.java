@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.jruby.RubyArray;
 import org.jruby.embed.LocalContextScope;
+import org.jruby.embed.LocalVariableBehavior;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
@@ -25,7 +26,7 @@ import org.jruby.embed.ScriptingContainer;
 public final class CalabashWrapper {
 
 	private final ScriptingContainer container = new ScriptingContainer(
-			LocalContextScope.SINGLETHREAD);
+			LocalContextScope.SINGLETHREAD, LocalVariableBehavior.PERSISTENT);
 	private final File rbScriptsDir;
 	private final File projectDir;
 	private final File gemsDir;
@@ -212,17 +213,25 @@ public final class CalabashWrapper {
 		}
 	}
 
-	public void swipe(String query, Direction direction)
+	public void swipe(String query, Direction direction, SwipeOptions options)
 			throws CalabashException {
 		try {
-			info("Swiping: %s", query);
+			info("Swiping: %s, with options: %s", query,
+					options == null ? "null" : options.toString());
 			container.clear();
 			addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::Operations");
 			container.put("cjQueryString", query);
 			container.put("cjDirection", direction.getDirection());
-			container
-					.runScriptlet("swipe(cjDirection, {:query => cjQueryString})");
+			if (options != null) {
+				container.put("cjSwipeOptsString", options.toString());
+				container.runScriptlet("cjSwipeOpts = eval(cjSwipeOptsString)");
+				container.runScriptlet("cjSwipeOpts[:query] = cjQueryString");
+				container.runScriptlet("swipe(cjDirection, cjSwipeOpts)");
+			} else {
+				container
+						.runScriptlet("swipe(cjDirection, {:query => cjQueryString})");
+			}
 			pause();
 		} catch (Exception e) {
 			error("Failed to swipe: %s", e, query);

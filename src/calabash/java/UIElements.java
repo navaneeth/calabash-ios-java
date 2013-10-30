@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
 
+import calabash.java.SwipeOptions.Force;
+
 /**
  * 
  *
@@ -77,6 +79,18 @@ public final class UIElements extends ArrayList<UIElement> implements IAction {
 		this.first().swipe(direction);
 	}
 
+	public void swipe(Direction direction, Force force)
+			throws CalabashException {
+		ensureCollectionIsNotEmpty();
+		this.first().swipe(direction, force);
+	}
+
+	public void swipe(Direction direction, SwipeOptions options)
+			throws CalabashException {
+		ensureCollectionIsNotEmpty();
+		this.first().swipe(direction, options);
+	}
+
 	public void pinchIn() throws CalabashException {
 		ensureCollectionIsNotEmpty();
 		this.first().pinchIn();
@@ -86,10 +100,11 @@ public final class UIElements extends ArrayList<UIElement> implements IAction {
 		ensureCollectionIsNotEmpty();
 		this.first().pinchOut();
 	}
-	
+
 	private void ensureCollectionIsNotEmpty() throws CalabashException {
 		if (this.size() == 0) {
-			throw new CalabashException("Cannot perform action on an empty list");
+			throw new CalabashException(
+					"Cannot perform action on an empty list");
 		}
 	}
 

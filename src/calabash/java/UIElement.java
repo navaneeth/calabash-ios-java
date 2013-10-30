@@ -9,6 +9,8 @@ import static calabash.java.Utils.getStringFromHash;
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
 
+import calabash.java.SwipeOptions.Force;
+
 /**
  * Represents an UI element.
  * 
@@ -170,7 +172,17 @@ public class UIElement implements IAction {
 	}
 
 	public void swipe(Direction direction) throws CalabashException {
-		calabashWrapper.swipe(query, direction);
+		calabashWrapper.swipe(query, direction, null);
+	}
+
+	public void swipe(Direction direction, Force force)
+			throws CalabashException {
+		calabashWrapper.swipe(query, direction, new SwipeOptions(force, null));
+	}
+
+	public void swipe(Direction direction, SwipeOptions options)
+			throws CalabashException {
+		calabashWrapper.swipe(query, direction, options);
 	}
 
 	public void pinchIn() throws CalabashException {
