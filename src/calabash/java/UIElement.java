@@ -1,19 +1,21 @@
 /**
- * 
+ *
  */
 package calabash.java;
+
+import calabash.java.SwipeOptions.Force;
+import org.jruby.RubyArray;
+import org.jruby.RubyHash;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static calabash.java.Utils.getIntFromHash;
 import static calabash.java.Utils.getStringFromHash;
 
-import org.jruby.RubyArray;
-import org.jruby.RubyHash;
-
-import calabash.java.SwipeOptions.Force;
-
 /**
  * Represents an UI element.
- * 
+ *
  */
 public class UIElement implements IAction {
 
@@ -30,7 +32,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Get element's class
-	 * 
+	 *
 	 * @return
 	 */
 	public String getElementClass() {
@@ -39,7 +41,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Gets the element id
-	 * 
+	 *
 	 * @return
 	 */
 	public String getId() {
@@ -48,7 +50,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Gets the label
-	 * 
+	 *
 	 * @return
 	 */
 	public String getLabel() {
@@ -57,7 +59,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Get description about this element
-	 * 
+	 *
 	 * @return
 	 */
 	public String getDescription() {
@@ -66,7 +68,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Gets the rectangle
-	 * 
+	 *
 	 * @return
 	 */
 	public Rect getRect() {
@@ -87,7 +89,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Get the rectangle representing frame
-	 * 
+	 *
 	 * @return
 	 */
 	public Rect getFrame() {
@@ -105,7 +107,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Checks if this element exists
-	 * 
+	 *
 	 * @return true if it exists, false otherwise
 	 * @throws CalabashException
 	 */
@@ -123,14 +125,14 @@ public class UIElement implements IAction {
 
 	/**
 	 * Gets the text from this UI element if it supports text
-	 * 
+	 *
 	 * @return
 	 * @throws CalabashException
 	 */
 	public String getText() throws CalabashException {
 		RubyArray result = calabashWrapper.query(query, "text");
-		if (result.size() > 0) {
-			return result.get(0).toString();
+		if (result.size() > 0 && result.get(0) != null) {
+            return result.get(0).toString();
 		}
 
 		return null;
@@ -141,7 +143,7 @@ public class UIElement implements IAction {
 	 * specific property value by performing selectors on the query result
 	 * <p>
 	 * Example:
-	 * 
+	 *
 	 * <pre>
 	 * UIElement element = iosApplication.query(&quot;tableView&quot;).first();
 	 * Object value = element.getPropertyValue(&quot;numberOfSections&quot;);
@@ -150,7 +152,7 @@ public class UIElement implements IAction {
 	 * This method doesn't support advanced selectors like the ones that are
 	 * supported by calabash Ruby. Support for advanced selectors will be added
 	 * in the later versions.
-	 * 
+	 *
 	 * @param selector
 	 *            Selector to apply to the query.
 	 * @return Value for the property after applying the selector. Type of this
@@ -195,7 +197,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Scroll to the cell according to the specified options
-	 * 
+	 *
 	 * @param options
 	 * @throws CalabashException
 	 */
@@ -209,7 +211,7 @@ public class UIElement implements IAction {
 	/**
 	 * Scrolls through each cells and calling the callback for each cell This
 	 * method works only for tableviews
-	 * 
+	 *
 	 * @param callback
 	 *            callback to be invoked
 	 * @throws CalabashException
@@ -222,7 +224,7 @@ public class UIElement implements IAction {
 	/**
 	 * Scrolls through each cells and calling the callback for each cell This
 	 * method works only for tableviews
-	 * 
+	 *
 	 * @param options
 	 *            options to control scrolling
 	 * @param callback
@@ -239,7 +241,7 @@ public class UIElement implements IAction {
 
 	/**
 	 * Gets all the child elements for this element
-	 * 
+	 *
 	 * @return List of UIElement
 	 * @throws CalabashException
 	 */
@@ -252,14 +254,24 @@ public class UIElement implements IAction {
 	/**
 	 * Inspects the current element and it's child elements and call callback
 	 * for each element
-	 * 
+	 *
 	 * @param callback
 	 *            Callback to be invoked
 	 * @throws CalabashException
 	 */
 	public void inspect(InspectCallback callback) throws CalabashException {
-		Utils.inspectElement(this, 0, callback);
+        TreeNode tree = new TreeBuilder(calabashWrapper).createTreeFrom(this);
+		Utils.inspectElement(tree, 0, callback);
 	}
+
+    /**
+     * get the tree with the current element as the root
+     * @return treeNode
+     * @throws CalabashException
+     */
+    public TreeNode getTree() throws CalabashException {
+        return new TreeBuilder(calabashWrapper).createTreeFrom(this);
+    }
 
 	public String toString() {
 		return String.format(
@@ -270,37 +282,43 @@ public class UIElement implements IAction {
 
 	/**
 	 * Gets the underlying query used to locate this element
-	 * 
+	 *
 	 * @return Query
 	 */
 	public String getQuery() {
 		return this.query;
 	}
 
-	public boolean equals(Object obj) {
-		if (obj instanceof UIElement) {
-			UIElement that = (UIElement) obj;
-			boolean equal = false;
-			if (this.getFrame() != null && that.getFrame() != null)
-				equal = this.getFrame().equals(that.getFrame());
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-			if (equal && this.getRect() != null && that.getRect() != null)
-				equal = this.getRect().equals(that.getRect());
+        UIElement uiElement = (UIElement) o;
 
-			if (equal && this.getId() != null && that.getId() != null)
-				equal = this.getId().equals(that.getId());
+        if (getRect() != null ? !getRect().equals(uiElement.getRect()) : uiElement.getRect() != null) return false;
+        if (getFrame() != null ? !getFrame().equals(uiElement.getFrame()) : uiElement.getFrame() != null) return false;
+        if (getLabel() != null ? !getLabel().equals(uiElement.getLabel()) : uiElement.getLabel() != null) return false;
+        if (getElementClass() != null ? !getElementClass().equals(uiElement.getElementClass()) : uiElement.getElementClass() != null) return false;
+        if (getId() != null ? !getId().equals(uiElement.getId()) : uiElement.getId() != null) return false;
+        if (getDescription() != null ? !getDescription().equals(uiElement.getDescription()) : uiElement.getDescription() != null) return false;
 
-			if (equal && this.getLabel() != null && that.getLabel() != null)
-				equal = this.getLabel().equals(that.getLabel());
+        return true;
+    }
 
-			if (equal && this.getElementClass() != null
-					&& that.getElementClass() != null)
-				equal = this.getElementClass().equals(that.getElementClass());
+    @Override
+    public int hashCode() {
+        List<Object> objects = new ArrayList<Object>();
+        objects.add(getRect());
+        objects.add(getFrame());
+        objects.add(getLabel());
+        objects.add(getElementClass());
+        objects.add(getId());
 
-			return equal;
-		}
-
-		return super.equals(obj);
-	}
-
+        int result = 0;
+        for (Object object : objects) {
+            result = 31 * result + (object != null ? object.hashCode() : 0);
+        }
+        return result;
+    }
 }

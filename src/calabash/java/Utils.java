@@ -3,19 +3,15 @@
  */
 package calabash.java;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.jruby.RubyArray;
+import org.jruby.RubyHash;
+import org.jruby.RubyObject;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.jruby.RubyArray;
-import org.jruby.RubyHash;
-import org.jruby.RubyObject;
 
 final class Utils {
 
@@ -102,7 +98,7 @@ final class Utils {
 
 	public static Object toJavaObject(Object rubyObject) {
 		if (rubyObject == null)
-			return rubyObject;
+			return null;
 
 		if (rubyObject instanceof RubyArray)
 			return toJavaArray((RubyArray) rubyObject);
@@ -126,14 +122,12 @@ final class Utils {
 		return map;
 	}
 
-	public static void inspectElement(UIElement element, int nestingLevel,
-			InspectCallback callback) throws CalabashException {
-		callback.onEachElement(element, nestingLevel);
-		UIElements children = element.children();
-		for (UIElement child : children) {
-			inspectElement(child, nestingLevel + 1, callback);
-		}
-	}
+    public static void inspectElement(TreeNode node, int nestingLevel, InspectCallback callback) {
+        callback.onEachElement(node.getData(), nestingLevel);
+        for (TreeNode childNode : node.getChildren()) {
+            inspectElement(childNode, nestingLevel + 1, callback);
+        }
+    }
 
 	public static void runCommand(String[] command, String onExceptionMessage)
 			throws CalabashException {

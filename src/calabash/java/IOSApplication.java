@@ -1,16 +1,17 @@
 /**
- * 
+ *
  */
 package calabash.java;
-
-import java.io.File;
 
 import org.jruby.RubyArray;
 import org.jruby.RubyHash;
 
+import java.io.File;
+import java.util.List;
+
 /**
  * Represents an iOS application
- * 
+ *
  */
 public class IOSApplication {
 
@@ -18,7 +19,7 @@ public class IOSApplication {
 
 	/**
 	 * Initializes a new instance of Application
-	 * 
+	 *
 	 * @param calabashWrapper
 	 */
 	public IOSApplication(CalabashWrapper calabashWrapper) {
@@ -33,7 +34,7 @@ public class IOSApplication {
 	 * <pre>
 	 * iosApplication.query(&quot;button index:0&quot;)
 	 * </pre>
-	 * 
+	 *
 	 * @param query
 	 *            Calabash iOS supported query
 	 * @return
@@ -53,7 +54,7 @@ public class IOSApplication {
 	 * String label = &quot;Foo&quot;;
 	 * iosApplication.query(&quot;label marked:'%s'&quot;, label);
 	 * </pre>
-	 * 
+	 *
 	 * @param query
 	 *            Calabash iOS supported query
 	 * @param args
@@ -71,7 +72,7 @@ public class IOSApplication {
 
 	/**
 	 * Records a sequence of events and saves them to disk.
-	 * 
+	 *
 	 * @throws CalabashException
 	 */
 	public void startRecording() throws CalabashException {
@@ -80,7 +81,7 @@ public class IOSApplication {
 
 	/**
 	 * Stops the recording and saves the data to the specified file
-	 * 
+	 *
 	 * @param filename
 	 *            File name
 	 * @throws CalabashException
@@ -91,7 +92,7 @@ public class IOSApplication {
 
 	/**
 	 * Plays a pre-recorded sequence of events on the application
-	 * 
+	 *
 	 * @param recording
 	 *            Name of the recording
 	 * @throws CalabashException
@@ -99,10 +100,10 @@ public class IOSApplication {
 	public void playback(String recording) throws CalabashException {
 		calabashWrapper.playback(recording, null, null);
 	}
-	
+
 	/**
 	 * Plays a pre-recorded sequence of events on the application
-	 * 
+	 *
 	 * @param recording
 	 *            Name of the recording
 	 * @param query Query to identify which view to playback the recorded touch-events on
@@ -114,9 +115,9 @@ public class IOSApplication {
 
 	/**
 	 * Kills the application
-	 * 
+	 *
 	 * @throws CalabashException
-	 * 
+	 *
 	 */
 	public void exit() throws CalabashException {
 		calabashWrapper.exit();
@@ -124,7 +125,7 @@ public class IOSApplication {
 
 	/**
 	 * Restarts this application
-	 * 
+	 *
 	 * @throws CalabashException
 	 */
 	public void restart() throws CalabashException {
@@ -134,7 +135,7 @@ public class IOSApplication {
 
 	/**
 	 * Returns a value indicating whether the application is running
-	 * 
+	 *
 	 * @return true if the application is running, false otherwise
 	 */
 	public boolean isRunning() {
@@ -145,7 +146,7 @@ public class IOSApplication {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Escapes single quotes in the calabash query
 	 * See <a href="https://github.com/calabash/calabash-ios/wiki/08-Tips-and-Tricks#handling-quotes">Handling quotes</a>
@@ -159,7 +160,7 @@ public class IOSApplication {
 
 	/**
 	 * Gets the calabash server & client details
-	 * 
+	 *
 	 * @return
 	 * @throws CalabashException
 	 */
@@ -179,7 +180,7 @@ public class IOSApplication {
 
 	/**
 	 * Takes a screenshot
-	 * 
+	 *
 	 * @return
 	 * @throws CalabashException
 	 */
@@ -202,7 +203,7 @@ public class IOSApplication {
 
 	/**
 	 * Rotate the screen to the left
-	 * 
+	 *
 	 * @throws CalabashException
 	 */
 	public void rotateLeft() throws CalabashException {
@@ -211,7 +212,7 @@ public class IOSApplication {
 
 	/**
 	 * Rotate the screen to the right
-	 * 
+	 *
 	 * @throws CalabashException
 	 */
 	public void rotateRight() throws CalabashException {
@@ -220,7 +221,7 @@ public class IOSApplication {
 
 	/**
 	 * Gets the current keyboard
-	 * 
+	 *
 	 * @return
 	 * @throws CalabashException
 	 *             If no visible keyboards are available.
@@ -232,7 +233,7 @@ public class IOSApplication {
 	/**
 	 * Waits for the specified condition. This uses default timeout period and
 	 * throws an exception when timeout reaches
-	 * 
+	 *
 	 * @param condition
 	 *            Condition to wait for
 	 * @throws CalabashException
@@ -247,7 +248,7 @@ public class IOSApplication {
 
 	/**
 	 * Waits for the specified condition with the options specified
-	 * 
+	 *
 	 * @param condition
 	 *            Condition to wait for
 	 * @param options
@@ -264,7 +265,7 @@ public class IOSApplication {
 
 	/**
 	 * Wait for all the elements to exist in the specified array
-	 * 
+	 *
 	 * @param queries
 	 *            Queries to perform
 	 * @throws OperationTimedoutException
@@ -294,7 +295,7 @@ public class IOSApplication {
 
 	/**
 	 * Waits till all the animations finishes
-	 * 
+	 *
 	 * @throws CalabashException
 	 *             When any calabash operation fails
 	 */
@@ -305,47 +306,34 @@ public class IOSApplication {
 	/**
 	 * Fetches all elements in this application and executes callback for each
 	 * of them
-	 * 
+	 *
 	 * @param callback
 	 *            Callback to be executed for each element
 	 * @throws CalabashException
 	 */
-	public void inspect(InspectCallback callback) throws CalabashException {
-		UIElements rootElements = getRootElements();
-		if (rootElements == null)
-			return;
+    public void inspect(InspectCallback callback) throws CalabashException {
+        List<TreeNode> tree = new TreeBuilder(calabashWrapper).createTreeFromRoot();
+        if (tree.isEmpty()) return;
 
-		for (UIElement root : rootElements) {
-			Utils.inspectElement(root, 0, callback);
-		}
-	}
+        for (TreeNode treeNode : tree) {
+            Utils.inspectElement(treeNode, 0, callback);
+        }
+    }
 
-	/**
+    /**
 	 * Gets all the root elements available This can be used to make a tree view
 	 * of all the elements available in the view currently
-	 * 
+	 *
 	 * @return list of root elements if available, null otherwise
 	 * @throws CalabashException
 	 */
-	public UIElements getRootElements() throws CalabashException {
-		RubyArray allElements = calabashWrapper.query("*");
-		if (allElements.size() == 0)
-			return null;
-
-		UIElements rootElements = new UIElements();
-		for (int i = 0; i < allElements.size(); i++) {
-			String query = String.format("* index:%d", i);
-			UIElement rootElement = getRootElement(query);
-			if (rootElement != null && !rootElements.contains(rootElement))
-				rootElements.add(rootElement);
-		}
-
-		return rootElements;
+	public List<TreeNode> getRootElements() throws CalabashException {
+		return new TreeBuilder(calabashWrapper).createTreeFromRoot();
 	}
 
 	/**
 	 * Checks if the element exists
-	 * 
+	 *
 	 * @param query
 	 *            Query to check
 	 * @return true if the element is available
@@ -359,7 +347,7 @@ public class IOSApplication {
 	 * Sends the application to background for specified seconds. Application
 	 * will be activated after the specified seconds This method blocks for
 	 * specified seconds
-	 * 
+	 *
 	 * @param seconds
 	 *            Seconds to put the application in the background
 	 * @throws CalabashException
@@ -370,25 +358,11 @@ public class IOSApplication {
 
 	/**
 	 * Waits for keyboard to appear
-	 * 
+	 *
 	 * @throws CalabashException
 	 */
 	public void awaitKeyboard() throws CalabashException {
 		calabashWrapper.awaitKeyboard();
 	}
 
-	private UIElement getRootElement(String query) throws CalabashException {
-		UIElement rootElement = null;
-		RubyArray result = calabashWrapper.query(query);
-		if (result.size() == 0)
-			return null;
-		else {
-			rootElement = new UIElements(result, query, calabashWrapper).get(0);
-			UIElement element = getRootElement(query + " parent * index:0");
-			if (element != null)
-				rootElement = element;
-		}
-
-		return rootElement;
-	}
 }

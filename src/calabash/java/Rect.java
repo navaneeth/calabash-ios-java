@@ -57,34 +57,31 @@ public final class Rect {
 						getCenter_y());
 	}
 
-	public boolean equals(Object obj) {
-		if (obj instanceof Rect) {
-			Rect that = (Rect) obj;
-			boolean equal = false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-			if (this.getX() != null && that.getX() != null)
-				equal = this.getX().equals(that.getX());
+        Rect rect = (Rect) o;
 
-			if (equal && this.getY() != null && that.getY() != null)
-				equal = this.getY().equals(that.getY());
+        if (center_x != null ? !center_x.equals(rect.center_x) : rect.center_x != null) return false;
+        if (center_y != null ? !center_y.equals(rect.center_y) : rect.center_y != null) return false;
+        if (height != null ? !height.equals(rect.height) : rect.height != null) return false;
+        if (width != null ? !width.equals(rect.width) : rect.width != null) return false;
+        if (x != null ? !x.equals(rect.x) : rect.x != null) return false;
+        if (y != null ? !y.equals(rect.y) : rect.y != null) return false;
 
-			if (equal && this.getWidth() != null && that.getWidth() != null)
-				equal = this.getWidth().equals(that.getWidth());
+        return true;
+    }
 
-			if (equal && this.getHeight() != null && that.getHeight() != null)
-				equal = this.getHeight().equals(that.getHeight());
-
-			if (equal && this.getCenter_x() != null
-					&& that.getCenter_x() != null)
-				equal = this.getCenter_x().equals(that.getCenter_x());
-
-			if (equal && this.getCenter_y() != null
-					&& that.getCenter_y() != null)
-				equal = this.getCenter_y().equals(that.getCenter_y());
-
-			return equal;
-		}
-
-		return super.equals(obj);
-	}
+    @Override
+    public int hashCode() {
+        int result = x != null ? x.hashCode() : 0;
+        result = 31 * result + (y != null ? y.hashCode() : 0);
+        result = 31 * result + (width != null ? width.hashCode() : 0);
+        result = 31 * result + (height != null ? height.hashCode() : 0);
+        result = 31 * result + (center_x != null ? center_x.hashCode() : 0);
+        result = 31 * result + (center_y != null ? center_y.hashCode() : 0);
+        return result;
+    }
 }
