@@ -4,7 +4,7 @@
 package calabash.java;
 
 /**
- * 
+ * Wait options to be specified for waitFor
  *
  */
 public final class WaitOptions {
@@ -15,6 +15,14 @@ public final class WaitOptions {
 	private final String timeoutMessage;
 	private final boolean screenshotOnError;
 
+    /**
+     *
+     * @param timeoutInSec maximum number of seconds to wait
+     * @param retryFreqInSec wait this long before retrying the block
+     * @param postTimeoutInSec wait this long after the block returns true
+     * @param timeoutMessage error message
+     * @param screenshotOnError take a screenshot in case of error
+     */
 	public WaitOptions(int timeoutInSec, int retryFreqInSec,
 			int postTimeoutInSec, String timeoutMessage,
 			boolean screenshotOnError) {

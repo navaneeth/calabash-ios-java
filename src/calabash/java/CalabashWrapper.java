@@ -1,10 +1,13 @@
 /**
- * 
+ *
  */
 package calabash.java;
 
-import static calabash.java.CalabashLogger.error;
-import static calabash.java.CalabashLogger.info;
+import org.jruby.RubyArray;
+import org.jruby.embed.LocalContextScope;
+import org.jruby.embed.LocalVariableBehavior;
+import org.jruby.embed.PathType;
+import org.jruby.embed.ScriptingContainer;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -13,15 +16,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.jruby.RubyArray;
-import org.jruby.embed.LocalContextScope;
-import org.jruby.embed.LocalVariableBehavior;
-import org.jruby.embed.PathType;
-import org.jruby.embed.ScriptingContainer;
+import static calabash.java.CalabashLogger.error;
+import static calabash.java.CalabashLogger.info;
 
 /**
  * This is a one to one mapping with the Ruby calabash API
- * 
+ *
  */
 public final class CalabashWrapper {
 
@@ -80,8 +80,7 @@ public final class CalabashWrapper {
 					projectDir.getAbsolutePath());
 			info("Gems directory: %s", gemsDir.getAbsolutePath());
 
-			container.clear();
-			hackForFork();
+						hackForFork();
 			String launcherScript = new File(rbScriptsDir, "launcher.rb")
 					.getAbsolutePath();
 			container.runScriptlet(PathType.ABSOLUTE, launcherScript);
@@ -110,8 +109,8 @@ public final class CalabashWrapper {
 		String message = e.getMessage();
 		message = message
 				.replace(
-						"Make sure you are running this command from your project directory, \n",
-						"");
+                        "Make sure you are running this command from your project directory, \n",
+                        "");
 		message = message.replace(
 				"i.e., the directory containing your .xcodeproj file.\n", "");
 		message = message.replace(
@@ -125,9 +124,7 @@ public final class CalabashWrapper {
 		ensureNotDisposed();
 		try {
 			info("Executing query - %s", query);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
-
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjQueryString", query);
 			container.put("cjQueryArgs", args);
 
@@ -150,8 +147,7 @@ public final class CalabashWrapper {
 	public String escapeQuotes(String source) throws CalabashException {
 		try {
 			info("Escape quotes - %s", source);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::Operations");
 			container.put("cjToEscape", source);
 			Object value = container.runScriptlet("escape_quotes(cjToEscape)");
@@ -169,8 +165,7 @@ public final class CalabashWrapper {
 	public void touch(String query) throws CalabashException {
 		try {
 			info("Touching - %s", query);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::Operations");
 			container.put("cjQueryString", query);
 			container.runScriptlet("touch(cjQueryString)");
@@ -185,8 +180,7 @@ public final class CalabashWrapper {
 	public void flash(String query) throws CalabashException {
 		try {
 			info("Flashing: %s", query);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjQueryString", query);
 			container.runScriptlet("flash(cjQueryString)");
 		} catch (Exception e) {
@@ -200,8 +194,7 @@ public final class CalabashWrapper {
 			throws CalabashException {
 		try {
 			info("Scrolling: %s", query);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjQueryString", query);
 			container.put("cjDirection", direction.getDirection());
 			container.runScriptlet("scroll(cjQueryString, cjDirection)");
@@ -218,8 +211,7 @@ public final class CalabashWrapper {
 		try {
 			info("Swiping: %s, with options: %s", query,
 					options == null ? "null" : options.toString());
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::Operations");
 			container.put("cjQueryString", query);
 			container.put("cjDirection", direction.getDirection());
@@ -243,8 +235,7 @@ public final class CalabashWrapper {
 	public void pinch(String query, String inOrOut) throws CalabashException {
 		try {
 			info("Pinching: %s. In or out: %s", query, inOrOut);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::Operations");
 			container.put("cjInOrOut", inOrOut);
 			if (query != null) {
@@ -265,8 +256,7 @@ public final class CalabashWrapper {
 	public void rotate(String direction) throws CalabashException {
 		try {
 			info("Rotating to %s", direction);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::TestsHelpers");
 			container.put("cjDirection", direction);
 			container.runScriptlet("rotate(cjDirection.to_sym)");
@@ -281,11 +271,10 @@ public final class CalabashWrapper {
 	public void exit() throws CalabashException {
 		try {
 			info("Exiting iOS application");
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+						addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.runScriptlet("calabash_exit");
 		} catch (Exception e) {
-			error("Exitting iOS application failed.", e);
+			error("Exiting iOS application failed.", e);
 			throw new CalabashException(String.format(
 					"Failed to exit application. %s", e.getMessage()));
 		}
@@ -294,8 +283,7 @@ public final class CalabashWrapper {
 	public void startRecording() throws CalabashException {
 		try {
 			info("Starting recording");
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.runScriptlet("record_begin");
 		} catch (Exception e) {
 			error("Failed to start recording.", e);
@@ -307,8 +295,7 @@ public final class CalabashWrapper {
 	public void stopRecording(String filename) throws CalabashException {
 		try {
 			info("Stopping recording");
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjFileName", filename);
 			container.runScriptlet("record_end cjFileName");
 		} catch (Exception e) {
@@ -322,8 +309,7 @@ public final class CalabashWrapper {
 			throws CalabashException {
 		try {
 			info("Playback: %s", recording);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::Operations");
 			container.put("cjRecording", recording);
 			if (query != null && offset != null) {
@@ -353,8 +339,7 @@ public final class CalabashWrapper {
 
 	public Object serverVersion() throws CalabashException {
 		try {
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			return container.runScriptlet("server_version");
 		} catch (Exception e) {
 			throw new CalabashException(String.format(
@@ -364,8 +349,7 @@ public final class CalabashWrapper {
 
 	public Object clientVersion() throws CalabashException {
 		try {
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			return container.runScriptlet("client_version");
 		} catch (Exception e) {
 			throw new CalabashException(String.format(
@@ -377,8 +361,7 @@ public final class CalabashWrapper {
 			throws CalabashException {
 		try {
 			info("Taking screenshot");
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::TestsHelpers");
 			container.put("cjPrefix", dir.getAbsolutePath() + "/");
 			container.put("cjFileName", fileName);
@@ -395,8 +378,7 @@ public final class CalabashWrapper {
 		ensureNotDisposed();
 		try {
 			info("Checking element exists: %s", query);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::TestsHelpers");
 			container.put("cjQuery", query);
 			Object result = container.runScriptlet("element_exists(cjQuery)");
@@ -411,8 +393,7 @@ public final class CalabashWrapper {
 	public void enterText(String text) throws CalabashException {
 		try {
 			info("Entering text - %s", text);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::KeyboardHelpers");
 			container.put("cjTextToEnter", text);
 			container.runScriptlet("keyboard_enter_text(cjTextToEnter)");
@@ -427,8 +408,7 @@ public final class CalabashWrapper {
 	public void enterChar(String text) throws CalabashException {
 		try {
 			info("Entering character '%s'", text);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::KeyboardHelpers");
 			container.put("cjCharToEnter", text);
 			container.runScriptlet("keyboard_enter_char(cjCharToEnter)");
@@ -443,8 +423,7 @@ public final class CalabashWrapper {
 	public void done() throws CalabashException {
 		try {
 			info("Pressing done button");
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.runScriptlet("done");
 		} catch (Exception e) {
 			error("Failed to press done button", e);
@@ -456,8 +435,7 @@ public final class CalabashWrapper {
 	public void sendAppToBackground(int seconds) throws CalabashException {
 		try {
 			info("Sending application to background for '%d' seconds", seconds);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+            addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjSeconds", seconds);
 			container.runScriptlet("send_app_to_background(cjSeconds)");
 			pause((seconds + 2) * 1000);
@@ -472,8 +450,7 @@ public final class CalabashWrapper {
 	public void awaitKeyboard() throws CalabashException {
 		try {
 			info("Waiting for keyboard to showup");
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::KeyboardHelpers");
 			container.runScriptlet("await_keyboard");
 		} catch (Exception e) {
@@ -487,8 +464,7 @@ public final class CalabashWrapper {
 			throws CalabashException, OperationTimedoutException {
 		try {
 			info("Waiting for condition");
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::WaitHelpers");
 			container.put("cjWaitCondition", condition);
 			String waitOptionsHash = getWaitOptionsHash(options);
@@ -507,8 +483,7 @@ public final class CalabashWrapper {
 	public void waitForElementsExist(String[] queries, WaitOptions options)
 			throws OperationTimedoutException, CalabashException {
 		try {
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::WaitHelpers");
 			container.put("cjWaitQueries", queries);
 			String waitOptionsHash = getWaitOptionsHash(options);
@@ -527,29 +502,23 @@ public final class CalabashWrapper {
 	public void waitForElementsToNotExist(String[] queries, WaitOptions options)
 			throws OperationTimedoutException, CalabashException {
 		try {
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+            addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::WaitHelpers");
 			container.put("cjWaitQueries", queries);
 			String waitOptionsHash = getWaitOptionsHash(options);
 			if (waitOptionsHash == null)
-				container
-						.runScriptlet("wait_for_elements_do_not_exist(cjWaitQueries.to_a)");
+				container.runScriptlet("wait_for_elements_do_not_exist(cjWaitQueries.to_a)");
 			else
-				container
-						.runScriptlet(String
-								.format("wait_for_elements_do_not_exist(cjWaitQueries.to_a, %s)",
-										waitOptionsHash));
-		} catch (Exception e) {
-			handleWaitException(e, options);
+                container.runScriptlet(String.format("wait_for_elements_do_not_exist(cjWaitQueries.to_a, %s)", waitOptionsHash));
+        } catch (Exception e) {
+            handleWaitException(e, options);
 		}
 	}
 
 	public void scrollToRow(String query, int row) throws CalabashException {
 		try {
 			info("Scrolling to row '%d' for query - %s", row, query);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+						addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjQueryString", query);
 			container.put("cjRow", row);
 			container.runScriptlet("scroll_to_row(cjQueryString, cjRow)");
@@ -566,8 +535,7 @@ public final class CalabashWrapper {
 			throws CalabashException {
 		try {
 			info("Scrolling to a cell for query - %s", query);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+						addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.runScriptlet(String.format("scroll_to_cell(%s)",
 					getScrollOptionsHash(query, options)));
 			pause();
@@ -583,8 +551,7 @@ public final class CalabashWrapper {
 			CellIterator callback) throws CalabashException {
 		try {
 			info("Starting to scroll through each cells for query - %s", query);
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core");
+						addRequiresAndIncludes("Calabash::Cucumber::Core");
 			container.put("cjCallback", new ScrollThroughEachCellCallback(
 					callback, this));
 			String scrollOptionsHash = getScrollOptionsHash(query, options);
@@ -600,33 +567,6 @@ public final class CalabashWrapper {
 					"Failed to scroll through each cell for query '%s'. %s",
 					query, e.getMessage()));
 		}
-	}
-
-	public class ScrollThroughEachCellCallback {
-
-		private final CellIterator iterator;
-		private final CalabashWrapper wrapper;
-
-		public ScrollThroughEachCellCallback(CellIterator iterator,
-				CalabashWrapper wrapper) {
-			this.iterator = iterator;
-			this.wrapper = wrapper;
-		}
-
-		public void onEachCell(int row, int section, String query,
-				RubyArray array) throws Exception {
-			UIElement element = null;
-			try {
-				UIElements elements = new UIElements(array, query, wrapper);
-				if (elements.size() > 0)
-					element = elements.get(0);
-			} catch (CalabashException e) {
-				element = null;
-			}
-
-			iterator.onEachCell(row, section, element);
-		}
-
 	}
 
 	private void handleWaitException(Exception e, WaitOptions options)
@@ -676,8 +616,7 @@ public final class CalabashWrapper {
 	public void waitForNoneAnimating() throws CalabashException {
 		try {
 			info("Waiting for all the animations to finish");
-			container.clear();
-			addRequiresAndIncludes("Calabash::Cucumber::Core",
+						addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::WaitHelpers");
 			container.runScriptlet("wait_for_none_animating");
 		} catch (Exception e) {
@@ -716,8 +655,7 @@ public final class CalabashWrapper {
 
 	public void dispose() throws CalabashException {
 		try {
-			container.clear();
-			container.getProvider().getRuntime().tearDown(true);
+						container.getProvider().getRuntime().tearDown(true);
 			container.terminate();
 			disposed = true;
 		} catch (Throwable e) {
@@ -860,6 +798,33 @@ public final class CalabashWrapper {
 	private void ensureNotDisposed() throws CalabashException {
 		if (disposed)
 			throw new CalabashException("Object is disposed.");
+	}
+
+	public class ScrollThroughEachCellCallback {
+
+		private final CellIterator iterator;
+		private final CalabashWrapper wrapper;
+
+		public ScrollThroughEachCellCallback(CellIterator iterator,
+				CalabashWrapper wrapper) {
+			this.iterator = iterator;
+			this.wrapper = wrapper;
+		}
+
+		public void onEachCell(int row, int section, String query,
+				RubyArray array) throws Exception {
+			UIElement element = null;
+			try {
+				UIElements elements = new UIElements(array, query, wrapper);
+				if (elements.size() > 0)
+					element = elements.get(0);
+			} catch (CalabashException e) {
+				element = null;
+			}
+
+			iterator.onEachCell(row, section, element);
+		}
+
 	}
 
 }

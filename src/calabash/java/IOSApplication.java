@@ -234,8 +234,14 @@ public class IOSApplication {
 	 * Waits for the specified condition. This uses default timeout period and
 	 * throws an exception when timeout reaches
 	 *
-	 * @param condition
-	 *            Condition to wait for
+	 * @param condition Condition to wait for
+     * <pre>
+     *  Default wait options timeout = 10 seconds <br>
+     *          retry frequency = 0.2 seconds <br>
+     *          post timeout = 0.1 seconds <br>
+     *          timeout message = "Timed out waiting..." <br>
+     *          screenshot on error = true
+     * </pre>
 	 * @throws CalabashException
 	 *             When any calabash operations fails
 	 * @throws OperationTimedoutException
