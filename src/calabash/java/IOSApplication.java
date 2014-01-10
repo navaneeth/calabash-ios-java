@@ -367,8 +367,8 @@ public class IOSApplication {
 	 *
 	 * @throws CalabashException
 	 */
-	public void awaitKeyboard() throws CalabashException {
-		calabashWrapper.awaitKeyboard();
+	public void waitForKeyboard() throws CalabashException {
+		calabashWrapper.waitForKeyboard();
 	}
 
 }

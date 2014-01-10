@@ -447,12 +447,12 @@ public final class CalabashWrapper {
 		}
 	}
 
-	public void awaitKeyboard() throws CalabashException {
+	public void waitForKeyboard() throws CalabashException {
 		try {
 			info("Waiting for keyboard to showup");
             addRequiresAndIncludes("Calabash::Cucumber::Core",
 					"Calabash::Cucumber::KeyboardHelpers");
-			container.runScriptlet("await_keyboard");
+			container.runScriptlet("wait_for_keyboard");
 		} catch (Exception e) {
 			error("Failed to wait for keyboard", e);
 			throw new CalabashException(String.format(
