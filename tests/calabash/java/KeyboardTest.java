@@ -49,7 +49,7 @@ public class KeyboardTest extends CalabashBaseTest {
     @Test
     public void shouldThrowExceptionWhenUsingKeyboardBeforeLaunchingKeyboard() throws CalabashException {
         expectedException.expect(CalabashException.class);
-        expectedException.expectMessage("Failed to enter text: hi. (RuntimeError) No visible keyboard");
+        expectedException.expectMessage("Failed to enter text: hi. (RuntimeError) no visible keyboard");
         iosApplication.getKeyboard().enterText("hi");
     }
 
@@ -60,7 +60,7 @@ public class KeyboardTest extends CalabashBaseTest {
         iosApplication.getKeyboard().pressSpecialKey(SpecialKeys.Return);
 
         expectedException.expect(CalabashException.class);
-        expectedException.expectMessage("Failed to enter text: after return. (RuntimeError) No visible keyboard");
+        expectedException.expectMessage("Failed to enter text: after return. (RuntimeError) no visible keyboard");
         iosApplication.getKeyboard().enterText("after return");
     }
 

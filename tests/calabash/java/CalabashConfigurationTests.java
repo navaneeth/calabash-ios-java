@@ -1,17 +1,13 @@
 package calabash.java;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import calabash.java.CalabashConfiguration;
-import calabash.java.CalabashException;
-import calabash.java.ScreenshotListener;
+import static org.junit.Assert.*;
 
 public class CalabashConfigurationTests {
 
