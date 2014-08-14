@@ -29,6 +29,8 @@ public class Program {
 }
 ```
 
+`setup()` will inject calabash-framework into the XCode project. So you need to compile the `-cal` target from XCode. Without this, `start()` will fail with exception. 
+
 Writting tests
 ==============
 
